@@ -18,12 +18,14 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
 
-  <!-- Instant Theme Init -->
+  <!-- Instant Theme Init (Prevents FOUC & Synchronizes with Storefront) -->
   <script>
     (function() {
       const saved = localStorage.getItem('tasmac-theme');
       if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
       }
     })();
   </script>
@@ -45,7 +47,8 @@
       --radius-2xl: 1.25rem;
       --radius-full: 9999px;
 
-      --background: #f8fafc;
+      /* Light Theme Surface & Typography Tokens */
+      --background: #f4f6fa;
       --foreground: #0f172a;
       --card: #ffffff;
       --card-foreground: #0f172a;
@@ -60,15 +63,70 @@
       --muted-foreground: #64748b;
       
       --border: rgba(0, 0, 0, 0.08);
-      --card-border: rgba(212, 165, 78, 0.35);
+      --card-border: rgba(212, 165, 78, 0.42);
 
-      --fp-state-success: #10b981;
+      --fp-state-success: #059669;
       --fp-state-success-subtle: #ecfdf5;
-      --fp-state-warning: #f59e0b;
+      --fp-state-warning: #d97706;
       --fp-state-warning-subtle: #fffbeb;
-      --fp-state-danger: #ef4444;
+      --fp-state-danger: #dc2626;
 
-      --fp-shadow-luxury: 0 25px 60px -15px rgba(0, 0, 0, 0.12), 0 0 35px -10px rgba(245, 158, 11, 0.12);
+      /* Structural & Component Theme Variables */
+      --header-bg: rgba(255, 255, 255, 0.88);
+      --header-border: rgba(0, 0, 0, 0.07);
+      --top-strip-bg: #0f172a;
+      --top-strip-text: rgba(255, 255, 255, 0.72);
+      --top-strip-border: rgba(0, 0, 0, 0.12);
+
+      --brand-title-gradient: linear-gradient(135deg, #0f172a 35%, #b45309 100%);
+      --auth-title-gradient: linear-gradient(135deg, #0f172a 35%, #b45309 100%);
+      --subtitle-color: #64748b;
+
+      --btn-return-bg: rgba(0, 0, 0, 0.04);
+      --btn-return-border: rgba(0, 0, 0, 0.12);
+      --btn-return-text: #334155;
+      --btn-return-hover-bg: rgba(0, 0, 0, 0.08);
+      --btn-return-hover-text: #0f172a;
+
+      --card-top-border: rgba(0, 0, 0, 0.06);
+      --govt-badge-bg: rgba(245, 158, 11, 0.12);
+      --govt-badge-border: rgba(245, 158, 11, 0.38);
+      --govt-badge-text: #b45309;
+
+      --alert-box-bg: rgba(245, 158, 11, 0.07);
+      --alert-box-border: rgba(245, 158, 11, 0.28);
+      --alert-box-text: #475569;
+
+      --tabs-bar-bg: #edf2f7;
+      --tabs-bar-border: rgba(0, 0, 0, 0.08);
+      --tab-btn-text: #64748b;
+      --tab-btn-hover-bg: rgba(0, 0, 0, 0.04);
+      --tab-btn-hover-text: #0f172a;
+      --tab-btn-active-bg: #ffffff;
+      --tab-btn-active-text: #0f172a;
+      --tab-btn-active-border: rgba(212, 165, 78, 0.45);
+      --tab-btn-active-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+      --form-label-color: #1e293b;
+      --input-bg: #ffffff;
+      --input-border: rgba(0, 0, 0, 0.14);
+      --input-text: #0f172a;
+      --input-placeholder: #94a3b8;
+      --input-hover-border: rgba(0, 0, 0, 0.28);
+      --input-focus-bg: #ffffff;
+      --input-focus-border: #d97706;
+      --input-focus-ring: rgba(217, 119, 6, 0.18);
+      --input-focus-glow: rgba(217, 119, 6, 0.1);
+      --input-divider: rgba(0, 0, 0, 0.12);
+
+      --checkbox-text: #475569;
+      --auth-toggle-border: rgba(0, 0, 0, 0.07);
+      --auth-toggle-text: #64748b;
+
+      --footer-border: rgba(0, 0, 0, 0.07);
+      --footer-text: #64748b;
+
+      --fp-shadow-luxury: 0 25px 60px -15px rgba(0, 0, 0, 0.09), 0 0 35px -10px rgba(217, 119, 6, 0.12);
     }
 
     .dark {
@@ -95,6 +153,61 @@
       --fp-state-warning: #f59e0b;
       --fp-state-warning-subtle: rgba(245, 158, 11, 0.1);
       --fp-state-danger: #f87171;
+
+      /* Structural & Component Theme Variables */
+      --header-bg: rgba(7, 8, 10, 0.85);
+      --header-border: rgba(255, 255, 255, 0.06);
+      --top-strip-bg: #0a0b0e;
+      --top-strip-text: rgba(255, 255, 255, 0.55);
+      --top-strip-border: rgba(255, 255, 255, 0.05);
+
+      --brand-title-gradient: linear-gradient(135deg, #ffffff 45%, #e2b774 100%);
+      --auth-title-gradient: linear-gradient(135deg, #ffffff 45%, #e2b774 100%);
+      --subtitle-color: rgba(255, 255, 255, 0.6);
+
+      --btn-return-bg: rgba(255, 255, 255, 0.03);
+      --btn-return-border: rgba(255, 255, 255, 0.12);
+      --btn-return-text: rgba(255, 255, 255, 0.85);
+      --btn-return-hover-bg: rgba(255, 255, 255, 0.08);
+      --btn-return-hover-text: #ffffff;
+
+      --card-top-border: rgba(255, 255, 255, 0.06);
+      --govt-badge-bg: rgba(245, 158, 11, 0.08);
+      --govt-badge-border: rgba(245, 158, 11, 0.28);
+      --govt-badge-text: #f59e0b;
+
+      --alert-box-bg: rgba(255, 255, 255, 0.02);
+      --alert-box-border: rgba(255, 255, 255, 0.07);
+      --alert-box-text: rgba(255, 255, 255, 0.72);
+
+      --tabs-bar-bg: #08090d;
+      --tabs-bar-border: rgba(255, 255, 255, 0.08);
+      --tab-btn-text: rgba(255, 255, 255, 0.55);
+      --tab-btn-hover-bg: rgba(255, 255, 255, 0.03);
+      --tab-btn-hover-text: rgba(255, 255, 255, 0.85);
+      --tab-btn-active-bg: rgba(255, 255, 255, 0.07);
+      --tab-btn-active-text: #ffffff;
+      --tab-btn-active-border: rgba(245, 158, 11, 0.35);
+      --tab-btn-active-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+
+      --form-label-color: rgba(255, 255, 255, 0.88);
+      --input-bg: rgba(0, 0, 0, 0.45);
+      --input-border: rgba(255, 255, 255, 0.12);
+      --input-text: #ffffff;
+      --input-placeholder: rgba(255, 255, 255, 0.32);
+      --input-hover-border: rgba(255, 255, 255, 0.22);
+      --input-focus-bg: rgba(0, 0, 0, 0.65);
+      --input-focus-border: #f59e0b;
+      --input-focus-ring: rgba(245, 158, 11, 0.18);
+      --input-focus-glow: rgba(245, 158, 11, 0.15);
+      --input-divider: rgba(255, 255, 255, 0.12);
+
+      --checkbox-text: rgba(255, 255, 255, 0.72);
+      --auth-toggle-border: rgba(255, 255, 255, 0.07);
+      --auth-toggle-text: rgba(255, 255, 255, 0.55);
+
+      --footer-border: rgba(255, 255, 255, 0.05);
+      --footer-text: rgba(255, 255, 255, 0.45);
 
       --fp-shadow-luxury: 0 30px 80px -15px rgba(0, 0, 0, 0.95), 0 0 50px -10px rgba(245, 158, 11, 0.12);
     }
@@ -127,6 +240,42 @@
       padding-top: var(--top-shell-height, 95px);
     }
 
+    /* Executive Smooth Theme Transitions & View Transitions API */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+      mix-blend-mode: normal;
+    }
+    ::view-transition-old(root) {
+      z-index: 1;
+    }
+    ::view-transition-new(root) {
+      z-index: 9999;
+    }
+
+    /* Fallback universal smooth transition */
+    html.theme-transitioning,
+    html.theme-transitioning *,
+    html.theme-transitioning *::before,
+    html.theme-transitioning *::after {
+      transition: background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                  color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  fill 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      transition-delay: 0s !important;
+    }
+
+    #theme-toggle-btn {
+      position: relative;
+    }
+    #theme-icon {
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+    }
+    #theme-toggle-btn:active #theme-icon {
+      transform: scale(0.85);
+    }
+
     /* Fixed Top Navigation Shell */
     .fixed-top-shell {
       position: fixed !important;
@@ -150,8 +299,8 @@
 
     /* Top Statutory Strip - Discreet Luxury */
     .statutory-top-strip {
-      background-color: #0a0b0e;
-      color: rgba(255, 255, 255, 0.55);
+      background-color: var(--top-strip-bg);
+      color: var(--top-strip-text);
       font-size: 10.5px;
       font-weight: 500;
       padding: 6px 20px;
@@ -162,7 +311,7 @@
       text-align: center;
       position: relative;
       z-index: 20;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid var(--top-strip-border);
       font-family: var(--fp-font-mono);
       letter-spacing: 0.03em;
     }
@@ -180,10 +329,10 @@
 
     /* Header Shell */
     .human-header {
-      background: rgba(7, 8, 10, 0.82);
+      background: var(--header-bg);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid var(--header-border);
       position: relative;
       z-index: 10;
       padding: 0 24px;
@@ -232,7 +381,7 @@
       font-size: 17px;
       font-weight: 800;
       letter-spacing: 0.06em;
-      background: linear-gradient(135deg, #ffffff 45%, #e2b774 100%);
+      background: var(--brand-title-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -260,9 +409,9 @@
       height: 36px;
       padding: 0 16px;
       border-radius: var(--radius-full);
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: rgba(255, 255, 255, 0.85);
+      background: var(--btn-return-bg);
+      border: 1px solid var(--btn-return-border);
+      color: var(--btn-return-text);
       font-size: 12px;
       font-weight: 650;
       font-family: var(--fp-font-mono);
@@ -271,9 +420,9 @@
       user-select: none;
     }
     .btn-return-store:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--btn-return-hover-bg);
       border-color: rgba(212, 165, 78, 0.45);
-      color: #ffffff;
+      color: var(--btn-return-hover-text);
       box-shadow: 0 0 16px rgba(245, 158, 11, 0.2);
       transform: translateX(-1px);
     }
@@ -282,8 +431,8 @@
       width: 36px;
       height: 36px;
       border-radius: var(--radius-full);
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: var(--btn-return-bg);
+      border: 1px solid var(--btn-return-border);
       color: var(--foreground);
       display: flex;
       align-items: center;
@@ -292,7 +441,7 @@
       transition: all 0.2s ease;
     }
     .icon-button-quiet:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--btn-return-hover-bg);
       border-color: rgba(212, 165, 78, 0.4);
     }
 
@@ -311,13 +460,13 @@
     .auth-card-wrapper {
       width: 100%;
       max-width: 490px;
-      background: #0d0f15;
+      background: var(--card);
       border: 1px solid var(--card-border);
       border-radius: 20px;
       box-shadow: var(--fp-shadow-luxury);
       position: relative;
       overflow: hidden;
-      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
     }
     .auth-card-wrapper::before {
       content: "";
@@ -334,7 +483,7 @@
     /* Card Top Branding */
     .auth-card-top {
       padding: 34px 32px 20px 32px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid var(--card-top-border);
       background: transparent;
       text-align: center;
     }
@@ -376,13 +525,13 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(245, 158, 11, 0.08);
-      border: 1px solid rgba(245, 158, 11, 0.28);
+      background: var(--govt-badge-bg);
+      border: 1px solid var(--govt-badge-border);
       padding: 4px 12px;
       border-radius: var(--radius-full);
       font-size: 10px;
       font-weight: 750;
-      color: #f59e0b;
+      color: var(--govt-badge-text);
       text-transform: uppercase;
       letter-spacing: 0.1em;
       margin-bottom: 8px;
@@ -392,14 +541,14 @@
       font-size: 26px;
       font-weight: 850;
       letter-spacing: 0.03em;
-      background: linear-gradient(135deg, #ffffff 45%, #e2b774 100%);
+      background: var(--auth-title-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 6px;
     }
     .auth-subtitle {
       font-size: 12.5px;
-      color: rgba(255, 255, 255, 0.6);
+      color: var(--subtitle-color);
       line-height: 1.5;
       max-width: 380px;
       margin: 0 auto;
@@ -409,21 +558,24 @@
     .regulatory-alert-box {
       margin: 20px 32px 0 32px;
       padding: 11px 16px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: var(--alert-box-bg);
+      border: 1px solid var(--alert-box-border);
       border-left: 3px solid #f59e0b;
       border-radius: 8px;
       display: flex;
       align-items: flex-start;
       gap: 12px;
       font-size: 11.5px;
-      color: rgba(255, 255, 255, 0.72);
+      color: var(--alert-box-text);
       line-height: 1.45;
     }
     .regulatory-alert-box i {
       color: #f59e0b;
       flex-shrink: 0;
       margin-top: 1.5px;
+    }
+    .regulatory-alert-title {
+      color: var(--foreground);
     }
 
     /* Segmented Tab Controls */
@@ -432,10 +584,10 @@
       grid-template-columns: 1fr 1fr;
       gap: 6px;
       margin: 20px 32px 0 32px;
-      background: #08090d;
+      background: var(--tabs-bar-bg);
       padding: 4px;
       border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--tabs-bar-border);
     }
     .auth-tab-btn {
       height: 38px;
@@ -445,7 +597,7 @@
       gap: 7px;
       border: 1px solid transparent;
       background: transparent;
-      color: rgba(255, 255, 255, 0.55);
+      color: var(--tab-btn-text);
       font-family: var(--fp-font-mono);
       font-size: 12.5px;
       font-weight: 650;
@@ -454,14 +606,14 @@
       transition: all 0.25s ease;
     }
     .auth-tab-btn:hover {
-      color: rgba(255, 255, 255, 0.85);
-      background: rgba(255, 255, 255, 0.03);
+      color: var(--tab-btn-hover-text);
+      background: var(--tab-btn-hover-bg);
     }
     .auth-tab-btn.active {
-      background: rgba(255, 255, 255, 0.07);
-      color: #ffffff;
-      border-color: rgba(245, 158, 11, 0.35);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+      background: var(--tab-btn-active-bg);
+      color: var(--tab-btn-active-text);
+      border-color: var(--tab-btn-active-border);
+      box-shadow: var(--tab-btn-active-shadow);
       font-weight: 750;
     }
     .auth-tab-btn.active i {
@@ -482,7 +634,7 @@
     .form-label-4rge {
       font-size: 11.5px;
       font-weight: 700;
-      color: rgba(255, 255, 255, 0.88);
+      color: var(--form-label-color);
       display: flex;
       align-items: center;
       gap: 6px;
@@ -506,35 +658,64 @@
       color: #f59e0b;
       font-family: var(--fp-font-mono);
       pointer-events: none;
-      border-right: 1px solid rgba(255, 255, 255, 0.12);
+      border-right: 1px solid var(--input-divider);
       padding-right: 8px;
     }
     .input-4rge, .select-4rge {
       width: 100%;
       height: 44px;
-      background: rgba(0, 0, 0, 0.45);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
       border-radius: 8px;
       padding: 0 14px;
       font-family: var(--fp-font-mono);
       font-size: 13.5px;
-      color: #ffffff;
+      color: var(--input-text);
       outline: none;
       transition: all 0.25s ease;
     }
     .input-4rge::placeholder {
-      color: rgba(255, 255, 255, 0.32);
+      color: var(--input-placeholder);
     }
     .input-4rge:hover, .select-4rge:hover {
-      border-color: rgba(255, 255, 255, 0.22);
+      border-color: var(--input-hover-border);
     }
     .input-4rge:focus, .select-4rge:focus {
-      border-color: #f59e0b;
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18), 0 0 20px -3px rgba(245, 158, 11, 0.15);
-      background: rgba(0, 0, 0, 0.65);
+      background: var(--input-focus-bg);
+      border-color: var(--input-focus-border);
+      box-shadow: 0 0 0 3px var(--input-focus-ring), 0 0 20px -3px var(--input-focus-glow);
+    }
+    .select-4rge {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23f59e0b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 34px;
+      cursor: pointer;
+    }
+    .select-4rge option {
+      background: var(--card);
+      color: var(--input-text);
     }
     .input-with-prefix {
       padding-left: 58px;
+    }
+    .password-eye-btn {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      transition: color 0.2s ease;
+    }
+    .password-eye-btn:hover {
+      color: var(--foreground);
     }
 
     /* Checkbox Row */
@@ -543,7 +724,7 @@
       align-items: flex-start;
       gap: 10px;
       font-size: 11.5px;
-      color: rgba(255, 255, 255, 0.72);
+      color: var(--checkbox-text);
       line-height: 1.45;
       margin: 18px 0 22px 0;
       cursor: pointer;
@@ -605,13 +786,13 @@
       display: flex;
       background: rgba(239, 68, 68, 0.12);
       border: 1px solid rgba(239, 68, 68, 0.35);
-      color: #fca5a5;
+      color: var(--fp-state-danger);
     }
     .auth-alert-banner.success {
       display: flex;
       background: rgba(52, 211, 153, 0.12);
       border: 1px solid rgba(52, 211, 153, 0.35);
-      color: #6ee7b7;
+      color: var(--fp-state-success);
     }
     .auth-alert-banner i {
       width: 15px;
@@ -627,10 +808,10 @@
     .auth-toggle-link {
       margin-top: 22px;
       padding-top: 18px;
-      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      border-top: 1px solid var(--auth-toggle-border);
       text-align: center;
       font-size: 12px;
-      color: rgba(255, 255, 255, 0.55);
+      color: var(--auth-toggle-text);
     }
     .auth-toggle-link button {
       background: none;
@@ -645,7 +826,7 @@
       transition: color 0.2s ease;
     }
     .auth-toggle-link button:hover {
-      color: #fbbf24;
+      color: var(--primary-hover);
     }
 
     /* Success State View */
@@ -684,8 +865,8 @@
       pointer-events: none;
     }
     .toast-human {
-      background: #0d0f15;
-      color: #ffffff;
+      background: var(--card);
+      color: var(--foreground);
       padding: 12px 18px;
       border-radius: var(--radius-lg);
       font-size: 12.5px;
@@ -693,8 +874,8 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: var(--fp-shadow-luxury);
+      border: 1px solid var(--card-border);
       border-left: 3px solid #f59e0b;
       animation: toastSlideUp 0.2s ease;
       pointer-events: auto;
@@ -711,11 +892,11 @@
     /* Footer */
     footer.human-footer {
       background: transparent;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      border-top: 1px solid var(--footer-border);
       padding: 22px 24px;
       margin-top: auto;
       font-size: 11px;
-      color: rgba(255, 255, 255, 0.45);
+      color: var(--footer-text);
       text-align: center;
       position: relative;
       z-index: 10;
@@ -749,7 +930,7 @@
       }
       .statutory-top-strip {
         font-size: 9.5px;
-        padding: 5px 10px;
+        padding: 5px 12px;
       }
     }
   </style>
@@ -812,7 +993,7 @@
       <div class="regulatory-alert-box">
         <i data-lucide="shield-alert" style="width: 16px; height: 16px;"></i>
         <div>
-          <strong style="color: #ffffff;">Statutory Age Clearance (21+):</strong>
+          <strong class="regulatory-alert-title">Statutory Age Clearance (21+):</strong>
           Under TN Prohibition Act 1937, patrons must be 21 years or older. Original Govt Photo ID verification required at pickup counter.
         </div>
       </div>
@@ -855,7 +1036,7 @@
             </div>
             <div class="input-wrapper-4rge">
               <input type="password" class="input-4rge" id="signin-password" placeholder="Enter your account password" required autocomplete="current-password" />
-              <button type="button" onclick="togglePasswordVisibility('signin-password', 'signin-eye-icon')" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.5);" aria-label="Toggle password visibility">
+              <button type="button" onclick="togglePasswordVisibility('signin-password', 'signin-eye-icon')" class="password-eye-btn" aria-label="Toggle password visibility">
                 <i data-lucide="eye" id="signin-eye-icon" style="width: 15px; height: 15px;"></i>
               </button>
             </div>
@@ -907,7 +1088,7 @@
             </label>
             <div class="input-wrapper-4rge">
               <input type="password" class="input-4rge" id="signup-password" minlength="6" placeholder="Choose a secure password" required autocomplete="new-password" />
-              <button type="button" onclick="togglePasswordVisibility('signup-password', 'signup-eye-icon')" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.5);" aria-label="Toggle password visibility">
+              <button type="button" onclick="togglePasswordVisibility('signup-password', 'signup-eye-icon')" class="password-eye-btn" aria-label="Toggle password visibility">
                 <i data-lucide="eye" id="signup-eye-icon" style="width: 15px; height: 15px;"></i>
               </button>
             </div>
@@ -1013,11 +1194,83 @@
 
   <!-- Client Auth Logic -->
   <script>
-    // 1. Theme Toggle
-    function toggleTheme(e) {
-      const isDark = document.documentElement.classList.toggle("dark");
-      localStorage.setItem("tasmac-theme", isDark ? "dark" : "light");
-      updateThemeIcon();
+    // 1. Executive Smooth Theme Switcher Action (View Transitions API Circular Ripple)
+    let isThemeTransitioning = false;
+
+    function applyThemeState(isDark) {
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      localStorage.setItem('tasmac-theme', isDark ? 'dark' : 'light');
+
+      const icon = document.getElementById('theme-icon');
+      if (icon) {
+        icon.style.transform = 'rotate(180deg) scale(0.6)';
+        icon.style.opacity = '0';
+        setTimeout(() => {
+          icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+          if (window.lucide) lucide.createIcons();
+          const newIcon = document.getElementById('theme-icon');
+          if (newIcon) {
+            newIcon.style.transform = 'rotate(0deg) scale(1)';
+            newIcon.style.opacity = '1';
+          }
+        }, 140);
+      }
+    }
+
+    function toggleTheme(event) {
+      if (isThemeTransitioning) return;
+      isThemeTransitioning = true;
+
+      const willBeDark = !document.documentElement.classList.contains('dark');
+
+      // Fallback if browser doesn't support View Transitions API or user prefers reduced motion
+      if (!document.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('theme-transitioning');
+        applyThemeState(willBeDark);
+        setTimeout(() => {
+          document.documentElement.classList.remove('theme-transitioning');
+          isThemeTransitioning = false;
+        }, 450);
+        return;
+      }
+
+      const btn = document.getElementById('theme-toggle-btn');
+      const rect = btn ? btn.getBoundingClientRect() : null;
+      const x = event && event.clientX ? event.clientX : (rect ? rect.left + rect.width / 2 : window.innerWidth - 60);
+      const y = event && event.clientY ? event.clientY : (rect ? rect.top + rect.height / 2 : 40);
+
+      const endRadius = Math.hypot(
+        Math.max(x, window.innerWidth - x),
+        Math.max(y, window.innerHeight - y)
+      );
+
+      const transition = document.startViewTransition(() => {
+        applyThemeState(willBeDark);
+      });
+
+      transition.ready.then(() => {
+        document.documentElement.animate(
+          {
+            clipPath: [
+              `circle(0px at ${x}px ${y}px)`,
+              `circle(${endRadius}px at ${x}px ${y}px)`
+            ]
+          },
+          {
+            duration: 480,
+            easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+            pseudoElement: '::view-transition-new(root)'
+          }
+        );
+      }).catch(() => {}).finally(() => {
+        setTimeout(() => {
+          isThemeTransitioning = false;
+        }, 480);
+      });
     }
 
     function updateThemeIcon() {
