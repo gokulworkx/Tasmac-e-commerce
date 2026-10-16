@@ -1,0 +1,108 @@
+/* =========================================================================
+   TASMAC Customer-Facing Storefront Stylesheet
+   Modern, Premium E-Commerce Design System (4RGE Platform Tokens)
+   ========================================================================= */
+
+:root {
+  --primary: #0F9D8A;
+  --primary-hover: #0C8272;
+  --primary-subtle: #E6F7F4;
+  --primary-dark: #074E44;
+  
+  --secondary: #14243A;
+  --secondary-light: #1E334F;
+  --secondary-dark: #0A131F;
+  
+  --accent-gold: #ff5100;
+  --accent-gold-light: #FEF3C7;
+  
+  --bg-page: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --bg-surface: #F1F5F9;
+  
+  --text-main: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --text-inverse: #FFFFFF;
+  
+  --border-color: #E2E8F0;
+  --border-subtle: #F1F5F9;
+  
+  --error: #EF4444;
+  --error-bg: #FEF2F2;
+  --success: #10B981;
+  --success-bg: #ECFDF5;
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  
+  --shadow-sm: 0 1px 3px rgb(0, 0, 0);
+  --shadow-md: 0 4px 6px -1px rgb(0, 0, 0), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 25px -3px rgb(0, 0, 0), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 35px -5px rgb(0, 0, 0);
+  
+  --header-height: 74px;
+  --max-width: 100%;
+  --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'JetBrains Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Regulatory Notice */
+.statutory-banner {
+  background-color: #7F1D1D;
+  color: #FEE2E2;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  padding: 6px 16px;
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.statutory-badge {
+  background-color: #B91C1C;
+  color: #FFFFFF;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.demo-banner {
+  background-color: #FEF3C7;
+  border-bottom: 1px solid #FDE68A;
+  color: #92400E;
+  font-size: 12.5px;
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+

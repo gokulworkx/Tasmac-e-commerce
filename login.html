@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Sign In — TASMAC Reserve | Tamil Nadu Express Retail</title>
+  <link rel="icon" type="image/png" href="img/tasmac-icon-128.png" />
+
+  <!-- 4RGE Typography Stack: JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Supabase Client SDK & Configuration -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+
+  <!-- 4RGE Instant Theme Init (Prevents FOUC) -->
+  <script>
+    (function() {
+      const saved = localStorage.getItem('tasmac-theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <style>
+    /* =========================================================================
+       4RGE PLATFORM DESIGN TOKENS & EXECUTIVE SPECIFICATION
+       ========================================================================= */
+    :root {
+      color-scheme: light;
+      --fp-font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      
+      --radius: 0.625rem;
+      --radius-sm: calc(var(--radius) - 4px);
+      --radius-md: calc(var(--radius) - 2px);
+      --radius-lg: var(--radius);
+      --radius-xl: calc(var(--radius) + 4px);
+      --radius-2xl: 1rem;
+      --radius-full: 9999px;
+
+      --background: hsl(210 20% 98%);
+      --foreground: hsl(220 28% 10%);
+      --card: hsl(0 0% 100%);
+      --card-foreground: hsl(220 28% 10%);
+      
+      --primary: hsl(24 100% 50%); /* Vibrant Radiant Orange */
+      --primary-foreground: #ffffff;
+      
+      --secondary: hsl(210 20% 96%);
+      --secondary-foreground: hsl(220 28% 10%);
+      --muted: hsl(210 20% 96%);
+      --muted-foreground: hsl(218 12% 44%);
+      --accent: hsl(210 20% 94%);
+      
+      --border: hsl(214 20% 88%);
+      --input: hsl(214 20% 88%);
+      --ring: hsl(24 100% 50%);
+
+      --fp-state-success: hsl(151 61% 32%);
+      --fp-state-success-subtle: hsl(148 52% 95%);
+      --fp-state-warning: hsl(24 100% 50%);
+      --fp-state-warning-subtle: hsl(24 100% 94%);
+      --fp-state-danger: hsl(0 72% 51%);
+
+      --fp-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --fp-shadow-2: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --fp-shadow-3: 0 20px 40px -15px rgba(0, 0, 0, 0.12);
+    }
+
+    .dark {
+      color-scheme: dark;
+      --background: hsl(222 30% 7%);
+      --foreground: hsl(210 20% 98%);
+      --card: hsl(222 28% 9%);
+      --card-foreground: hsl(210 20% 98%);
+      
+      --primary: hsl(24 100% 50%);
+      --primary-foreground: #ffffff;
+      
+      --secondary: hsl(222 24% 12%);
+      --secondary-foreground: hsl(210 20% 98%);
+      --muted: hsl(222 24% 12%);
+      --muted-foreground: hsl(215 15% 62%);
+      --accent: hsl(222 24% 14%);
+      
+      --border: hsl(222 20% 16%);
+      --input: hsl(222 20% 16%);
+      --ring: hsl(24 100% 50%);
+
+      --fp-state-success: hsl(151 56% 54%);
+      --fp-state-success-subtle: hsl(151 25% 14%);
+      --fp-state-warning: hsl(24 100% 50%);
+      --fp-state-warning-subtle: hsl(24 35% 15%);
+
+      --fp-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+      --fp-shadow-2: 0 4px 16px rgba(0, 0, 0, 0.45);
+      --fp-shadow-3: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: inherit;
+    }
+
+    html, body {
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden !important;
+    }
+
+    body {
+      font-family: var(--fp-font-mono) !important;
+      background-color: var(--background);
+      color: var(--foreground);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-size: 13.5px;
+      line-height: 1.5;
+      letter-spacing: -0.012em;
+      position: relative;
+      padding-top: var(--top-shell-height, 95px);
+    }
+
+    /* Ambient Subtle Grid */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 50% 15%, color-mix(in srgb, var(--primary) 6%, transparent) 0%, transparent 60%),
+        linear-gradient(to right, color-mix(in srgb, var(--border) 25%, transparent) 1px, transparent 1px),
+        linear-gradient(to bottom, color-mix(in srgb, var(--border) 25%, transparent) 1px, transparent 1px);
+      background-size: 100% 100%, 36px 36px, 36px 36px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Fixed Top Navigation Shell */
+    .fixed-top-shell {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      z-index: 600 !important;
+      background: var(--background);
+      box-shadow: none !important;
+      transition: background-color 0.2s ease, box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .fixed-top-shell.scrolled {
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.12),
+                  0 2px 6px -1px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .dark .fixed-top-shell.scrolled {
+      box-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.55),
+                  0 2px 8px -1px rgba(0, 0, 0, 0.35) !important;
+    }
+
+    /* Top Statutory Strip */
+    .statutory-top-strip {
+      background-color: hsl(0 75% 20%);
+      color: hsl(0 100% 96%);
+      font-size: 11px;
+      font-weight: 650;
+      padding: 6px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      text-align: center;
+      position: relative;
+      z-index: 20;
+      border-bottom: 1px solid hsl(0 75% 30%);
+      font-family: var(--fp-font-mono);
+      letter-spacing: 0.02em;
+    }
+    .statutory-badge-pill {
+      background-color: hsl(0 80% 40%);
+      color: white;
+      padding: 2px 7px;
+      border-radius: var(--radius-sm);
+      font-size: 9.5px;
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Header Shell */
+    .human-header {
+      background: color-mix(in srgb, var(--card) 92%, transparent);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 10;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+    }
+    .header-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .brand-logo-gem {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease;
+      filter: drop-shadow(0 4px 10px rgba(255, 122, 0, 0.32));
+    }
+    .brand-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.28));
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .brand-group:hover .brand-logo-gem {
+      transform: scale(1.08) translateY(-1px);
+      filter: drop-shadow(0 6px 18px rgba(255, 122, 0, 0.55));
+    }
+    .brand-group:hover .brand-logo-img {
+      transform: scale(1.04);
+    }
+    .brand-title {
+      font-size: 16.5px;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      color: var(--foreground);
+      font-family: var(--fp-font-mono);
+    }
+    .brand-sub {
+      font-size: 9.5px;
+      color: var(--primary);
+      font-weight: 750;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-family: var(--fp-font-mono);
+      display: block;
+      margin-top: -2px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Standard Button Styles */
+    .btn-4rge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 16px;
+      height: 38px;
+      border-radius: var(--radius-md);
+      font-size: 12.5px;
+      font-weight: 650;
+      font-family: var(--fp-font-mono);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid transparent;
+      user-select: none;
+    }
+    .btn-4rge-default {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-4rge-default:hover {
+      background: hsl(24 100% 45%);
+      box-shadow: 0 4px 14px color-mix(in srgb, var(--primary) 35%, transparent);
+      transform: translateY(-1px);
+    }
+    .btn-4rge-outline {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--foreground);
+    }
+    .btn-4rge-outline:hover {
+      background: var(--secondary);
+      border-color: color-mix(in srgb, var(--foreground) 20%, transparent);
+    }
+    .btn-4rge-sm {
+      height: 34px;
+      padding: 0 12px;
+      font-size: 12px;
+    }
+
+    .icon-button-quiet {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--foreground);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .icon-button-quiet:hover {
+      background: var(--secondary);
+    }
+
+    /* Main Auth Container */
+    .auth-main-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .auth-card-wrapper {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--fp-shadow-3);
+      overflow: hidden;
+      transition: box-shadow 0.3s ease;
+    }
+
+    /* Auth Header */
+    .auth-card-top {
+      padding: 28px 28px 20px 28px;
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in srgb, var(--secondary) 40%, var(--card));
+      text-align: center;
+    }
+    .auth-govt-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+    .auth-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--foreground);
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .auth-subtitle {
+      font-size: 12.5px;
+      color: var(--muted-foreground);
+      line-height: 1.45;
+    }
+
+    /* 21+ Regulatory Alert Box */
+    .regulatory-alert-box {
+      margin: 20px 28px 0 28px;
+      padding: 10px 14px;
+      background: var(--fp-state-warning-subtle);
+      border: 1px solid color-mix(in srgb, var(--fp-state-warning) 30%, transparent);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 11.5px;
+      color: color-mix(in srgb, var(--foreground) 85%, transparent);
+      line-height: 1.4;
+    }
+    .regulatory-alert-box i {
+      color: var(--primary);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Tabs Bar */
+    .auth-tabs-bar {
+      display: flex;
+      margin: 20px 28px 0 28px;
+      background: var(--secondary);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      gap: 4px;
+    }
+    .auth-tab-btn {
+      flex: 1;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      background: transparent;
+      color: var(--muted-foreground);
+      font-family: var(--fp-font-mono);
+      font-size: 12px;
+      font-weight: 650;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .auth-tab-btn.active {
+      background: var(--card);
+      color: var(--foreground);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border);
+    }
+
+    /* Form Body */
+    .auth-card-body {
+      padding: 24px 28px 28px 28px;
+    }
+
+    .form-group-4rge {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-label-4rge {
+      font-size: 11.5px;
+      font-weight: 650;
+      color: var(--foreground);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .input-wrapper-4rge {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-prefix-badge {
+      position: absolute;
+      left: 12px;
+      font-size: 12px;
+      font-weight: 750;
+      color: var(--muted-foreground);
+      font-family: var(--fp-font-mono);
+      pointer-events: none;
+      border-right: 1px solid var(--border);
+      padding-right: 8px;
+    }
+    .input-4rge {
+      width: 100%;
+      height: 40px;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0 14px;
+      font-family: var(--fp-font-mono);
+      font-size: 13px;
+      color: var(--foreground);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .input-4rge:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
+      background: var(--card);
+    }
+    .input-with-prefix {
+      padding-left: 56px;
+    }
+
+    .select-4rge {
+      width: 100%;
+      height: 40px;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0 14px;
+      font-family: var(--fp-font-mono);
+      font-size: 12.5px;
+      color: var(--foreground);
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* 6-Digit OTP Box Grid */
+    .otp-inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .otp-digit-box {
+      width: 100%;
+      min-width: 0;
+      max-width: 56px;
+      height: 48px;
+      margin: 0 auto;
+      padding: 0;
+      box-sizing: border-box;
+      background: var(--secondary);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      text-align: center;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--foreground);
+      font-family: var(--fp-font-mono);
+      outline: none;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .otp-digit-box:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
+      background: var(--card);
+      transform: translateY(-2px);
+    }
+
+    /* Checkbox Container */
+    .checkbox-row-4rge {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 11.5px;
+      color: var(--muted-foreground);
+      line-height: 1.45;
+      margin: 16px 0 20px 0;
+      cursor: pointer;
+      user-select: none;
+    }
+    .checkbox-row-4rge input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--primary);
+      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    /* Quick Demo Bar */
+    .demo-accounts-strip {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .demo-strip-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted-foreground);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .demo-buttons-col {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .btn-quick-demo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+    .btn-quick-demo:hover {
+      background: var(--card);
+      border-color: var(--primary);
+      transform: translateX(2px);
+    }
+    .demo-user-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+    .demo-user-details {
+      font-size: 10.5px;
+      color: var(--muted-foreground);
+    }
+    .demo-tag-pill {
+      font-size: 9.5px;
+      font-weight: 750;
+      padding: 2px 6px;
+      border-radius: var(--radius-full);
+      background: color-mix(in srgb, var(--primary) 12%, transparent);
+      color: var(--primary);
+    }
+
+    /* Success State View */
+    .auth-success-card {
+      display: none;
+      text-align: center;
+      padding: 36px 28px;
+    }
+    .success-pulse-circle {
+      width: 64px;
+      height: 64px;
+      background: var(--fp-state-success-subtle);
+      color: var(--fp-state-success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px auto;
+      border: 1.5px solid color-mix(in srgb, var(--fp-state-success) 35%, transparent);
+      animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes bounceIn {
+      from { transform: scale(0.6); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    /* Toast Notification Tray */
+    #toast-tray {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast-human {
+      background: var(--card);
+      color: var(--foreground);
+      padding: 12px 18px;
+      border-radius: var(--radius-lg);
+      font-size: 12.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--fp-shadow-3);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary);
+      animation: toastSlideUp 0.2s ease;
+      pointer-events: auto;
+    }
+    @keyframes toastSlideUp {
+      from { transform: translateY(10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* Footer */
+    footer.human-footer {
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      padding: 20px 24px;
+      margin-top: auto;
+      font-size: 11.5px;
+      color: var(--muted-foreground);
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    @media (max-width: 520px) {
+      .auth-main-area {
+        padding: 20px 12px;
+      }
+      .auth-card-wrapper {
+        border-radius: var(--radius-xl);
+      }
+      .auth-card-top {
+        padding: 20px 16px 14px 16px;
+      }
+      .auth-title {
+        font-size: 18px;
+      }
+      .regulatory-alert-box {
+        margin: 14px 14px 0 14px;
+        font-size: 11px;
+      }
+      .auth-tabs-bar {
+        margin: 14px 14px 0 14px;
+      }
+      .auth-card-body {
+        padding: 16px 14px 20px 14px;
+      }
+      .header-container {
+        padding: 0 12px;
+      }
+      .statutory-top-strip {
+        font-size: 10px;
+        padding: 5px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fixed Top Navigation Shell -->
+  <div class="fixed-top-shell" id="app-fixed-top-shell">
+    <!-- Statutory Legal Banner -->
+    <div class="statutory-top-strip">
+      <span class="statutory-badge-pill">Government of Tamil Nadu</span>
+      <span>Consumption of liquor is injurious to health. Be safe — don't drink and drive. Strictly 21+ only.</span>
+    </div>
+
+    <!-- Header -->
+    <header class="human-header">
+      <div class="header-container">
+        <a href="index.html" class="brand-group" title="Back to TASMAC Store">
+          <div class="brand-logo-gem">
+            <img src="img/tasmac-luxury-clean-cutout.png" alt="TASMAC Reserve Emblem" class="brand-logo-img">
+          </div>
+          <div class="brand-text-col">
+            <span class="brand-title">TASMAC</span>
+            <span class="brand-sub">Express Retail Portal</span>
+          </div>
+        </a>
+
+        <div class="header-right">
+          <a href="index.html" class="btn-4rge btn-4rge-outline btn-4rge-sm">
+            <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+            <span>Return to Store</span>
+          </a>
+          <button class="icon-button-quiet" onclick="toggleTheme(event)" id="theme-toggle-btn" title="Toggle Light/Dark Theme">
+            <i data-lucide="moon" id="theme-icon" style="width: 15px; height: 15px;"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <!-- Auth Main Workspace -->
+  <main class="auth-main-area">
+    <div class="auth-card-wrapper">
+      
+      <!-- Top Branding -->
+      <div class="auth-card-top">
+        <div style="display: flex; justify-content: center; margin-bottom: 12px;">
+          <img src="img/tasmac-luxury-clean-cutout.png" alt="TASMAC Reserve Emblem" style="width: 58px; height: 58px; object-fit: contain; filter: drop-shadow(0 6px 16px rgba(255, 122, 0, 0.38));">
+        </div>
+        <div class="auth-govt-badge">
+          <i data-lucide="shield-check" style="width: 13px; height: 13px;"></i>
+          <span>Official Customer Authentication</span>
+        </div>
+        <h1 class="auth-title">Customer Sign In</h1>
+        <p class="auth-subtitle">Verify your identity to reserve bottles at statutory Govt MRP with instant digital token generation.</p>
+      </div>
+
+      <!-- 21+ Statutory Warning -->
+      <div class="regulatory-alert-box">
+        <i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i>
+        <div>
+          <strong style="color: var(--foreground);">Mandatory Age Regulation (21+):</strong>
+          Under TN Prohibition Act 1937, customers must be 21 years or older. Original Govt Photo ID must be produced during pickup.
+        </div>
+      </div>
+
+      <!-- Form Switcher Tabs -->
+      <div class="auth-tabs-bar" id="auth-tabs">
+        <button class="auth-tab-btn active" id="tab-btn-otp" onclick="switchAuthTab('otp')">
+          <i data-lucide="smartphone" style="width: 13px; height: 13px;"></i>
+          <span>Mobile OTP (Express)</span>
+        </button>
+        <button class="auth-tab-btn" id="tab-btn-pwd" onclick="switchAuthTab('pwd')">
+          <i data-lucide="mail" style="width: 13px; height: 13px;"></i>
+          <span>Email & Password</span>
+        </button>
+      </div>
+
+      <!-- Form Body -->
+      <div class="auth-card-body" id="auth-form-container">
+
+        <!-- 1. MOBILE OTP FORM -->
+        <form id="form-otp-login" onsubmit="handleOtpSubmit(event)">
+          
+          <div class="form-group-4rge">
+            <label class="form-label-4rge">
+              <i data-lucide="user" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+              <span>Full Name (As per Govt Photo ID) *</span>
+            </label>
+            <input type="text" class="input-4rge" id="otp-name" placeholder="e.g. Anand Murugan" required value="Anand Murugan" />
+          </div>
+
+          <div class="form-group-4rge">
+            <label class="form-label-4rge">
+              <i data-lucide="phone" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+              <span>Mobile Phone Number *</span>
+            </label>
+            <div class="input-wrapper-4rge">
+              <span class="input-prefix-badge">+91</span>
+              <input type="tel" class="input-4rge input-with-prefix" id="otp-phone" placeholder="94440 12345" maxlength="10" required value="9444012345" />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+            <div class="form-group-4rge" style="margin-bottom: 0;">
+              <label class="form-label-4rge">
+                <i data-lucide="shield" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+                <span>Govt ID Type *</span>
+              </label>
+              <select class="select-4rge" id="otp-id-type">
+                <option value="Aadhaar Card" selected>Aadhaar Card</option>
+                <option value="Voter ID">Voter ID</option>
+                <option value="Driving License">Driving License</option>
+                <option value="Passport">Passport</option>
+              </select>
+            </div>
+
+            <div class="form-group-4rge" style="margin-bottom: 0;">
+              <label class="form-label-4rge">
+                <i data-lucide="hash" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+                <span>ID Number (Last 4) *</span>
+              </label>
+              <input type="text" class="input-4rge" id="otp-id-number" placeholder="e.g. 8821" maxlength="8" value="8821" required />
+            </div>
+          </div>
+
+          <!-- OTP Input Section -->
+          <div class="form-group-4rge" id="otp-input-section" style="margin-top: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label class="form-label-4rge">
+                <i data-lucide="key-round" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+                <span>6-Digit Verification Code *</span>
+              </label>
+              <button type="button" class="btn-4rge btn-4rge-sm btn-4rge-outline" id="btn-request-otp" onclick="requestOtpCode()" style="height: 26px; font-size: 11px; padding: 0 8px;">
+                <span>Send OTP</span>
+              </button>
+            </div>
+
+            <div class="otp-inputs-grid" id="otp-boxes" onpaste="handleOtpPaste(event)">
+              <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit-box" value="1" oninput="handleOtpBoxInput(this, 0)" onkeydown="handleOtpBoxKeyDown(this, event, 0)" onfocus="this.select()" />
+              <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit-box" value="2" oninput="handleOtpBoxInput(this, 1)" onkeydown="handleOtpBoxKeyDown(this, event, 1)" onfocus="this.select()" />
+              <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit-box" value="3" oninput="handleOtpBoxInput(this, 2)" onkeydown="handleOtpBoxKeyDown(this, event, 2)" onfocus="this.select()" />
+              <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit-box" value="4" oninput="handleOtpBoxInput(this, 3)" onkeydown="handleOtpBoxKeyDown(this, event, 3)" onfocus="this.select()" />
+              <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit-box" value="5" oninput="handleOtpBoxInput(this, 4)" onkeydown="handleOtpBoxKeyDown(this, event, 4)" onfocus="this.select()" />
+              <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit-box" value="6" oninput="handleOtpBoxInput(this, 5)" onkeydown="handleOtpBoxKeyDown(this, event, 5)" onfocus="this.select()" />
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+              <span style="font-size: 11px; color: var(--muted-foreground);" id="otp-helper-msg">Default demo OTP is prefilled: 123456</span>
+              <span style="font-size: 11px; font-weight: 700; color: var(--primary); cursor: pointer;" onclick="fillDemoOtp()">Fill 123456</span>
+            </div>
+          </div>
+
+          <!-- Age Declaration Checkbox -->
+          <label class="checkbox-row-4rge">
+            <input type="checkbox" id="otp-age-check" required checked />
+            <span>I solemnly declare that I am 21 years of age or older, and agree to present my original Govt Photo ID at the pickup counter.</span>
+          </label>
+
+          <button type="submit" class="btn-4rge btn-4rge-default" style="width: 100%; height: 42px; font-size: 13.5px;">
+            <span>Verify & Enter Store</span>
+            <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
+          </button>
+        </form>
+
+
+        <!-- 2. EMAIL & PASSWORD FORM (Initially Hidden) -->
+        <form id="form-pwd-login" onsubmit="handlePwdSubmit(event)" style="display: none;">
+          
+          <div class="form-group-4rge">
+            <label class="form-label-4rge">
+              <i data-lucide="mail" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+              <span>Registered Email / Excise Consumer ID *</span>
+            </label>
+            <input type="email" class="input-4rge" id="pwd-email" placeholder="anand.murugan@example.com" value="anand.murugan@example.com" required />
+          </div>
+
+          <div class="form-group-4rge">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label class="form-label-4rge">
+                <i data-lucide="lock" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+                <span>Account Password *</span>
+              </label>
+              <span style="font-size: 11px; color: var(--primary); cursor: pointer;" onclick="showToast('Password reset link sent to registered email')">Forgot?</span>
+            </div>
+            <div class="input-wrapper-4rge">
+              <input type="password" class="input-4rge" id="pwd-input" placeholder="••••••••••••" value="TasmacReserve2026!" required />
+              <button type="button" onclick="togglePasswordVisibility()" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--muted-foreground);">
+                <i data-lucide="eye" id="pwd-eye-icon" style="width: 15px; height: 15px;"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Age Declaration Checkbox -->
+          <label class="checkbox-row-4rge">
+            <input type="checkbox" id="pwd-age-check" required checked />
+            <span>I declare that I am 21+ years of age and hold a valid Govt Photo ID.</span>
+          </label>
+
+          <button type="submit" class="btn-4rge btn-4rge-default" style="width: 100%; height: 42px; font-size: 13.5px;">
+            <span>Sign In to TASMAC</span>
+            <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
+          </button>
+        </form>
+
+
+        <!-- 3. QUICK 1-CLICK DEMO TEST SIGN IN -->
+        <div class="demo-accounts-strip">
+          <div class="demo-strip-title">
+            <i data-lucide="sparkles" style="width: 13px; height: 13px; color: var(--primary);"></i>
+            <span>1-Click Test Customer Accounts</span>
+          </div>
+
+          <div class="demo-buttons-col">
+            <div class="btn-quick-demo" onclick="loginDemoUser('Anand Murugan', '9444012345', 'Aadhaar Card', '8821')">
+              <div>
+                <div class="demo-user-name">Anand Murugan</div>
+                <div class="demo-user-details">+91 94440 12345 • Aadhaar ****8821</div>
+              </div>
+              <span class="demo-tag-pill">21+ Verified</span>
+            </div>
+
+            <div class="btn-quick-demo" onclick="loginDemoUser('Karthik Sundaram', '9884067890', 'Driving License', '4410')">
+              <div>
+                <div class="demo-user-name">Karthik Sundaram</div>
+                <div class="demo-user-details">+91 98840 67890 • DL ****4410</div>
+              </div>
+              <span class="demo-tag-pill">Elite Club</span>
+            </div>
+
+            <div class="btn-quick-demo" onclick="loginDemoUser('Priya Senthil', '9790054321', 'Voter ID', '2298')">
+              <div>
+                <div class="demo-user-name">Priya Senthil</div>
+                <div class="demo-user-details">+91 97900 54321 • Voter ID ****2298</div>
+              </div>
+              <span class="demo-tag-pill">Verified</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Success State Card (Shown upon successful login) -->
+      <div class="auth-success-card" id="auth-success-view">
+        <div class="success-pulse-circle">
+          <i data-lucide="check" style="width: 32px; height: 32px;"></i>
+        </div>
+        <h2 style="font-size: 18px; font-weight: 800; color: var(--foreground); margin-bottom: 6px;">Sign In Successful!</h2>
+        <p style="font-size: 13px; color: var(--muted-foreground); margin-bottom: 20px;" id="success-welcome-msg">Welcome back, Anand Murugan.</p>
+        
+        <div style="background: var(--secondary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px; text-align: left; font-size: 12px; margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="color: var(--muted-foreground);">Age Clearance:</span>
+            <strong style="color: var(--fp-state-success);">Verified (21+ Years)</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="color: var(--muted-foreground);">Govt ID Registered:</span>
+            <strong style="color: var(--foreground);" id="success-id-summary">Aadhaar Card (****8821)</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--muted-foreground);">Fulfillment Mode:</span>
+            <strong style="color: var(--primary);">Express Counter Pickup</strong>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; color: var(--muted-foreground);">
+          <div class="live-dot-pulse" style="width: 8px; height: 8px; background: var(--primary); border-radius: 50%;"></div>
+          <span>Redirecting to catalog storefront...</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Clean Footer -->
+  <footer class="human-footer">
+    <div>
+      <strong>TASMAC Ltd.</strong> — Tamil Nadu State Marketing Corporation • CMDA Tower II, Egmore, Chennai.
+    </div>
+    <div style="margin-top: 4px; font-size: 11px;">
+      Helpline: 1800-889-2015 • Statutory Printed MRP Guarantee • Strictly 21+ Years of Age
+    </div>
+  </footer>
+
+  <!-- Toast Tray -->
+  <div id="toast-tray"></div>
+
+  <!-- Client Auth Logic -->
+  <script>
+    // 1. Theme Toggle
+    function toggleTheme(e) {
+      const isDark = document.documentElement.classList.toggle("dark");
+      localStorage.setItem("tasmac-theme", isDark ? "dark" : "light");
+      updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+      const isDark = document.documentElement.classList.contains("dark");
+      const icon = document.getElementById("theme-icon");
+      if (icon) {
+        icon.setAttribute("data-lucide", isDark ? "sun" : "moon");
+        if (window.lucide) lucide.createIcons();
+      }
+    }
+
+    // 2. Tab Switcher
+    function switchAuthTab(type) {
+      const tabOtp = document.getElementById("tab-btn-otp");
+      const tabPwd = document.getElementById("tab-btn-pwd");
+      const formOtp = document.getElementById("form-otp-login");
+      const formPwd = document.getElementById("form-pwd-login");
+
+      if (type === 'otp') {
+        tabOtp.classList.add("active");
+        tabPwd.classList.remove("active");
+        formOtp.style.display = "block";
+        formPwd.style.display = "none";
+      } else {
+        tabPwd.classList.add("active");
+        tabOtp.classList.remove("active");
+        formOtp.style.display = "none";
+        formPwd.style.display = "block";
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // 3. OTP Digit Boxes Handling
+    function handleOtpBoxInput(el, idx) {
+      const boxes = document.querySelectorAll(".otp-digit-box");
+      if (el.value.length === 1 && idx < boxes.length - 1) {
+        boxes[idx + 1].focus();
+      }
+    }
+
+    function handleOtpBoxKeyDown(el, e, idx) {
+      const boxes = document.querySelectorAll(".otp-digit-box");
+      if (e.key === "Backspace" && !el.value && idx > 0) {
+        boxes[idx - 1].focus();
+      }
+    }
+
+    function handleOtpPaste(e) {
+      e.preventDefault();
+      const pasteData = (e.clipboardData || window.clipboardData).getData("text").trim();
+      const digits = pasteData.replace(/\D/g, "").slice(0, 6);
+      if (!digits) return;
+      const boxes = document.querySelectorAll(".otp-digit-box");
+      boxes.forEach((box, i) => {
+        box.value = digits[i] || "";
+      });
+      const nextIdx = Math.min(digits.length, boxes.length - 1);
+      boxes[nextIdx].focus();
+      showToast("OTP pasted from clipboard");
+    }
+
+    function fillDemoOtp() {
+      const boxes = document.querySelectorAll(".otp-digit-box");
+      const code = "123456";
+      boxes.forEach((box, i) => {
+        box.value = code[i];
+      });
+      showToast("Auto-filled demo OTP: 123456");
+    }
+
+    function requestOtpCode() {
+      const phone = document.getElementById("otp-phone").value.trim();
+      if (!phone || phone.length < 10) {
+        showToast("Please enter a valid 10-digit mobile number");
+        return;
+      }
+      const btn = document.getElementById("btn-request-otp");
+      btn.disabled = true;
+      let countdown = 30;
+      btn.innerHTML = `<span>Sent (${countdown}s)</span>`;
+      showToast(`Verification OTP sent to +91 ${phone}!`);
+      fillDemoOtp();
+
+      const timer = setInterval(() => {
+        countdown--;
+        if (countdown <= 0) {
+          clearInterval(timer);
+          btn.disabled = false;
+          btn.innerHTML = `<span>Resend OTP</span>`;
+        } else {
+          btn.innerHTML = `<span>Sent (${countdown}s)</span>`;
+        }
+      }, 1000);
+    }
+
+    function togglePasswordVisibility() {
+      const pwd = document.getElementById("pwd-input");
+      const icon = document.getElementById("pwd-eye-icon");
+      if (pwd.type === "password") {
+        pwd.type = "text";
+        icon.setAttribute("data-lucide", "eye-off");
+      } else {
+        pwd.type = "password";
+        icon.setAttribute("data-lucide", "eye");
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // 4. Form Submissions
+    function handleOtpSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById("otp-name").value.trim();
+      const phone = document.getElementById("otp-phone").value.trim();
+      const idType = document.getElementById("otp-id-type").value;
+      const idNumber = document.getElementById("otp-id-number").value.trim();
+      const ageCheck = document.getElementById("otp-age-check").checked;
+
+      const boxes = document.querySelectorAll(".otp-digit-box");
+      let otpCode = "";
+      boxes.forEach(b => otpCode += b.value);
+
+      if (otpCode.length !== 6) {
+        showToast("Please enter all 6 digits of the OTP code");
+        return;
+      }
+
+      if (!ageCheck) {
+        showToast("Statutory age verification (21+) is required");
+        return;
+      }
+
+      saveUserAndRedirect({
+        name: name || "Customer",
+        phone: "+91 " + phone,
+        idType: idType,
+        idNumber: idNumber,
+        verified21: true,
+        method: "mobile_otp"
+      });
+    }
+
+    function handlePwdSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById("pwd-email").value.trim();
+      const ageCheck = document.getElementById("pwd-age-check").checked;
+
+      if (!ageCheck) {
+        showToast("Statutory age verification (21+) is required");
+        return;
+      }
+
+      saveUserAndRedirect({
+        name: "Anand Murugan",
+        phone: "+91 94440 12345",
+        email: email,
+        idType: "Aadhaar Card",
+        idNumber: "8821",
+        verified21: true,
+        method: "password"
+      });
+    }
+
+    function loginDemoUser(name, phone, idType, idNumber) {
+      saveUserAndRedirect({
+        name: name,
+        phone: "+91 " + phone,
+        idType: idType,
+        idNumber: idNumber,
+        verified21: true,
+        method: "demo_1click"
+      });
+    }
+
+    function saveUserAndRedirect(userObj) {
+      userObj.loginTime = new Date().toISOString();
+      localStorage.setItem("tasmac-user", JSON.stringify(userObj));
+
+      // Switch to success card
+      document.getElementById("auth-form-container").style.display = "none";
+      document.getElementById("auth-success-view").style.display = "block";
+      document.getElementById("success-welcome-msg").innerText = `Welcome, ${userObj.name}!`;
+      document.getElementById("success-id-summary").innerText = `${userObj.idType} (****${userObj.idNumber})`;
+
+      if (window.lucide) lucide.createIcons();
+
+      // Check for redirect query param
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectTarget = urlParams.get("redirect") || "index.html";
+
+      setTimeout(() => {
+        window.location.href = redirectTarget;
+      }, 1200);
+    }
+
+    // 5. Toast Notifications
+    function showToast(msg) {
+      const tray = document.getElementById("toast-tray");
+      const toast = document.createElement("div");
+      toast.className = "toast-human";
+      toast.innerHTML = `<i data-lucide="check" style="width:16px;height:16px;color:var(--primary);"></i><span>${msg}</span>`;
+      tray.appendChild(toast);
+      if (window.lucide) lucide.createIcons();
+
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 250);
+      }, 3500);
+    }
+
+    function syncTopShellHeight() {
+      const shell = document.getElementById('app-fixed-top-shell');
+      if (shell) {
+        const h = shell.offsetHeight;
+        if (h > 0) {
+          document.documentElement.style.setProperty('--top-shell-height', h + 'px');
+        }
+      }
+      handleTopShellScroll();
+    }
+
+    function handleTopShellScroll() {
+      const shell = document.getElementById('app-fixed-top-shell');
+      if (!shell) return;
+      const scrollPos = window.scrollY || document.documentElement.scrollTop || 0;
+      if (scrollPos > 8) {
+        shell.classList.add('scrolled');
+      } else {
+        shell.classList.remove('scrolled');
+      }
+    }
+
+    window.addEventListener('scroll', handleTopShellScroll, { passive: true });
+    window.addEventListener('resize', syncTopShellHeight);
+    window.addEventListener('orientationchange', () => setTimeout(syncTopShellHeight, 100));
+
+    document.addEventListener("DOMContentLoaded", function() {
+      updateThemeIcon();
+      if (window.lucide) lucide.createIcons();
+      syncTopShellHeight();
+      handleTopShellScroll();
+      setTimeout(syncTopShellHeight, 150);
+
+      // Auto-check if already logged in
+      const existing = localStorage.getItem("tasmac-user");
+      if (existing) {
+        try {
+          const user = JSON.parse(existing);
+          showToast(`Logged in as ${user.name}`);
+        } catch (e) {}
+      }
+    });
+  </script>
+</body>
+</html>
+
