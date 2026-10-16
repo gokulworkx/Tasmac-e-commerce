@@ -105,9 +105,42 @@ CREATE POLICY "Users can read own profile"
   ON public.profiles FOR SELECT
   USING (auth.uid() = id);
 
+CREATE POLICY "Users can insert own profile"
+  ON public.profiles FOR INSERT
+  WITH CHECK (auth.uid() = id);
+
 CREATE POLICY "Users can update own profile"
   ON public.profiles FOR UPDATE
   USING (auth.uid() = id);
+
+-- Trigger to automatically create a patron profile in public.profiles when a new user signs up in auth.users
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, full_name, phone, id_type, id_number, verified_21)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', 'Valued Patron'),
+    COALESCE(NEW.raw_user_meta_data->>'phone', NEW.phone, ''),
+    COALESCE(NEW.raw_user_meta_data->>'id_type', 'Aadhaar Card'),
+    COALESCE(NEW.raw_user_meta_data->>'id_number', ''),
+    true
+  )
+  ON CONFLICT (id) DO UPDATE
+  SET full_name = EXCLUDED.full_name,
+      phone = EXCLUDED.phone,
+      id_type = EXCLUDED.id_type,
+      id_number = EXCLUDED.id_number,
+      updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Recreate trigger on auth.users
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- ============================================================================
 -- 5. SEED DATA: DRINKS CATALOG (26 Verified Bottles)

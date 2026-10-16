@@ -568,61 +568,62 @@
       cursor: pointer;
     }
 
-    /* Quick Demo Bar */
-    .demo-accounts-strip {
-      margin-top: 24px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-    }
-    .demo-strip-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--muted-foreground);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
-    .demo-buttons-col {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .btn-quick-demo {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 12px;
-      background: var(--secondary);
-      border: 1px solid var(--border);
+    /* Form Status Alert Banner */
+    .auth-alert-banner {
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
       border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-align: left;
-    }
-    .btn-quick-demo:hover {
-      background: var(--card);
-      border-color: var(--primary);
-      transform: translateX(2px);
-    }
-    .demo-user-name {
       font-size: 12px;
-      font-weight: 700;
-      color: var(--foreground);
+      line-height: 1.45;
+      margin-bottom: 16px;
+      animation: alertSlide 0.2s ease;
     }
-    .demo-user-details {
-      font-size: 10.5px;
+    .auth-alert-banner.error {
+      display: flex;
+      background: color-mix(in srgb, var(--fp-state-danger) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--fp-state-danger) 35%, transparent);
+      color: var(--fp-state-danger);
+    }
+    .auth-alert-banner.success {
+      display: flex;
+      background: var(--fp-state-success-subtle);
+      border: 1px solid color-mix(in srgb, var(--fp-state-success) 35%, transparent);
+      color: var(--fp-state-success);
+    }
+    .auth-alert-banner i {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      margin-top: 1.5px;
+    }
+    @keyframes alertSlide {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-toggle-link {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 12px;
       color: var(--muted-foreground);
     }
-    .demo-tag-pill {
-      font-size: 9.5px;
-      font-weight: 750;
-      padding: 2px 6px;
-      border-radius: var(--radius-full);
-      background: color-mix(in srgb, var(--primary) 12%, transparent);
+    .auth-toggle-link button {
+      background: none;
+      border: none;
       color: var(--primary);
+      font-weight: 750;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .auth-toggle-link button:hover {
+      opacity: 0.85;
     }
 
     /* Success State View */
@@ -776,8 +777,8 @@
           <i data-lucide="shield-check" style="width: 13px; height: 13px;"></i>
           <span>Official Customer Authentication</span>
         </div>
-        <h1 class="auth-title">Customer Sign In</h1>
-        <p class="auth-subtitle">Verify your identity to reserve bottles at statutory Govt MRP with instant digital token generation.</p>
+        <h1 class="auth-title" id="auth-main-title">Patron Portal</h1>
+        <p class="auth-subtitle" id="auth-main-subtitle">Sign in or register your verified 21+ account with Supabase to reserve genuine state-monopoly spirits at Govt MRP.</p>
       </div>
 
       <!-- 21+ Statutory Warning -->
@@ -791,48 +792,118 @@
 
       <!-- Form Switcher Tabs -->
       <div class="auth-tabs-bar" id="auth-tabs">
-        <button class="auth-tab-btn active" id="tab-btn-otp" onclick="switchAuthTab('otp')">
-          <i data-lucide="smartphone" style="width: 13px; height: 13px;"></i>
-          <span>Mobile OTP (Express)</span>
+        <button type="button" class="auth-tab-btn active" id="tab-btn-signin" onclick="switchAuthTab('signin')">
+          <i data-lucide="log-in" style="width: 13px; height: 13px;"></i>
+          <span>Sign In</span>
         </button>
-        <button class="auth-tab-btn" id="tab-btn-pwd" onclick="switchAuthTab('pwd')">
-          <i data-lucide="mail" style="width: 13px; height: 13px;"></i>
-          <span>Email & Password</span>
+        <button type="button" class="auth-tab-btn" id="tab-btn-signup" onclick="switchAuthTab('signup')">
+          <i data-lucide="user-plus" style="width: 13px; height: 13px;"></i>
+          <span>Create Account</span>
         </button>
       </div>
 
       <!-- Form Body -->
       <div class="auth-card-body" id="auth-form-container">
 
-        <!-- 1. MOBILE OTP FORM -->
-        <form id="form-otp-login" onsubmit="handleOtpSubmit(event)">
-          
+        <!-- 1. SIGN IN FORM -->
+        <form id="form-signin" onsubmit="handleSignInSubmit(event)">
+          <!-- Dynamic Alert Banner -->
+          <div class="auth-alert-banner" id="signin-alert"></div>
+
           <div class="form-group-4rge">
-            <label class="form-label-4rge">
-              <i data-lucide="user" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
-              <span>Full Name (As per Govt Photo ID) *</span>
+            <label class="form-label-4rge" for="signin-email">
+              <i data-lucide="mail" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+              <span>Registered Email Address *</span>
             </label>
-            <input type="text" class="input-4rge" id="otp-name" placeholder="e.g. Anand Murugan" required value="Anand Murugan" />
+            <input type="email" class="input-4rge" id="signin-email" placeholder="e.g. patron@example.com" required autocomplete="email" />
           </div>
 
           <div class="form-group-4rge">
-            <label class="form-label-4rge">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label class="form-label-4rge" for="signin-password">
+                <i data-lucide="lock" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+                <span>Account Password *</span>
+              </label>
+              <span style="font-size: 11px; color: var(--primary); cursor: pointer;" onclick="handleForgotPassword()">Forgot password?</span>
+            </div>
+            <div class="input-wrapper-4rge">
+              <input type="password" class="input-4rge" id="signin-password" placeholder="Enter your account password" required autocomplete="current-password" />
+              <button type="button" onclick="togglePasswordVisibility('signin-password', 'signin-eye-icon')" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--muted-foreground);" aria-label="Toggle password visibility">
+                <i data-lucide="eye" id="signin-eye-icon" style="width: 15px; height: 15px;"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Age Declaration Checkbox -->
+          <label class="checkbox-row-4rge">
+            <input type="checkbox" id="signin-age-check" required checked />
+            <span>I declare that I am 21+ years of age and hold a valid original Govt Photo ID for counter collection.</span>
+          </label>
+
+          <button type="submit" class="btn-4rge btn-4rge-default" id="btn-signin-submit" style="width: 100%; height: 42px; font-size: 13.5px;">
+            <span>Sign In to TASMAC</span>
+            <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
+          </button>
+
+          <div class="auth-toggle-link">
+            <span>New patron? </span>
+            <button type="button" onclick="switchAuthTab('signup')">Create a verified account now →</button>
+          </div>
+        </form>
+
+
+        <!-- 2. CREATE ACCOUNT (SIGN UP) FORM (Initially Hidden) -->
+        <form id="form-signup" onsubmit="handleSignUpSubmit(event)" style="display: none;">
+          <!-- Dynamic Alert Banner -->
+          <div class="auth-alert-banner" id="signup-alert"></div>
+
+          <div class="form-group-4rge">
+            <label class="form-label-4rge" for="signup-name">
+              <i data-lucide="user" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+              <span>Full Name (As per Govt Photo ID) *</span>
+            </label>
+            <input type="text" class="input-4rge" id="signup-name" placeholder="e.g. Gokulakrishnan R" required autocomplete="name" />
+          </div>
+
+          <div class="form-group-4rge">
+            <label class="form-label-4rge" for="signup-email">
+              <i data-lucide="mail" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+              <span>Email Address *</span>
+            </label>
+            <input type="email" class="input-4rge" id="signup-email" placeholder="e.g. gokul@example.com" required autocomplete="email" />
+          </div>
+
+          <div class="form-group-4rge">
+            <label class="form-label-4rge" for="signup-password">
+              <i data-lucide="lock" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+              <span>Create Password (Min. 6 Characters) *</span>
+            </label>
+            <div class="input-wrapper-4rge">
+              <input type="password" class="input-4rge" id="signup-password" minlength="6" placeholder="Choose a secure password" required autocomplete="new-password" />
+              <button type="button" onclick="togglePasswordVisibility('signup-password', 'signup-eye-icon')" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--muted-foreground);" aria-label="Toggle password visibility">
+                <i data-lucide="eye" id="signup-eye-icon" style="width: 15px; height: 15px;"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group-4rge">
+            <label class="form-label-4rge" for="signup-phone">
               <i data-lucide="phone" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
               <span>Mobile Phone Number *</span>
             </label>
             <div class="input-wrapper-4rge">
               <span class="input-prefix-badge">+91</span>
-              <input type="tel" class="input-4rge input-with-prefix" id="otp-phone" placeholder="94440 12345" maxlength="10" required value="9444012345" />
+              <input type="tel" class="input-4rge input-with-prefix" id="signup-phone" placeholder="98765 43210" maxlength="10" required />
             </div>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
             <div class="form-group-4rge" style="margin-bottom: 0;">
-              <label class="form-label-4rge">
+              <label class="form-label-4rge" for="signup-id-type">
                 <i data-lucide="shield" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
                 <span>Govt ID Type *</span>
               </label>
-              <select class="select-4rge" id="otp-id-type">
+              <select class="select-4rge" id="signup-id-type">
                 <option value="Aadhaar Card" selected>Aadhaar Card</option>
                 <option value="Voter ID">Voter ID</option>
                 <option value="Driving License">Driving License</option>
@@ -841,127 +912,30 @@
             </div>
 
             <div class="form-group-4rge" style="margin-bottom: 0;">
-              <label class="form-label-4rge">
+              <label class="form-label-4rge" for="signup-id-number">
                 <i data-lucide="hash" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
-                <span>ID Number (Last 4) *</span>
+                <span>ID Number / Last 4 *</span>
               </label>
-              <input type="text" class="input-4rge" id="otp-id-number" placeholder="e.g. 8821" maxlength="8" value="8821" required />
-            </div>
-          </div>
-
-          <!-- OTP Input Section -->
-          <div class="form-group-4rge" id="otp-input-section" style="margin-top: 18px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <label class="form-label-4rge">
-                <i data-lucide="key-round" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
-                <span>6-Digit Verification Code *</span>
-              </label>
-              <button type="button" class="btn-4rge btn-4rge-sm btn-4rge-outline" id="btn-request-otp" onclick="requestOtpCode()" style="height: 26px; font-size: 11px; padding: 0 8px;">
-                <span>Send OTP</span>
-              </button>
-            </div>
-
-            <div class="otp-inputs-grid" id="otp-boxes" onpaste="handleOtpPaste(event)">
-              <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit-box" value="1" oninput="handleOtpBoxInput(this, 0)" onkeydown="handleOtpBoxKeyDown(this, event, 0)" onfocus="this.select()" />
-              <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit-box" value="2" oninput="handleOtpBoxInput(this, 1)" onkeydown="handleOtpBoxKeyDown(this, event, 1)" onfocus="this.select()" />
-              <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit-box" value="3" oninput="handleOtpBoxInput(this, 2)" onkeydown="handleOtpBoxKeyDown(this, event, 2)" onfocus="this.select()" />
-              <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit-box" value="4" oninput="handleOtpBoxInput(this, 3)" onkeydown="handleOtpBoxKeyDown(this, event, 3)" onfocus="this.select()" />
-              <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit-box" value="5" oninput="handleOtpBoxInput(this, 4)" onkeydown="handleOtpBoxKeyDown(this, event, 4)" onfocus="this.select()" />
-              <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit-box" value="6" oninput="handleOtpBoxInput(this, 5)" onkeydown="handleOtpBoxKeyDown(this, event, 5)" onfocus="this.select()" />
-            </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
-              <span style="font-size: 11px; color: var(--muted-foreground);" id="otp-helper-msg">Default demo OTP is prefilled: 123456</span>
-              <span style="font-size: 11px; font-weight: 700; color: var(--primary); cursor: pointer;" onclick="fillDemoOtp()">Fill 123456</span>
+              <input type="text" class="input-4rge" id="signup-id-number" placeholder="e.g. 8821" maxlength="16" required />
             </div>
           </div>
 
           <!-- Age Declaration Checkbox -->
           <label class="checkbox-row-4rge">
-            <input type="checkbox" id="otp-age-check" required checked />
-            <span>I solemnly declare that I am 21 years of age or older, and agree to present my original Govt Photo ID at the pickup counter.</span>
+            <input type="checkbox" id="signup-age-check" required />
+            <span>I solemnly declare under the Tamil Nadu Prohibition Act that I am 21 years of age or older, and agree to present my original Govt Photo ID at the pickup counter.</span>
           </label>
 
-          <button type="submit" class="btn-4rge btn-4rge-default" style="width: 100%; height: 42px; font-size: 13.5px;">
-            <span>Verify & Enter Store</span>
-            <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
+          <button type="submit" class="btn-4rge btn-4rge-default" id="btn-signup-submit" style="width: 100%; height: 42px; font-size: 13.5px;">
+            <span>Create Verified Patron Account</span>
+            <i data-lucide="user-check" style="width: 15px; height: 15px;"></i>
           </button>
+
+          <div class="auth-toggle-link">
+            <span>Already registered? </span>
+            <button type="button" onclick="switchAuthTab('signin')">Sign in to your account →</button>
+          </div>
         </form>
-
-
-        <!-- 2. EMAIL & PASSWORD FORM (Initially Hidden) -->
-        <form id="form-pwd-login" onsubmit="handlePwdSubmit(event)" style="display: none;">
-          
-          <div class="form-group-4rge">
-            <label class="form-label-4rge">
-              <i data-lucide="mail" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
-              <span>Registered Email / Excise Consumer ID *</span>
-            </label>
-            <input type="email" class="input-4rge" id="pwd-email" placeholder="anand.murugan@example.com" value="anand.murugan@example.com" required />
-          </div>
-
-          <div class="form-group-4rge">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <label class="form-label-4rge">
-                <i data-lucide="lock" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
-                <span>Account Password *</span>
-              </label>
-              <span style="font-size: 11px; color: var(--primary); cursor: pointer;" onclick="showToast('Password reset link sent to registered email')">Forgot?</span>
-            </div>
-            <div class="input-wrapper-4rge">
-              <input type="password" class="input-4rge" id="pwd-input" placeholder="••••••••••••" value="TasmacReserve2026!" required />
-              <button type="button" onclick="togglePasswordVisibility()" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--muted-foreground);">
-                <i data-lucide="eye" id="pwd-eye-icon" style="width: 15px; height: 15px;"></i>
-              </button>
-            </div>
-          </div>
-
-          <!-- Age Declaration Checkbox -->
-          <label class="checkbox-row-4rge">
-            <input type="checkbox" id="pwd-age-check" required checked />
-            <span>I declare that I am 21+ years of age and hold a valid Govt Photo ID.</span>
-          </label>
-
-          <button type="submit" class="btn-4rge btn-4rge-default" style="width: 100%; height: 42px; font-size: 13.5px;">
-            <span>Sign In to TASMAC</span>
-            <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
-          </button>
-        </form>
-
-
-        <!-- 3. QUICK 1-CLICK DEMO TEST SIGN IN -->
-        <div class="demo-accounts-strip">
-          <div class="demo-strip-title">
-            <i data-lucide="sparkles" style="width: 13px; height: 13px; color: var(--primary);"></i>
-            <span>1-Click Test Customer Accounts</span>
-          </div>
-
-          <div class="demo-buttons-col">
-            <div class="btn-quick-demo" onclick="loginDemoUser('Anand Murugan', '9444012345', 'Aadhaar Card', '8821')">
-              <div>
-                <div class="demo-user-name">Anand Murugan</div>
-                <div class="demo-user-details">+91 94440 12345 • Aadhaar ****8821</div>
-              </div>
-              <span class="demo-tag-pill">21+ Verified</span>
-            </div>
-
-            <div class="btn-quick-demo" onclick="loginDemoUser('Karthik Sundaram', '9884067890', 'Driving License', '4410')">
-              <div>
-                <div class="demo-user-name">Karthik Sundaram</div>
-                <div class="demo-user-details">+91 98840 67890 • DL ****4410</div>
-              </div>
-              <span class="demo-tag-pill">Elite Club</span>
-            </div>
-
-            <div class="btn-quick-demo" onclick="loginDemoUser('Priya Senthil', '9790054321', 'Voter ID', '2298')">
-              <div>
-                <div class="demo-user-name">Priya Senthil</div>
-                <div class="demo-user-details">+91 97900 54321 • Voter ID ****2298</div>
-              </div>
-              <span class="demo-tag-pill">Verified</span>
-            </div>
-          </div>
-        </div>
 
       </div>
 
@@ -970,8 +944,8 @@
         <div class="success-pulse-circle">
           <i data-lucide="check" style="width: 32px; height: 32px;"></i>
         </div>
-        <h2 style="font-size: 18px; font-weight: 800; color: var(--foreground); margin-bottom: 6px;">Sign In Successful!</h2>
-        <p style="font-size: 13px; color: var(--muted-foreground); margin-bottom: 20px;" id="success-welcome-msg">Welcome back, Anand Murugan.</p>
+        <h2 style="font-size: 18px; font-weight: 800; color: var(--foreground); margin-bottom: 6px;" id="success-heading">Authentication Successful!</h2>
+        <p style="font-size: 13px; color: var(--muted-foreground); margin-bottom: 20px;" id="success-welcome-msg">Welcome to TASMAC Reserve.</p>
         
         <div style="background: var(--secondary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px; text-align: left; font-size: 12px; margin-bottom: 24px;">
           <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
@@ -980,7 +954,7 @@
           </div>
           <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
             <span style="color: var(--muted-foreground);">Govt ID Registered:</span>
-            <strong style="color: var(--foreground);" id="success-id-summary">Aadhaar Card (****8821)</strong>
+            <strong style="color: var(--foreground);" id="success-id-summary">Govt Photo ID (Verified)</strong>
           </div>
           <div style="display: flex; justify-content: space-between;">
             <span style="color: var(--muted-foreground);">Fulfillment Mode:</span>
@@ -1030,175 +1004,282 @@
 
     // 2. Tab Switcher
     function switchAuthTab(type) {
-      const tabOtp = document.getElementById("tab-btn-otp");
-      const tabPwd = document.getElementById("tab-btn-pwd");
-      const formOtp = document.getElementById("form-otp-login");
-      const formPwd = document.getElementById("form-pwd-login");
+      const tabSignIn = document.getElementById("tab-btn-signin");
+      const tabSignUp = document.getElementById("tab-btn-signup");
+      const formSignIn = document.getElementById("form-signin");
+      const formSignUp = document.getElementById("form-signup");
+      const titleEl = document.getElementById("auth-main-title");
+      const subtitleEl = document.getElementById("auth-main-subtitle");
 
-      if (type === 'otp') {
-        tabOtp.classList.add("active");
-        tabPwd.classList.remove("active");
-        formOtp.style.display = "block";
-        formPwd.style.display = "none";
+      // Clear alerts
+      setFormAlert("signin-alert", null);
+      setFormAlert("signup-alert", null);
+
+      if (type === 'signup') {
+        if (tabSignUp) tabSignUp.classList.add("active");
+        if (tabSignIn) tabSignIn.classList.remove("active");
+        if (formSignUp) formSignUp.style.display = "block";
+        if (formSignIn) formSignIn.style.display = "none";
+        if (titleEl) titleEl.innerText = "Create Patron Account";
+        if (subtitleEl) subtitleEl.innerText = "Register your verified 21+ identity with Supabase to reserve genuine state-monopoly spirits at Govt MRP.";
       } else {
-        tabPwd.classList.add("active");
-        tabOtp.classList.remove("active");
-        formOtp.style.display = "none";
-        formPwd.style.display = "block";
+        if (tabSignIn) tabSignIn.classList.add("active");
+        if (tabSignUp) tabSignUp.classList.remove("active");
+        if (formSignIn) formSignIn.style.display = "block";
+        if (formSignUp) formSignUp.style.display = "none";
+        if (titleEl) titleEl.innerText = "Patron Portal";
+        if (subtitleEl) subtitleEl.innerText = "Sign in with your registered email and password to access your cart and express tokens.";
       }
       if (window.lucide) lucide.createIcons();
     }
 
-    // 3. OTP Digit Boxes Handling
-    function handleOtpBoxInput(el, idx) {
-      const boxes = document.querySelectorAll(".otp-digit-box");
-      if (el.value.length === 1 && idx < boxes.length - 1) {
-        boxes[idx + 1].focus();
-      }
-    }
+    // 3. Password Show / Hide Toggle
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (!input || !icon) return;
 
-    function handleOtpBoxKeyDown(el, e, idx) {
-      const boxes = document.querySelectorAll(".otp-digit-box");
-      if (e.key === "Backspace" && !el.value && idx > 0) {
-        boxes[idx - 1].focus();
-      }
-    }
-
-    function handleOtpPaste(e) {
-      e.preventDefault();
-      const pasteData = (e.clipboardData || window.clipboardData).getData("text").trim();
-      const digits = pasteData.replace(/\D/g, "").slice(0, 6);
-      if (!digits) return;
-      const boxes = document.querySelectorAll(".otp-digit-box");
-      boxes.forEach((box, i) => {
-        box.value = digits[i] || "";
-      });
-      const nextIdx = Math.min(digits.length, boxes.length - 1);
-      boxes[nextIdx].focus();
-      showToast("OTP pasted from clipboard");
-    }
-
-    function fillDemoOtp() {
-      const boxes = document.querySelectorAll(".otp-digit-box");
-      const code = "123456";
-      boxes.forEach((box, i) => {
-        box.value = code[i];
-      });
-      showToast("Auto-filled demo OTP: 123456");
-    }
-
-    function requestOtpCode() {
-      const phone = document.getElementById("otp-phone").value.trim();
-      if (!phone || phone.length < 10) {
-        showToast("Please enter a valid 10-digit mobile number");
-        return;
-      }
-      const btn = document.getElementById("btn-request-otp");
-      btn.disabled = true;
-      let countdown = 30;
-      btn.innerHTML = `<span>Sent (${countdown}s)</span>`;
-      showToast(`Verification OTP sent to +91 ${phone}!`);
-      fillDemoOtp();
-
-      const timer = setInterval(() => {
-        countdown--;
-        if (countdown <= 0) {
-          clearInterval(timer);
-          btn.disabled = false;
-          btn.innerHTML = `<span>Resend OTP</span>`;
-        } else {
-          btn.innerHTML = `<span>Sent (${countdown}s)</span>`;
-        }
-      }, 1000);
-    }
-
-    function togglePasswordVisibility() {
-      const pwd = document.getElementById("pwd-input");
-      const icon = document.getElementById("pwd-eye-icon");
-      if (pwd.type === "password") {
-        pwd.type = "text";
+      if (input.type === "password") {
+        input.type = "text";
         icon.setAttribute("data-lucide", "eye-off");
       } else {
-        pwd.type = "password";
+        input.type = "password";
         icon.setAttribute("data-lucide", "eye");
       }
       if (window.lucide) lucide.createIcons();
     }
 
-    // 4. Form Submissions
-    function handleOtpSubmit(e) {
-      e.preventDefault();
-      const name = document.getElementById("otp-name").value.trim();
-      const phone = document.getElementById("otp-phone").value.trim();
-      const idType = document.getElementById("otp-id-type").value;
-      const idNumber = document.getElementById("otp-id-number").value.trim();
-      const ageCheck = document.getElementById("otp-age-check").checked;
+    // 4. Form Alert Banners
+    function setFormAlert(alertId, type, message) {
+      const alertEl = document.getElementById(alertId);
+      if (!alertEl) return;
 
-      const boxes = document.querySelectorAll(".otp-digit-box");
-      let otpCode = "";
-      boxes.forEach(b => otpCode += b.value);
-
-      if (otpCode.length !== 6) {
-        showToast("Please enter all 6 digits of the OTP code");
+      if (!message) {
+        alertEl.style.display = "none";
+        alertEl.innerHTML = "";
+        alertEl.className = "auth-alert-banner";
         return;
       }
+
+      alertEl.className = "auth-alert-banner " + (type || "error");
+      const iconName = type === "success" ? "check-circle-2" : "alert-triangle";
+      alertEl.innerHTML = `<i data-lucide="${iconName}"></i><span>${message}</span>`;
+      alertEl.style.display = "flex";
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // 5. Handle Sign In (Supabase Auth)
+    async function handleSignInSubmit(e) {
+      e.preventDefault();
+      setFormAlert("signin-alert", null);
+
+      const email = document.getElementById("signin-email").value.trim();
+      const password = document.getElementById("signin-password").value;
+      const ageCheck = document.getElementById("signin-age-check").checked;
+      const btn = document.getElementById("btn-signin-submit");
 
       if (!ageCheck) {
-        showToast("Statutory age verification (21+) is required");
+        setFormAlert("signin-alert", "error", "Statutory declaration of legal drinking age (21+) is mandatory.");
         return;
       }
 
-      saveUserAndRedirect({
-        name: name || "Customer",
-        phone: "+91 " + phone,
-        idType: idType,
-        idNumber: idNumber,
-        verified21: true,
-        method: "mobile_otp"
-      });
+      if (!email || !password) {
+        setFormAlert("signin-alert", "error", "Please provide both your registered email and password.");
+        return;
+      }
+
+      // Loading UI State
+      const originalBtnHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<span>Verifying Credentials...</span><i data-lucide="loader" style="width: 15px; height: 15px; animation: spin 1s linear infinite;"></i>`;
+      if (window.lucide) lucide.createIcons();
+
+      try {
+        const res = await window.TASMAC_SUPABASE.signInWithEmail(email, password);
+
+        if (res.error) {
+          btn.disabled = false;
+          btn.innerHTML = originalBtnHtml;
+          if (window.lucide) lucide.createIcons();
+
+          let msg = res.error.message || "Failed to sign in.";
+          if (msg.toLowerCase().includes("invalid login credentials")) {
+            msg = "Invalid email or password. Please check your credentials or create a new account.";
+          }
+          setFormAlert("signin-alert", "error", msg);
+          return;
+        }
+
+        // Successfully authenticated
+        let userObj = null;
+        try {
+          userObj = JSON.parse(localStorage.getItem("tasmac-user"));
+        } catch(e) {}
+
+        if (!userObj) {
+          userObj = {
+            id: res.data?.user?.id,
+            email: email,
+            name: res.data?.user?.user_metadata?.full_name || email.split("@")[0],
+            phone: res.data?.user?.user_metadata?.phone || "",
+            idType: res.data?.user?.user_metadata?.id_type || "Govt Photo ID",
+            idNumber: res.data?.user?.user_metadata?.id_number || "Verified",
+            verified21: true
+          };
+          localStorage.setItem("tasmac-user", JSON.stringify(userObj));
+        }
+
+        saveUserAndRedirect(userObj, "signin");
+
+      } catch(err) {
+        btn.disabled = false;
+        btn.innerHTML = originalBtnHtml;
+        if (window.lucide) lucide.createIcons();
+        setFormAlert("signin-alert", "error", "Connection error. Please check your network and try again.");
+      }
     }
 
-    function handlePwdSubmit(e) {
+    // 6. Handle New User Registration (Supabase Auth)
+    async function handleSignUpSubmit(e) {
       e.preventDefault();
-      const email = document.getElementById("pwd-email").value.trim();
-      const ageCheck = document.getElementById("pwd-age-check").checked;
+      setFormAlert("signup-alert", null);
 
+      const name = document.getElementById("signup-name").value.trim();
+      const email = document.getElementById("signup-email").value.trim();
+      const password = document.getElementById("signup-password").value;
+      const phone = document.getElementById("signup-phone").value.trim();
+      const idType = document.getElementById("signup-id-type").value;
+      const idNumber = document.getElementById("signup-id-number").value.trim();
+      const ageCheck = document.getElementById("signup-age-check").checked;
+      const btn = document.getElementById("btn-signup-submit");
+
+      if (!name) {
+        setFormAlert("signup-alert", "error", "Please enter your full name as per Govt Photo ID.");
+        return;
+      }
+      if (!email || !email.includes("@")) {
+        setFormAlert("signup-alert", "error", "Please provide a valid email address.");
+        return;
+      }
+      if (password.length < 6) {
+        setFormAlert("signup-alert", "error", "Password must be at least 6 characters in length.");
+        return;
+      }
+      if (!phone || phone.length < 10) {
+        setFormAlert("signup-alert", "error", "Please enter a valid 10-digit mobile phone number.");
+        return;
+      }
+      if (!idNumber) {
+        setFormAlert("signup-alert", "error", "Please enter your Govt ID Number or last 4 digits.");
+        return;
+      }
       if (!ageCheck) {
-        showToast("Statutory age verification (21+) is required");
+        setFormAlert("signup-alert", "error", "Statutory age declaration (21+) is required by Tamil Nadu law.");
         return;
       }
 
-      saveUserAndRedirect({
-        name: "Anand Murugan",
-        phone: "+91 94440 12345",
-        email: email,
-        idType: "Aadhaar Card",
-        idNumber: "8821",
-        verified21: true,
-        method: "password"
-      });
+      // Loading UI State
+      const originalBtnHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<span>Creating Account in Supabase...</span><i data-lucide="loader" style="width: 15px; height: 15px; animation: spin 1s linear infinite;"></i>`;
+      if (window.lucide) lucide.createIcons();
+
+      try {
+        const res = await window.TASMAC_SUPABASE.signUpWithEmail(email, password, {
+          name: name,
+          phone: "+91 " + phone,
+          idType: idType,
+          idNumber: idNumber
+        });
+
+        if (res.error) {
+          btn.disabled = false;
+          btn.innerHTML = originalBtnHtml;
+          if (window.lucide) lucide.createIcons();
+          setFormAlert("signup-alert", "error", res.error.message || "Could not register account. Please try again.");
+          return;
+        }
+
+        // Successfully created user
+        let userObj = null;
+        try {
+          userObj = JSON.parse(localStorage.getItem("tasmac-user"));
+        } catch(e) {}
+
+        if (!userObj) {
+          userObj = {
+            id: res.data?.user?.id,
+            email: email,
+            name: name,
+            phone: "+91 " + phone,
+            idType: idType,
+            idNumber: idNumber,
+            verified21: true
+          };
+          localStorage.setItem("tasmac-user", JSON.stringify(userObj));
+        }
+
+        saveUserAndRedirect(userObj, "signup");
+
+      } catch(err) {
+        btn.disabled = false;
+        btn.innerHTML = originalBtnHtml;
+        if (window.lucide) lucide.createIcons();
+        setFormAlert("signup-alert", "error", "Unable to reach Supabase server. Please check your connection.");
+      }
     }
 
-    function loginDemoUser(name, phone, idType, idNumber) {
-      saveUserAndRedirect({
-        name: name,
-        phone: "+91 " + phone,
-        idType: idType,
-        idNumber: idNumber,
-        verified21: true,
-        method: "demo_1click"
-      });
+    // 7. Forgot Password
+    function handleForgotPassword() {
+      const currentEmail = document.getElementById("signin-email")?.value.trim();
+      const email = prompt("Enter your registered email address to receive password reset instructions:", currentEmail || "");
+      if (!email || !email.includes("@")) {
+        if (email) showToast("Invalid email address provided.");
+        return;
+      }
+
+      if (typeof supabaseClient !== "undefined" && supabaseClient) {
+        supabaseClient.auth.resetPasswordForEmail(email)
+          .then(res => {
+            if (res.error) {
+              setFormAlert("signin-alert", "error", res.error.message);
+            } else {
+              setFormAlert("signin-alert", "success", "Password reset email sent to " + email + ". Please check your inbox.");
+            }
+          })
+          .catch(e => {
+            showToast("Password reset request sent.");
+          });
+      } else {
+        showToast("Password reset email sent to " + email);
+      }
     }
 
-    function saveUserAndRedirect(userObj) {
+    // 8. Session Finalize & Redirect
+    function saveUserAndRedirect(userObj, actionType) {
       userObj.loginTime = new Date().toISOString();
       localStorage.setItem("tasmac-user", JSON.stringify(userObj));
 
       // Switch to success card
       document.getElementById("auth-form-container").style.display = "none";
+      document.getElementById("auth-tabs").style.display = "none";
       document.getElementById("auth-success-view").style.display = "block";
-      document.getElementById("success-welcome-msg").innerText = `Welcome, ${userObj.name}!`;
-      document.getElementById("success-id-summary").innerText = `${userObj.idType} (****${userObj.idNumber})`;
+      
+      const headingEl = document.getElementById("success-heading");
+      if (headingEl) {
+        headingEl.innerText = actionType === "signup" ? "Account Created Successfully!" : "Sign In Successful!";
+      }
+      
+      const welcomeEl = document.getElementById("success-welcome-msg");
+      if (welcomeEl) {
+        welcomeEl.innerText = `Welcome, ${userObj.name}! Your Verified Patron Account is active.`;
+      }
+      
+      const idEl = document.getElementById("success-id-summary");
+      if (idEl) {
+        const last4 = userObj.idNumber ? userObj.idNumber.slice(-4) : "Verified";
+        idEl.innerText = `${userObj.idType || "Govt Photo ID"} (****${last4})`;
+      }
 
       if (window.lucide) lucide.createIcons();
 
@@ -1208,10 +1289,10 @@
 
       setTimeout(() => {
         window.location.href = redirectTarget;
-      }, 1200);
+      }, 1300);
     }
 
-    // 5. Toast Notifications
+    // 9. Toast Notifications
     function showToast(msg) {
       const tray = document.getElementById("toast-tray");
       const toast = document.createElement("div");
@@ -1259,12 +1340,20 @@
       handleTopShellScroll();
       setTimeout(syncTopShellHeight, 150);
 
-      // Auto-check if already logged in
+      // Support ?tab=signup URL parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("tab") === "signup") {
+        switchAuthTab("signup");
+      }
+
+      // Check if already logged in
       const existing = localStorage.getItem("tasmac-user");
       if (existing) {
         try {
           const user = JSON.parse(existing);
-          showToast(`Logged in as ${user.name}`);
+          if (user && user.name) {
+            showToast(`Currently signed in as ${user.name}`);
+          }
         } catch (e) {}
       }
     });

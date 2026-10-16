@@ -163,27 +163,138 @@ window.TASMAC_SUPABASE = {
 
   // 6. Supabase Auth: Email & Password Sign Up / Sign In
   signInWithEmail: async function(email, password) {
-    if (!supabaseClient) return { error: 'Supabase client not configured yet' };
-    return await supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
+    if (!supabaseClient) return { data: null, error: { message: 'Supabase client not initialized' } };
+    try {
+      const res = await supabaseClient.auth.signInWithPassword({
+        email: email.trim(),
+        password: password
+      });
+
+      if (res.error) return res;
+
+      // Fetch user profile from public.profiles table if user authenticated
+      if (res.data && res.data.user) {
+        let profile = null;
+        try {
+          const { data: profData } = await supabaseClient
+            .from('profiles')
+            .select('*')
+            .eq('id', res.data.user.id)
+            .maybeSingle();
+          profile = profData;
+        } catch(e) {
+          console.warn('Could not query public.profiles:', e);
+        }
+
+        const userObj = {
+          id: res.data.user.id,
+          email: res.data.user.email,
+          name: profile?.full_name || res.data.user.user_metadata?.full_name || email.split('@')[0],
+          phone: profile?.phone || res.data.user.user_metadata?.phone || '',
+          idType: profile?.id_type || res.data.user.user_metadata?.id_type || 'Govt Photo ID',
+          idNumber: profile?.id_number || res.data.user.user_metadata?.id_number || 'Verified',
+          verified21: true,
+          method: 'supabase_email',
+          loginTime: new Date().toISOString()
+        };
+
+        localStorage.setItem('tasmac-user', JSON.stringify(userObj));
+      }
+
+      return res;
+    } catch(err) {
+      return { data: null, error: err };
+    }
   },
 
   signUpWithEmail: async function(email, password, userMeta) {
-    if (!supabaseClient) return { error: 'Supabase client not configured yet' };
-    return await supabaseClient.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: userMeta || {}
+    if (!supabaseClient) return { data: null, error: { message: 'Supabase client not initialized' } };
+    try {
+      const res = await supabaseClient.auth.signUp({
+        email: email.trim(),
+        password: password,
+        options: {
+          data: {
+            full_name: userMeta?.name || '',
+            phone: userMeta?.phone || '',
+            id_type: userMeta?.idType || 'Aadhaar Card',
+            id_number: userMeta?.idNumber || '',
+            verified_21: true
+          }
+        }
+      });
+
+      if (res.error) return res;
+
+      // If user created, also insert/upsert to public.profiles directly
+      if (res.data && res.data.user) {
+        try {
+          await supabaseClient
+            .from('profiles')
+            .upsert({
+              id: res.data.user.id,
+              full_name: userMeta?.name || 'Valued Patron',
+              phone: userMeta?.phone || '',
+              id_type: userMeta?.idType || 'Aadhaar Card',
+              id_number: userMeta?.idNumber || '',
+              verified_21: true,
+              updated_at: new Date().toISOString()
+            });
+        } catch(e) {
+          console.warn('Profile upsert note (may be handled by trigger):', e);
+        }
+
+        const userObj = {
+          id: res.data.user.id,
+          email: res.data.user.email,
+          name: userMeta?.name || email.split('@')[0],
+          phone: userMeta?.phone || '',
+          idType: userMeta?.idType || 'Aadhaar Card',
+          idNumber: userMeta?.idNumber || 'Verified',
+          verified21: true,
+          method: 'supabase_signup',
+          loginTime: new Date().toISOString()
+        };
+
+        localStorage.setItem('tasmac-user', JSON.stringify(userObj));
       }
-    });
+
+      return res;
+    } catch(err) {
+      return { data: null, error: err };
+    }
+  },
+
+  getProfile: async function(userId) {
+    if (!supabaseClient || !userId) return null;
+    try {
+      const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+      if (error) return null;
+      return data;
+    } catch(e) {
+      return null;
+    }
+  },
+
+  getCurrentUser: async function() {
+    if (!supabaseClient) return null;
+    try {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      return user;
+    } catch(e) {
+      return null;
+    }
   },
 
   signOut: async function() {
     if (supabaseClient) {
-      await supabaseClient.auth.signOut();
+      try {
+        await supabaseClient.auth.signOut();
+      } catch(e) {}
     }
     localStorage.removeItem('tasmac-user');
   }

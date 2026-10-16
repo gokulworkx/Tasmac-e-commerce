@@ -46,10 +46,11 @@ Unlike administrative back-office ERPs or warehouse inventory tables, this proje
 - **Zero Scroll-Bleed Lock**: Opening dialogs, Quick View modals, or the interactive Leaflet map locks both `html` and `body` scroll positions statically (`modal-open`), preventing any annoying background jump or bounce.
 - **Keyboard Shortcuts**: Full desktop accessibility with Escape (`Esc`) to close open dialogs and `/` to immediately focus catalog search.
 
-### 6. 📱 Digital QR Token Express Checkout
-- **Statutory Age Verification**: Mandatory 21+ legal age verification modal in compliance with Tamil Nadu State Excise rules.
-- **Dedicated Customer Login Portal (`login.html`)**: Secure authentication supporting Mobile OTP verification (+91), Registered Email & Password, and 1-click test profiles. Pre-populates customer name, mobile number, and verified Govt ID into express reservations.
-- **Persistent Profile & Session Menu**: Real-time user dropdown in the main storefront navigation with instant Sign Out, active token tracking, and 21+ verification status.
+### 6. 📱 Supabase Cloud Authentication & Digital Express Reservations
+- **Supabase Cloud User Sign Up & Authentication**: Real user registration and login powered by **Supabase Auth** (`supabase.auth.signUp` & `supabase.auth.signInWithPassword`), with zero hardcoded demo accounts.
+- **21+ Verified Patron Identity**: New users register with their Full Name (as per Govt ID), Email, Password, Mobile (+91), Govt ID Type (Aadhaar, Voter ID, Driving License, Passport), and statutory 21+ legal affirmation under Tamil Nadu Excise laws.
+- **Automated Profile Synchronization**: An automated PostgreSQL trigger (`handle_new_user()`) and client fallback synchronize metadata into the Supabase `public.profiles` table with Row Level Security (RLS).
+- **Persistent Session & Dynamic Profile Dropdown**: Authenticated sessions seamlessly populate the header avatar, patron status pill, and pre-fill checkout tokens.
 - **Express QR Pickup Token**: Finalizing checkout generates a scannable digital token and unique order ID with pickup counter operating hours (12:00 PM – 10:00 PM) for zero-wait fulfillment.
 
 ---

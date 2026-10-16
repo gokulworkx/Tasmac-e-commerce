@@ -3257,9 +3257,9 @@
             <!-- Logged In State: User Dropdown -->
             <div class="user-profile-menu-wrap" id="nav-user-profile-wrap" style="display: none;">
               <button class="user-profile-pill" onclick="toggleUserDropdown(event)" id="nav-user-pill" title="Account Menu">
-                <div class="user-avatar-badge" id="nav-user-avatar">A</div>
+                <div class="user-avatar-badge" id="nav-user-avatar">U</div>
                 <div class="user-pill-text-col">
-                  <span class="user-pill-name" id="nav-user-name">Anand M.</span>
+                  <span class="user-pill-name" id="nav-user-name">Patron</span>
                   <span class="user-pill-tag">21+ Verified</span>
                 </div>
                 <i data-lucide="chevron-down" class="user-pill-caret" style="width: 12px; height: 12px;"></i>
@@ -3268,11 +3268,11 @@
               <!-- Dropdown Menu -->
               <div class="user-dropdown-menu" id="nav-user-dropdown" onclick="event.stopPropagation()">
                 <div class="user-dropdown-header">
-                  <div class="user-menu-fullname" id="menu-user-fullname">Anand Murugan</div>
-                  <div class="user-menu-meta" id="menu-user-meta">+91 94440 12345</div>
+                  <div class="user-menu-fullname" id="menu-user-fullname">Verified Patron</div>
+                  <div class="user-menu-meta" id="menu-user-meta">Patron Account</div>
                   <div class="user-menu-status-badge">
                     <i data-lucide="shield-check" style="width: 11px; height: 11px;"></i>
-                    <span id="menu-user-idtype">Aadhaar Card (****8821)</span>
+                    <span id="menu-user-idtype">Govt Photo ID (Verified)</span>
                   </div>
                 </div>
                 <div class="user-dropdown-divider"></div>
@@ -3622,7 +3622,7 @@
             <div id="checkout-auth-banner" style="display: none; background: var(--fp-state-success-subtle); border: 1px solid color-mix(in srgb, var(--fp-state-success) 30%, transparent); padding: 8px 12px; border-radius: var(--radius-md); font-size: 11.5px; color: var(--fp-state-success); margin-bottom: 14px; align-items: center; justify-content: space-between;">
               <div style="display: flex; align-items: center; gap: 6px;">
                 <i data-lucide="check-circle-2" style="width: 14px; height: 14px;"></i>
-                <span>Signed in as <strong id="checkout-logged-user-name">Anand Murugan</strong> (21+ Verified)</span>
+                <span>Signed in as <strong id="checkout-logged-user-name">Patron</strong> (21+ Verified)</span>
               </div>
               <a href="login.html" style="color: var(--primary); font-weight: 700; text-decoration: none; font-size: 11px;">Switch</a>
             </div>
@@ -3638,7 +3638,7 @@
                   <i data-lucide="user" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
                   <span>Your Full Name (As per Govt Photo ID) *</span>
                 </label>
-                <input type="text" class="input-4rge" id="cust-name-input" placeholder="e.g. Anand Murugan" required />
+                <input type="text" class="input-4rge" id="cust-name-input" placeholder="e.g. Enter your full name" required />
               </div>
 
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
@@ -3647,7 +3647,7 @@
                     <i data-lucide="phone" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
                     <span>Mobile Number *</span>
                   </label>
-                  <input type="tel" class="input-4rge" id="cust-phone-input" placeholder="+91 94440 00000" required />
+                  <input type="tel" class="input-4rge" id="cust-phone-input" placeholder="+91 98765 43210" required />
                 </div>
                 <div class="form-group-4rge">
                   <label class="form-label-4rge">
@@ -3703,7 +3703,7 @@
             <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12.5px;">
               <div style="display: flex; justify-content: space-between;">
                 <span style="color: var(--muted-foreground);">Customer:</span>
-                <strong style="color: var(--foreground);" id="res-name">Anand Murugan</strong>
+                <strong style="color: var(--foreground);" id="res-name">Customer</strong>
               </div>
               <div style="display: flex; justify-content: space-between;">
                 <span style="color: var(--muted-foreground);">Pickup Outlet:</span>
@@ -5505,8 +5505,33 @@
     // =========================================================================
     // CUSTOMER AUTHENTICATION CONTROLLER (TASMAC RESERVE)
     // =========================================================================
-    function initUserAuth() {
-      const userJson = localStorage.getItem("tasmac-user");
+    async function initUserAuth() {
+      let userJson = localStorage.getItem("tasmac-user");
+
+      // If localStorage is empty, check if Supabase has an active signed-in user
+      if (!userJson && window.TASMAC_SUPABASE && window.TASMAC_SUPABASE.getCurrentUser) {
+        try {
+          const authUser = await window.TASMAC_SUPABASE.getCurrentUser();
+          if (authUser) {
+            let profile = null;
+            if (window.TASMAC_SUPABASE.getProfile) {
+              profile = await window.TASMAC_SUPABASE.getProfile(authUser.id);
+            }
+            const restoredUser = {
+              id: authUser.id,
+              email: authUser.email,
+              name: profile?.full_name || authUser.user_metadata?.full_name || authUser.email.split("@")[0],
+              phone: profile?.phone || authUser.user_metadata?.phone || "",
+              idType: profile?.id_type || authUser.user_metadata?.id_type || "Govt Photo ID",
+              idNumber: profile?.id_number || authUser.user_metadata?.id_number || "Verified",
+              verified21: true
+            };
+            localStorage.setItem("tasmac-user", JSON.stringify(restoredUser));
+            userJson = JSON.stringify(restoredUser);
+          }
+        } catch(e) {}
+      }
+
       const loginBtn = document.getElementById("nav-login-btn");
       const profileWrap = document.getElementById("nav-user-profile-wrap");
       const avatarEl = document.getElementById("nav-user-avatar");
@@ -5530,7 +5555,8 @@
             }
             if (menuFullname) menuFullname.innerText = user.name;
             if (menuMeta) menuMeta.innerText = user.phone || user.email || "Verified 21+";
-            if (menuIdType) menuIdType.innerText = `${user.idType || "Govt Photo ID"} (****${user.idNumber || "Verified"})`;
+            const last4 = user.idNumber ? user.idNumber.slice(-4) : "Verified";
+            if (menuIdType) menuIdType.innerText = `${user.idType || "Govt Photo ID"} (****${last4})`;
             if (window.lucide) lucide.createIcons();
             return;
           }
@@ -5560,8 +5586,12 @@
       if (wrap) wrap.classList.remove("open");
     }
 
-    function handleUserLogout() {
-      localStorage.removeItem("tasmac-user");
+    async function handleUserLogout() {
+      if (window.TASMAC_SUPABASE && window.TASMAC_SUPABASE.signOut) {
+        await window.TASMAC_SUPABASE.signOut();
+      } else {
+        localStorage.removeItem("tasmac-user");
+      }
       closeUserDropdown();
       initUserAuth();
       showToast("Signed out of your TASMAC account");
