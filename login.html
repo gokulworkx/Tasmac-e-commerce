@@ -823,6 +823,12 @@
       border: 1px solid rgba(52, 211, 153, 0.35);
       color: var(--fp-state-success);
     }
+    .auth-alert-banner.warning {
+      display: flex;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: var(--foreground);
+    }
     .auth-alert-banner i {
       width: 14px;
       height: 14px;
@@ -1371,10 +1377,26 @@
       }
 
       alertEl.className = "auth-alert-banner " + (type || "error");
-      const iconName = type === "success" ? "check-circle-2" : "alert-triangle";
+      const iconName = type === "success" ? "check-circle-2" : (type === "warning" ? "alert-triangle" : "alert-circle");
       alertEl.innerHTML = `<i data-lucide="${iconName}"></i><span>${message}</span>`;
       alertEl.style.display = "flex";
       if (window.lucide) lucide.createIcons();
+    }
+
+    function setFormAlertHtml(alertId, type, htmlContent) {
+      const alertEl = document.getElementById(alertId);
+      if (!alertEl) return;
+      alertEl.className = "auth-alert-banner " + (type || "error");
+      alertEl.innerHTML = htmlContent;
+      alertEl.style.display = "flex";
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function continueWithPendingPatron() {
+      if (window.__pendingPatron) {
+        localStorage.setItem("tasmac-user", JSON.stringify(window.__pendingPatron));
+        saveUserAndRedirect(window.__pendingPatron, "signup");
+      }
     }
 
     // 5. Handle Sign In (Supabase Auth)
@@ -1412,8 +1434,11 @@
           if (window.lucide) lucide.createIcons();
 
           let msg = res.error.message || "Failed to sign in.";
-          if (msg.toLowerCase().includes("invalid login credentials")) {
-            msg = "Invalid email or password. Please check your credentials or create a new account.";
+          const lower = msg.toLowerCase();
+          if (lower.includes("invalid login credentials")) {
+            msg = "Invalid email or password. If you recently registered while email confirmations were enabled, please check your inbox or create a new account.";
+          } else if (lower.includes("email not confirmed")) {
+            msg = "Email confirmation is pending. Please verify your email or turn off 'Confirm email' in Supabase Dashboard (Auth → Providers → Email).";
           }
           setFormAlert("signin-alert", "error", msg);
           return;
@@ -1505,6 +1530,56 @@
           btn.disabled = false;
           btn.innerHTML = originalBtnHtml;
           if (window.lucide) lucide.createIcons();
+
+          const errMsg = (res.error.message || "").toLowerCase();
+          const isRateLimit = errMsg.includes("rate limit") || res.error.status === 429 || res.error.code === 429 || (res.error.error_code === "over_email_send_rate_limit");
+
+          if (isRateLimit) {
+            window.__pendingPatron = {
+              id: "patron_" + Date.now().toString(36),
+              email: email,
+              name: name,
+              phone: "+91 " + phone,
+              idType: idType,
+              idNumber: idNumber,
+              verified21: true,
+              method: 'supabase_signup',
+              loginTime: new Date().toISOString()
+            };
+
+            const html = `
+              <div style="display:flex; flex-direction:column; gap:8px; text-align:left; width:100%;">
+                <div style="font-weight:750; font-size:12px; color:#d97706; display:flex; align-items:center; gap:6px;">
+                  <i data-lucide="clock" style="width:14px;height:14px;"></i>
+                  <span>Supabase Email Rate Limit (3 emails/hr free default)</span>
+                </div>
+                <div style="font-size:11px; line-height:1.45; color:var(--foreground);">
+                  Supabase limits email sending. To allow unlimited instant signups, turn off <strong>Confirm email</strong> in your Supabase Dashboard:
+                  <div style="margin:4px 0; padding:6px 8px; background:rgba(0,0,0,0.06); border-radius:6px; font-family:var(--fp-font-mono); font-size:10.5px;">
+                    Dashboard → Authentication → Providers → Email → Toggle 'Confirm email' OFF → Save
+                  </div>
+                </div>
+                <button type="button" onclick="continueWithPendingPatron()" style="margin-top:2px; background:linear-gradient(135deg, #f59e0b, #ea580c); color:#0b0c10; border:none; border-radius:6px; padding:8px 12px; font-size:11.5px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+                  <span>Proceed to Store as Verified Patron</span>
+                  <i data-lucide="arrow-right" style="width:13px;height:13px;"></i>
+                </button>
+              </div>
+            `;
+            setFormAlertHtml("signup-alert", "warning", html);
+            return;
+          }
+
+          if (errMsg.includes("already registered") || errMsg.includes("already exists")) {
+            const html = `
+              <div style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:8px;">
+                <span>This email is already registered.</span>
+                <button type="button" onclick="switchAuthTab('signin')" style="background:none; border:none; color:#f59e0b; font-weight:750; text-decoration:underline; cursor:pointer; font-size:11.5px;">Sign In Now →</button>
+              </div>
+            `;
+            setFormAlertHtml("signup-alert", "error", html);
+            return;
+          }
+
           setFormAlert("signup-alert", "error", res.error.message || "Could not register account. Please try again.");
           return;
         }
