@@ -9,10 +9,21 @@
  *    localStorage.setItem('tasmac-supabase-key', 'your-anon-key');
  */
 
+// Auto-sanitize any legacy .supabase.com URLs cached in the browser's localStorage
+(function sanitizeSupabaseStorage() {
+  if (typeof localStorage !== 'undefined') {
+    let storedUrl = localStorage.getItem('tasmac-supabase-url');
+    if (storedUrl && storedUrl.includes('.supabase.com')) {
+      storedUrl = storedUrl.replace('.supabase.com', '.supabase.co');
+      localStorage.setItem('tasmac-supabase-url', storedUrl);
+    }
+  }
+})();
+
 const SUPABASE_CONFIG = {
-  // Replace these placeholders with your live Supabase project credentials:
-  url: localStorage.getItem('tasmac-supabase-url') || "https://ilbwkldseycfqytfkiie.supabase.com",
-  anonKey: localStorage.getItem('tasmac-supabase-key') || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsYndrbGRzZXljZnF5dGZraWllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxMzI1NzUsImV4cCI6MjEwNzcwODU3NX0.9DPW5cJGcXO5Fr2xqm1V89Lj9GBFE3aVuH-qfEEFb64"
+  // Live Supabase project credentials (Supabase instances strictly use .supabase.co):
+  url: ((typeof localStorage !== 'undefined' && localStorage.getItem('tasmac-supabase-url')) || "https://ilbwkldseycfqytfkiie.supabase.co").replace('.supabase.com', '.supabase.co'),
+  anonKey: (typeof localStorage !== 'undefined' && localStorage.getItem('tasmac-supabase-key')) || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsYndrbGRzZXljZnF5dGZraWllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxMzI1NzUsImV4cCI6MjEwNzcwODU3NX0.9DPW5cJGcXO5Fr2xqm1V89Lj9GBFE3aVuH-qfEEFb64"
 };
 
 // Initialize Supabase Client if library is loaded and keys are set
@@ -41,10 +52,12 @@ window.TASMAC_SUPABASE = {
 
   setCredentials: function(url, anonKey) {
     if (!url || !anonKey) return false;
-    localStorage.setItem('tasmac-supabase-url', url.trim());
-    localStorage.setItem('tasmac-supabase-key', anonKey.trim());
-    SUPABASE_CONFIG.url = url.trim();
-    SUPABASE_CONFIG.anonKey = anonKey.trim();
+    const cleanUrl = url.trim().replace('.supabase.com', '.supabase.co');
+    const cleanKey = anonKey.trim();
+    localStorage.setItem('tasmac-supabase-url', cleanUrl);
+    localStorage.setItem('tasmac-supabase-key', cleanKey);
+    SUPABASE_CONFIG.url = cleanUrl;
+    SUPABASE_CONFIG.anonKey = cleanKey;
     initSupabase();
     return Boolean(supabaseClient);
   },
