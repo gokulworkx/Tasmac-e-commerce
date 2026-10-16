@@ -49,9 +49,9 @@ window.TASMAC_SUPABASE = {
     return Boolean(supabaseClient);
   },
 
-  // 1. Fetch live drinks from Supabase Database (with local fallback)
+  // 1. Fetch live drinks from Supabase Database (with safe fallback cloning)
   getDrinks: async function(fallbackArray) {
-    if (!supabaseClient) return fallbackArray;
+    if (!supabaseClient) return fallbackArray ? [...fallbackArray] : null;
     try {
       const { data, error } = await supabaseClient
         .from('drinks')
@@ -60,8 +60,8 @@ window.TASMAC_SUPABASE = {
         .order('price', { ascending: false });
 
       if (error || !data || data.length === 0) {
-        console.warn('Supabase drinks fetch returned fallback:', error);
-        return fallbackArray;
+        if (error) console.warn('Supabase drinks fetch note:', error.message || error);
+        return fallbackArray ? [...fallbackArray] : null;
       }
 
       // Map Supabase snake_case columns to local app camelCase format
@@ -81,7 +81,7 @@ window.TASMAC_SUPABASE = {
       }));
     } catch(e) {
       console.warn('Error querying Supabase drinks:', e);
-      return fallbackArray;
+      return fallbackArray ? [...fallbackArray] : null;
     }
   },
 

@@ -4231,7 +4231,7 @@
     ];
 
     // 2. MASTER 26-BEVERAGE CATALOG (Official Tamil Nadu State Excise Registered)
-    const DRINKS = [
+    const MASTER_CATALOG = [
       { 
         id: "AMRUT-SGL-750", 
         name: "Amrut Fusion Indian Single Malt", 
@@ -4597,6 +4597,7 @@
         img: "images/BOMBAY-SAPH-750.png" 
       }
     ];
+    let DRINKS = [...MASTER_CATALOG];
 
     // Default reference coordinate: Chennai Central Zero Milestone / Ripon Building (13.0827, 80.2757)
     const DEFAULT_REF = { lat: 13.0827, lng: 80.2757 };
@@ -4704,12 +4705,13 @@
 
       // Async sync from Supabase if live database credentials are provided
       if (window.TASMAC_SUPABASE && window.TASMAC_SUPABASE.isConfigured()) {
-        window.TASMAC_SUPABASE.getDrinks(DRINKS).then(live => {
-          if (live && live.length > 0) {
-            DRINKS.length = 0;
-            DRINKS.push(...live);
+        window.TASMAC_SUPABASE.getDrinks().then(live => {
+          if (live && Array.isArray(live) && live.length > 0 && live !== DRINKS && live !== MASTER_CATALOG) {
+            DRINKS = [...live];
             renderProductsGrid();
           }
+        }).catch(err => {
+          console.warn('Supabase catalog sync skipped:', err);
         });
       }
 
@@ -4906,6 +4908,11 @@
       const grid = document.getElementById("products-grid");
       if (!grid) return;
       
+      // Auto-recovery: If DRINKS is ever uninitialized or empty, restore from immutable MASTER_CATALOG
+      if (!DRINKS || DRINKS.length === 0) {
+        DRINKS = [...MASTER_CATALOG];
+      }
+
       let filtered = DRINKS.filter(p => {
         const catMatch = currentCategory === "All" || p.category === currentCategory;
         const searchMatch = searchFilter === "" || 
@@ -5059,6 +5066,9 @@
       if (btn) {
         btn.classList.add("active");
         btn.setAttribute("data-state", "on");
+      }
+      if (!DRINKS || DRINKS.length === 0) {
+        DRINKS = [...MASTER_CATALOG];
       }
       renderProductsGrid();
     }
