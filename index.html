@@ -5616,13 +5616,13 @@
 
     async function handleUserLogout() {
       if (window.TASMAC_SUPABASE && window.TASMAC_SUPABASE.signOut) {
-        await window.TASMAC_SUPABASE.signOut();
-      } else {
-        localStorage.removeItem("tasmac-user");
+        try {
+          await window.TASMAC_SUPABASE.signOut();
+        } catch(e) {}
       }
+      localStorage.removeItem("tasmac-user");
       closeUserDropdown();
-      initUserAuth();
-      showToast("Signed out of your TASMAC account");
+      window.location.href = "login.html?logout=true";
     }
 
     // Dismiss user dropdown when clicking outside

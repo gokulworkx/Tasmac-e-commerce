@@ -1730,15 +1730,24 @@
         switchAuthTab("signup");
       }
 
-      // Check if already logged in
-      const existing = localStorage.getItem("tasmac-user");
-      if (existing) {
+      // Support ?logout=true URL parameter
+      if (urlParams.get("logout") === "true") {
+        localStorage.removeItem("tasmac-user");
+        showToast("Signed out of your TASMAC account");
         try {
-          const user = JSON.parse(existing);
-          if (user && user.name) {
-            showToast(`Currently signed in as ${user.name}`);
-          }
+          window.history.replaceState({}, document.title, window.location.pathname);
         } catch (e) {}
+      } else {
+        // Check if already logged in
+        const existing = localStorage.getItem("tasmac-user");
+        if (existing) {
+          try {
+            const user = JSON.parse(existing);
+            if (user && user.name) {
+              showToast(`Currently signed in as ${user.name}`);
+            }
+          } catch (e) {}
+        }
       }
     });
   </script>
