@@ -6,10 +6,10 @@
   <title>Customer Sign In — TASMAC Reserve | Tamil Nadu Express Retail</title>
   <link rel="icon" type="image/png" href="img/tasmac-icon-128.png" />
 
-  <!-- 4RGE Typography Stack: JetBrains Mono -->
+  <!-- Luxury Typography Stack: Cinzel + JetBrains Mono + Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
 
-  <!-- 4RGE Instant Theme Init (Prevents FOUC) -->
+  <!-- Instant Theme Init -->
   <script>
     (function() {
       const saved = localStorage.getItem('tasmac-theme');
@@ -30,77 +30,73 @@
 
   <style>
     /* =========================================================================
-       4RGE PLATFORM DESIGN TOKENS & EXECUTIVE SPECIFICATION
+       TASMAC RESERVE — ULTRA-LUXURY EXECUTIVE DESIGN TOKENS
        ========================================================================= */
     :root {
       color-scheme: light;
-      --fp-font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --fp-font-mono: "JetBrains Mono", Consolas, "Liberation Mono", Menlo, monospace;
+      --font-display: "Cinzel", Georgia, serif;
       
       --radius: 0.625rem;
       --radius-sm: calc(var(--radius) - 4px);
       --radius-md: calc(var(--radius) - 2px);
       --radius-lg: var(--radius);
-      --radius-xl: calc(var(--radius) + 4px);
-      --radius-2xl: 1rem;
+      --radius-xl: 1rem;
+      --radius-2xl: 1.25rem;
       --radius-full: 9999px;
 
-      --background: hsl(210 20% 98%);
-      --foreground: hsl(220 28% 10%);
-      --card: hsl(0 0% 100%);
-      --card-foreground: hsl(220 28% 10%);
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --card-foreground: #0f172a;
       
-      --primary: hsl(24 100% 50%); /* Vibrant Radiant Orange */
-      --primary-foreground: #ffffff;
+      --primary: #f59e0b;
+      --primary-hover: #ea580c;
+      --primary-foreground: #0b0c10;
       
-      --secondary: hsl(210 20% 96%);
-      --secondary-foreground: hsl(220 28% 10%);
-      --muted: hsl(210 20% 96%);
-      --muted-foreground: hsl(218 12% 44%);
-      --accent: hsl(210 20% 94%);
+      --secondary: #f1f5f9;
+      --secondary-foreground: #0f172a;
+      --muted: #f1f5f9;
+      --muted-foreground: #64748b;
       
-      --border: hsl(214 20% 88%);
-      --input: hsl(214 20% 88%);
-      --ring: hsl(24 100% 50%);
+      --border: rgba(0, 0, 0, 0.08);
+      --card-border: rgba(212, 165, 78, 0.35);
 
-      --fp-state-success: hsl(151 61% 32%);
-      --fp-state-success-subtle: hsl(148 52% 95%);
-      --fp-state-warning: hsl(24 100% 50%);
-      --fp-state-warning-subtle: hsl(24 100% 94%);
-      --fp-state-danger: hsl(0 72% 51%);
+      --fp-state-success: #10b981;
+      --fp-state-success-subtle: #ecfdf5;
+      --fp-state-warning: #f59e0b;
+      --fp-state-warning-subtle: #fffbeb;
+      --fp-state-danger: #ef4444;
 
-      --fp-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.05);
-      --fp-shadow-2: 0 4px 12px rgba(0, 0, 0, 0.08);
-      --fp-shadow-3: 0 20px 40px -15px rgba(0, 0, 0, 0.12);
+      --fp-shadow-luxury: 0 25px 60px -15px rgba(0, 0, 0, 0.12), 0 0 35px -10px rgba(245, 158, 11, 0.12);
     }
 
     .dark {
       color-scheme: dark;
-      --background: hsl(222 30% 7%);
-      --foreground: hsl(210 20% 98%);
-      --card: hsl(222 28% 9%);
-      --card-foreground: hsl(210 20% 98%);
+      --background: #07080a; /* Plain Solid Obsidian Black */
+      --foreground: #f8fafc;
+      --card: #0d0f15;
+      --card-foreground: #f8fafc;
       
-      --primary: hsl(24 100% 50%);
-      --primary-foreground: #ffffff;
+      --primary: #f59e0b;
+      --primary-hover: #fbbf24;
+      --primary-foreground: #0b0c10;
       
-      --secondary: hsl(222 24% 12%);
-      --secondary-foreground: hsl(210 20% 98%);
-      --muted: hsl(222 24% 12%);
-      --muted-foreground: hsl(215 15% 62%);
-      --accent: hsl(222 24% 14%);
+      --secondary: #12141a;
+      --secondary-foreground: #f8fafc;
+      --muted: #141720;
+      --muted-foreground: #94a3b8;
       
-      --border: hsl(222 20% 16%);
-      --input: hsl(222 20% 16%);
-      --ring: hsl(24 100% 50%);
+      --border: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(212, 165, 78, 0.24);
 
-      --fp-state-success: hsl(151 56% 54%);
-      --fp-state-success-subtle: hsl(151 25% 14%);
-      --fp-state-warning: hsl(24 100% 50%);
-      --fp-state-warning-subtle: hsl(24 35% 15%);
+      --fp-state-success: #34d399;
+      --fp-state-success-subtle: rgba(52, 211, 153, 0.1);
+      --fp-state-warning: #f59e0b;
+      --fp-state-warning-subtle: rgba(245, 158, 11, 0.1);
+      --fp-state-danger: #f87171;
 
-      --fp-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-      --fp-shadow-2: 0 4px 16px rgba(0, 0, 0, 0.45);
-      --fp-shadow-3: 0 20px 50px rgba(0, 0, 0, 0.6);
+      --fp-shadow-luxury: 0 30px 80px -15px rgba(0, 0, 0, 0.95), 0 0 50px -10px rgba(245, 158, 11, 0.12);
     }
 
     *, *::before, *::after {
@@ -116,6 +112,7 @@
       overflow-x: hidden !important;
     }
 
+    /* PLAIN CLEAN LUXURY BACKGROUND (NO GRID MESH LINES) */
     body {
       font-family: var(--fp-font-mono) !important;
       background-color: var(--background);
@@ -130,20 +127,6 @@
       padding-top: var(--top-shell-height, 95px);
     }
 
-    /* Ambient Subtle Grid */
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background-image: 
-        radial-gradient(circle at 50% 15%, color-mix(in srgb, var(--primary) 6%, transparent) 0%, transparent 60%),
-        linear-gradient(to right, color-mix(in srgb, var(--border) 25%, transparent) 1px, transparent 1px),
-        linear-gradient(to bottom, color-mix(in srgb, var(--border) 25%, transparent) 1px, transparent 1px);
-      background-size: 100% 100%, 36px 36px, 36px 36px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
     /* Fixed Top Navigation Shell */
     .fixed-top-shell {
       position: fixed !important;
@@ -154,25 +137,23 @@
       z-index: 600 !important;
       background: var(--background);
       box-shadow: none !important;
-      transition: background-color 0.2s ease, box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: background-color 0.25s ease, box-shadow 0.25s ease;
     }
 
     .fixed-top-shell.scrolled {
-      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.12),
-                  0 2px 6px -1px rgba(0, 0, 0, 0.05) !important;
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.15) !important;
     }
 
     .dark .fixed-top-shell.scrolled {
-      box-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.55),
-                  0 2px 8px -1px rgba(0, 0, 0, 0.35) !important;
+      box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.75) !important;
     }
 
-    /* Top Statutory Strip */
+    /* Top Statutory Strip - Discreet Luxury */
     .statutory-top-strip {
-      background-color: hsl(0 75% 20%);
-      color: hsl(0 100% 96%);
-      font-size: 11px;
-      font-weight: 650;
+      background-color: #0a0b0e;
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 10.5px;
+      font-weight: 500;
       padding: 6px 20px;
       display: flex;
       align-items: center;
@@ -181,26 +162,28 @@
       text-align: center;
       position: relative;
       z-index: 20;
-      border-bottom: 1px solid hsl(0 75% 30%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       font-family: var(--fp-font-mono);
-      letter-spacing: 0.02em;
+      letter-spacing: 0.03em;
     }
     .statutory-badge-pill {
-      background-color: hsl(0 80% 40%);
-      color: white;
-      padding: 2px 7px;
-      border-radius: var(--radius-sm);
-      font-size: 9.5px;
-      font-weight: 750;
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
     }
 
     /* Header Shell */
     .human-header {
-      background: color-mix(in srgb, var(--card) 92%, transparent);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      background: rgba(7, 8, 10, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       position: relative;
       z-index: 10;
       padding: 0 24px;
@@ -232,32 +215,30 @@
       position: relative;
       flex-shrink: 0;
       transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), filter 0.25s ease;
-      filter: drop-shadow(0 4px 10px rgba(255, 122, 0, 0.32));
+      filter: drop-shadow(0 4px 14px rgba(245, 158, 11, 0.45));
     }
     .brand-logo-img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.28));
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .brand-group:hover .brand-logo-gem {
       transform: scale(1.08) translateY(-1px);
-      filter: drop-shadow(0 6px 18px rgba(255, 122, 0, 0.55));
-    }
-    .brand-group:hover .brand-logo-img {
-      transform: scale(1.04);
+      filter: drop-shadow(0 6px 20px rgba(245, 158, 11, 0.65));
     }
     .brand-title {
-      font-size: 16.5px;
-      font-weight: 850;
-      letter-spacing: 0.04em;
-      color: var(--foreground);
-      font-family: var(--fp-font-mono);
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      background: linear-gradient(135deg, #ffffff 45%, #e2b774 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
     .brand-sub {
       font-size: 9.5px;
-      color: var(--primary);
+      color: #f59e0b;
       font-weight: 750;
       letter-spacing: 0.16em;
       text-transform: uppercase;
@@ -272,54 +253,37 @@
       gap: 12px;
     }
 
-    /* Standard Button Styles */
-    .btn-4rge {
+    .btn-return-store {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
       gap: 8px;
+      height: 36px;
       padding: 0 16px;
-      height: 38px;
-      border-radius: var(--radius-md);
-      font-size: 12.5px;
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 12px;
       font-weight: 650;
       font-family: var(--fp-font-mono);
-      cursor: pointer;
       text-decoration: none;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      border: 1px solid transparent;
+      transition: all 0.25s ease;
       user-select: none;
     }
-    .btn-4rge-default {
-      background: var(--primary);
-      color: white;
-    }
-    .btn-4rge-default:hover {
-      background: hsl(24 100% 45%);
-      box-shadow: 0 4px 14px color-mix(in srgb, var(--primary) 35%, transparent);
-      transform: translateY(-1px);
-    }
-    .btn-4rge-outline {
-      background: transparent;
-      border-color: var(--border);
-      color: var(--foreground);
-    }
-    .btn-4rge-outline:hover {
-      background: var(--secondary);
-      border-color: color-mix(in srgb, var(--foreground) 20%, transparent);
-    }
-    .btn-4rge-sm {
-      height: 34px;
-      padding: 0 12px;
-      font-size: 12px;
+    .btn-return-store:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(212, 165, 78, 0.45);
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.2);
+      transform: translateX(-1px);
     }
 
     .icon-button-quiet {
       width: 36px;
       height: 36px;
-      border-radius: var(--radius-md);
-      background: transparent;
-      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       color: var(--foreground);
       display: flex;
       align-items: center;
@@ -328,123 +292,185 @@
       transition: all 0.2s ease;
     }
     .icon-button-quiet:hover {
-      background: var(--secondary);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(212, 165, 78, 0.4);
     }
 
-    /* Main Auth Container */
+    /* Main Auth Container - Centered Luxury Workspace */
     .auth-main-area {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 40px 20px;
+      padding: 44px 20px 60px 20px;
       position: relative;
       z-index: 10;
     }
 
+    /* THE LUXURY CARD */
     .auth-card-wrapper {
       width: 100%;
-      max-width: 480px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-2xl);
-      box-shadow: var(--fp-shadow-3);
+      max-width: 490px;
+      background: #0d0f15;
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      box-shadow: var(--fp-shadow-luxury);
+      position: relative;
       overflow: hidden;
-      transition: box-shadow 0.3s ease;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .auth-card-wrapper::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 12%;
+      right: 12%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #f59e0b, #fde047, #f59e0b, transparent);
+      border-radius: var(--radius-full);
+      pointer-events: none;
     }
 
-    /* Auth Header */
+    /* Card Top Branding */
     .auth-card-top {
-      padding: 28px 28px 20px 28px;
-      border-bottom: 1px solid var(--border);
-      background: color-mix(in srgb, var(--secondary) 40%, var(--card));
+      padding: 34px 32px 20px 32px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      background: transparent;
       text-align: center;
+    }
+    .luxury-seal-stage {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 12px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .seal-glow-ring {
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, transparent 70%);
+      pointer-events: none;
+      animation: sealPulse 4s ease-in-out infinite alternate;
+    }
+    @keyframes sealPulse {
+      0% { transform: scale(0.92); opacity: 0.5; }
+      100% { transform: scale(1.15); opacity: 0.95; }
+    }
+    .luxury-seal-emblem {
+      width: 76px;
+      height: 76px;
+      object-fit: contain;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 8px 24px rgba(245, 158, 11, 0.5));
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .luxury-seal-stage:hover .luxury-seal-emblem {
+      transform: scale(1.08) translateY(-2px);
+      filter: drop-shadow(0 12px 32px rgba(245, 158, 11, 0.7));
     }
     .auth-govt-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      padding: 4px 10px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.28);
+      padding: 4px 12px;
       border-radius: var(--radius-full);
-      font-size: 10.5px;
-      font-weight: 700;
-      color: var(--primary);
+      font-size: 10px;
+      font-weight: 750;
+      color: #f59e0b;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
     }
     .auth-title {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--foreground);
-      letter-spacing: -0.02em;
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 850;
+      letter-spacing: 0.03em;
+      background: linear-gradient(135deg, #ffffff 45%, #e2b774 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       margin-bottom: 6px;
     }
     .auth-subtitle {
       font-size: 12.5px;
-      color: var(--muted-foreground);
-      line-height: 1.45;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.5;
+      max-width: 380px;
+      margin: 0 auto;
     }
 
-    /* 21+ Regulatory Alert Box */
+    /* 21+ Statutory Warning */
     .regulatory-alert-box {
-      margin: 20px 28px 0 28px;
-      padding: 10px 14px;
-      background: var(--fp-state-warning-subtle);
-      border: 1px solid color-mix(in srgb, var(--fp-state-warning) 30%, transparent);
-      border-radius: var(--radius-md);
+      margin: 20px 32px 0 32px;
+      padding: 11px 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-left: 3px solid #f59e0b;
+      border-radius: 8px;
       display: flex;
       align-items: flex-start;
-      gap: 10px;
+      gap: 12px;
       font-size: 11.5px;
-      color: color-mix(in srgb, var(--foreground) 85%, transparent);
-      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.72);
+      line-height: 1.45;
     }
     .regulatory-alert-box i {
-      color: var(--primary);
+      color: #f59e0b;
       flex-shrink: 0;
-      margin-top: 1px;
+      margin-top: 1.5px;
     }
 
-    /* Tabs Bar */
+    /* Segmented Tab Controls */
     .auth-tabs-bar {
-      display: flex;
-      margin: 20px 28px 0 28px;
-      background: var(--secondary);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin: 20px 32px 0 32px;
+      background: #08090d;
       padding: 4px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-      gap: 4px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .auth-tab-btn {
-      flex: 1;
-      height: 34px;
+      height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      border: none;
+      gap: 7px;
+      border: 1px solid transparent;
       background: transparent;
-      color: var(--muted-foreground);
+      color: rgba(255, 255, 255, 0.55);
       font-family: var(--fp-font-mono);
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: 650;
-      border-radius: var(--radius-sm);
+      border-radius: 8px;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
+    }
+    .auth-tab-btn:hover {
+      color: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.03);
     }
     .auth-tab-btn.active {
-      background: var(--card);
-      color: var(--foreground);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.07);
+      color: #ffffff;
+      border-color: rgba(245, 158, 11, 0.35);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+      font-weight: 750;
+    }
+    .auth-tab-btn.active i {
+      color: #f59e0b;
     }
 
     /* Form Body */
     .auth-card-body {
-      padding: 24px 28px 28px 28px;
+      padding: 24px 32px 32px 32px;
     }
 
     .form-group-4rge {
@@ -455,11 +481,17 @@
     }
     .form-label-4rge {
       font-size: 11.5px;
-      font-weight: 650;
-      color: var(--foreground);
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.88);
       display: flex;
       align-items: center;
       gap: 6px;
+      letter-spacing: 0.02em;
+    }
+    .form-label-4rge i {
+      color: #f59e0b;
+      width: 13px;
+      height: 13px;
     }
     .input-wrapper-4rge {
       position: relative;
@@ -470,102 +502,91 @@
       position: absolute;
       left: 12px;
       font-size: 12px;
-      font-weight: 750;
-      color: var(--muted-foreground);
+      font-weight: 800;
+      color: #f59e0b;
       font-family: var(--fp-font-mono);
       pointer-events: none;
-      border-right: 1px solid var(--border);
+      border-right: 1px solid rgba(255, 255, 255, 0.12);
       padding-right: 8px;
     }
-    .input-4rge {
+    .input-4rge, .select-4rge {
       width: 100%;
-      height: 40px;
-      background: var(--secondary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      height: 44px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
       padding: 0 14px;
       font-family: var(--fp-font-mono);
-      font-size: 13px;
-      color: var(--foreground);
+      font-size: 13.5px;
+      color: #ffffff;
       outline: none;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: all 0.25s ease;
     }
-    .input-4rge:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 18%, transparent);
-      background: var(--card);
+    .input-4rge::placeholder {
+      color: rgba(255, 255, 255, 0.32);
+    }
+    .input-4rge:hover, .select-4rge:hover {
+      border-color: rgba(255, 255, 255, 0.22);
+    }
+    .input-4rge:focus, .select-4rge:focus {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18), 0 0 20px -3px rgba(245, 158, 11, 0.15);
+      background: rgba(0, 0, 0, 0.65);
     }
     .input-with-prefix {
-      padding-left: 56px;
+      padding-left: 58px;
     }
 
-    .select-4rge {
-      width: 100%;
-      height: 40px;
-      background: var(--secondary);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 0 14px;
-      font-family: var(--fp-font-mono);
-      font-size: 12.5px;
-      color: var(--foreground);
-      outline: none;
-      cursor: pointer;
-    }
-
-    /* 6-Digit OTP Box Grid */
-    .otp-inputs-grid {
-      display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 8px;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .otp-digit-box {
-      width: 100%;
-      min-width: 0;
-      max-width: 56px;
-      height: 48px;
-      margin: 0 auto;
-      padding: 0;
-      box-sizing: border-box;
-      background: var(--secondary);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-md);
-      text-align: center;
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--foreground);
-      font-family: var(--fp-font-mono);
-      outline: none;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .otp-digit-box:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
-      background: var(--card);
-      transform: translateY(-2px);
-    }
-
-    /* Checkbox Container */
+    /* Checkbox Row */
     .checkbox-row-4rge {
       display: flex;
       align-items: flex-start;
       gap: 10px;
       font-size: 11.5px;
-      color: var(--muted-foreground);
+      color: rgba(255, 255, 255, 0.72);
       line-height: 1.45;
-      margin: 16px 0 20px 0;
+      margin: 18px 0 22px 0;
       cursor: pointer;
       user-select: none;
     }
     .checkbox-row-4rge input[type="checkbox"] {
       width: 16px;
       height: 16px;
-      accent-color: var(--primary);
+      accent-color: #f59e0b;
       margin-top: 2px;
       cursor: pointer;
+    }
+
+    /* PRIMARY LUXURY SUBMIT BUTTON */
+    .btn-submit-luxury {
+      width: 100%;
+      height: 46px;
+      background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+      color: #0b0c10;
+      font-family: var(--fp-font-mono);
+      font-size: 13px;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset, 0 8px 24px -4px rgba(234, 88, 12, 0.48);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+    }
+    .btn-submit-luxury:hover {
+      background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+      transform: translateY(-1.5px);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45) inset, 0 12px 32px -4px rgba(234, 88, 12, 0.65);
+    }
+    .btn-submit-luxury:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 12px rgba(234, 88, 12, 0.4);
     }
 
     /* Form Status Alert Banner */
@@ -582,15 +603,15 @@
     }
     .auth-alert-banner.error {
       display: flex;
-      background: color-mix(in srgb, var(--fp-state-danger) 10%, transparent);
-      border: 1px solid color-mix(in srgb, var(--fp-state-danger) 35%, transparent);
-      color: var(--fp-state-danger);
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
     }
     .auth-alert-banner.success {
       display: flex;
-      background: var(--fp-state-success-subtle);
-      border: 1px solid color-mix(in srgb, var(--fp-state-success) 35%, transparent);
-      color: var(--fp-state-success);
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      color: #6ee7b7;
     }
     .auth-alert-banner i {
       width: 15px;
@@ -604,45 +625,46 @@
     }
 
     .auth-toggle-link {
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
       text-align: center;
       font-size: 12px;
-      color: var(--muted-foreground);
+      color: rgba(255, 255, 255, 0.55);
     }
     .auth-toggle-link button {
       background: none;
       border: none;
-      color: var(--primary);
+      color: #f59e0b;
       font-weight: 750;
       cursor: pointer;
       font-family: inherit;
       font-size: 12px;
       text-decoration: underline;
       text-underline-offset: 3px;
+      transition: color 0.2s ease;
     }
     .auth-toggle-link button:hover {
-      opacity: 0.85;
+      color: #fbbf24;
     }
 
     /* Success State View */
     .auth-success-card {
       display: none;
       text-align: center;
-      padding: 36px 28px;
+      padding: 40px 32px;
     }
     .success-pulse-circle {
-      width: 64px;
-      height: 64px;
-      background: var(--fp-state-success-subtle);
-      color: var(--fp-state-success);
+      width: 68px;
+      height: 68px;
+      background: rgba(52, 211, 153, 0.12);
+      color: #34d399;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       margin: 0 auto 16px auto;
-      border: 1.5px solid color-mix(in srgb, var(--fp-state-success) 35%, transparent);
+      border: 1.5px solid rgba(52, 211, 153, 0.35);
       animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     @keyframes bounceIn {
@@ -662,8 +684,8 @@
       pointer-events: none;
     }
     .toast-human {
-      background: var(--card);
-      color: var(--foreground);
+      background: #0d0f15;
+      color: #ffffff;
       padding: 12px 18px;
       border-radius: var(--radius-lg);
       font-size: 12.5px;
@@ -671,9 +693,9 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      box-shadow: var(--fp-shadow-3);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--primary);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-left: 3px solid #f59e0b;
       animation: toastSlideUp 0.2s ease;
       pointer-events: auto;
     }
@@ -681,15 +703,19 @@
       from { transform: translateY(10px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
 
     /* Footer */
     footer.human-footer {
-      background: var(--card);
-      border-top: 1px solid var(--border);
-      padding: 20px 24px;
+      background: transparent;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 22px 24px;
       margin-top: auto;
-      font-size: 11.5px;
-      color: var(--muted-foreground);
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.45);
       text-align: center;
       position: relative;
       z-index: 10;
@@ -697,32 +723,32 @@
 
     @media (max-width: 520px) {
       .auth-main-area {
-        padding: 20px 12px;
+        padding: 20px 14px 40px 14px;
       }
       .auth-card-wrapper {
         border-radius: var(--radius-xl);
       }
       .auth-card-top {
-        padding: 20px 16px 14px 16px;
+        padding: 24px 18px 16px 18px;
       }
       .auth-title {
-        font-size: 18px;
+        font-size: 21px;
       }
       .regulatory-alert-box {
-        margin: 14px 14px 0 14px;
+        margin: 16px 16px 0 16px;
         font-size: 11px;
       }
       .auth-tabs-bar {
-        margin: 14px 14px 0 14px;
+        margin: 16px 16px 0 16px;
       }
       .auth-card-body {
-        padding: 16px 14px 20px 14px;
+        padding: 18px 16px 24px 16px;
       }
       .header-container {
-        padding: 0 12px;
+        padding: 0 14px;
       }
       .statutory-top-strip {
-        font-size: 10px;
+        font-size: 9.5px;
         padding: 5px 10px;
       }
     }
@@ -734,8 +760,8 @@
   <div class="fixed-top-shell" id="app-fixed-top-shell">
     <!-- Statutory Legal Banner -->
     <div class="statutory-top-strip">
-      <span class="statutory-badge-pill">Government of Tamil Nadu</span>
-      <span>Consumption of liquor is injurious to health. Be safe — don't drink and drive. Strictly 21+ only.</span>
+      <span class="statutory-badge-pill">TAMIL NADU EXCISE</span>
+      <span>Official Government Reserve Concierge &bull; Guaranteed Statutory MRP &bull; Strictly 21+ Only</span>
     </div>
 
     <!-- Header -->
@@ -746,14 +772,14 @@
             <img src="img/tasmac-luxury-clean-cutout.png" alt="TASMAC Reserve Emblem" class="brand-logo-img">
           </div>
           <div class="brand-text-col">
-            <span class="brand-title">TASMAC</span>
-            <span class="brand-sub">Express Retail Portal</span>
+            <span class="brand-title">TASMAC RESERVE</span>
+            <span class="brand-sub">Express Retail &bull; Chennai</span>
           </div>
         </a>
 
         <div class="header-right">
-          <a href="index.html" class="btn-4rge btn-4rge-outline btn-4rge-sm">
-            <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+          <a href="index.html" class="btn-return-store">
+            <i data-lucide="arrow-left" style="width: 14px; height: 14px; color: #f59e0b;"></i>
             <span>Return to Store</span>
           </a>
           <button class="icon-button-quiet" onclick="toggleTheme(event)" id="theme-toggle-btn" title="Toggle Light/Dark Theme">
@@ -770,23 +796,24 @@
       
       <!-- Top Branding -->
       <div class="auth-card-top">
-        <div style="display: flex; justify-content: center; margin-bottom: 12px;">
-          <img src="img/tasmac-luxury-clean-cutout.png" alt="TASMAC Reserve Emblem" style="width: 58px; height: 58px; object-fit: contain; filter: drop-shadow(0 6px 16px rgba(255, 122, 0, 0.38));">
+        <div class="luxury-seal-stage">
+          <div class="seal-glow-ring"></div>
+          <img src="img/tasmac-luxury-clean-cutout.png" alt="TASMAC Reserve Royal Seal" class="luxury-seal-emblem">
         </div>
         <div class="auth-govt-badge">
-          <i data-lucide="shield-check" style="width: 13px; height: 13px;"></i>
-          <span>Official Customer Authentication</span>
+          <i data-lucide="shield-check" style="width: 12px; height: 12px;"></i>
+          <span>Official Patron Concierge</span>
         </div>
-        <h1 class="auth-title" id="auth-main-title">Patron Portal</h1>
-        <p class="auth-subtitle" id="auth-main-subtitle">Sign in or register your verified 21+ account with Supabase to reserve genuine state-monopoly spirits at Govt MRP.</p>
+        <h1 class="auth-title" id="auth-main-title">TASMAC Reserve</h1>
+        <p class="auth-subtitle" id="auth-main-subtitle">Verified 21+ Patron Access &bull; Express Digital Token Counter Pickup</p>
       </div>
 
       <!-- 21+ Statutory Warning -->
       <div class="regulatory-alert-box">
-        <i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i>
+        <i data-lucide="shield-alert" style="width: 16px; height: 16px;"></i>
         <div>
-          <strong style="color: var(--foreground);">Mandatory Age Regulation (21+):</strong>
-          Under TN Prohibition Act 1937, customers must be 21 years or older. Original Govt Photo ID must be produced during pickup.
+          <strong style="color: #ffffff;">Statutory Age Clearance (21+):</strong>
+          Under TN Prohibition Act 1937, patrons must be 21 years or older. Original Govt Photo ID verification required at pickup counter.
         </div>
       </div>
 
@@ -812,7 +839,7 @@
 
           <div class="form-group-4rge">
             <label class="form-label-4rge" for="signin-email">
-              <i data-lucide="mail" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+              <i data-lucide="mail"></i>
               <span>Registered Email Address *</span>
             </label>
             <input type="email" class="input-4rge" id="signin-email" placeholder="e.g. patron@example.com" required autocomplete="email" />
@@ -821,14 +848,14 @@
           <div class="form-group-4rge">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <label class="form-label-4rge" for="signin-password">
-                <i data-lucide="lock" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+                <i data-lucide="lock"></i>
                 <span>Account Password *</span>
               </label>
-              <span style="font-size: 11px; color: var(--primary); cursor: pointer;" onclick="handleForgotPassword()">Forgot password?</span>
+              <span style="font-size: 11px; color: #f59e0b; cursor: pointer; font-weight: 650;" onclick="handleForgotPassword()">Forgot password?</span>
             </div>
             <div class="input-wrapper-4rge">
               <input type="password" class="input-4rge" id="signin-password" placeholder="Enter your account password" required autocomplete="current-password" />
-              <button type="button" onclick="togglePasswordVisibility('signin-password', 'signin-eye-icon')" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--muted-foreground);" aria-label="Toggle password visibility">
+              <button type="button" onclick="togglePasswordVisibility('signin-password', 'signin-eye-icon')" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.5);" aria-label="Toggle password visibility">
                 <i data-lucide="eye" id="signin-eye-icon" style="width: 15px; height: 15px;"></i>
               </button>
             </div>
@@ -840,7 +867,7 @@
             <span>I declare that I am 21+ years of age and hold a valid original Govt Photo ID for counter collection.</span>
           </label>
 
-          <button type="submit" class="btn-4rge btn-4rge-default" id="btn-signin-submit" style="width: 100%; height: 42px; font-size: 13.5px;">
+          <button type="submit" class="btn-submit-luxury" id="btn-signin-submit">
             <span>Sign In to TASMAC</span>
             <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
           </button>
@@ -859,7 +886,7 @@
 
           <div class="form-group-4rge">
             <label class="form-label-4rge" for="signup-name">
-              <i data-lucide="user" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+              <i data-lucide="user"></i>
               <span>Full Name (As per Govt Photo ID) *</span>
             </label>
             <input type="text" class="input-4rge" id="signup-name" placeholder="e.g. Gokulakrishnan R" required autocomplete="name" />
@@ -867,7 +894,7 @@
 
           <div class="form-group-4rge">
             <label class="form-label-4rge" for="signup-email">
-              <i data-lucide="mail" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+              <i data-lucide="mail"></i>
               <span>Email Address *</span>
             </label>
             <input type="email" class="input-4rge" id="signup-email" placeholder="e.g. gokul@example.com" required autocomplete="email" />
@@ -875,12 +902,12 @@
 
           <div class="form-group-4rge">
             <label class="form-label-4rge" for="signup-password">
-              <i data-lucide="lock" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+              <i data-lucide="lock"></i>
               <span>Create Password (Min. 6 Characters) *</span>
             </label>
             <div class="input-wrapper-4rge">
               <input type="password" class="input-4rge" id="signup-password" minlength="6" placeholder="Choose a secure password" required autocomplete="new-password" />
-              <button type="button" onclick="togglePasswordVisibility('signup-password', 'signup-eye-icon')" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--muted-foreground);" aria-label="Toggle password visibility">
+              <button type="button" onclick="togglePasswordVisibility('signup-password', 'signup-eye-icon')" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.5);" aria-label="Toggle password visibility">
                 <i data-lucide="eye" id="signup-eye-icon" style="width: 15px; height: 15px;"></i>
               </button>
             </div>
@@ -888,7 +915,7 @@
 
           <div class="form-group-4rge">
             <label class="form-label-4rge" for="signup-phone">
-              <i data-lucide="phone" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+              <i data-lucide="phone"></i>
               <span>Mobile Phone Number *</span>
             </label>
             <div class="input-wrapper-4rge">
@@ -900,7 +927,7 @@
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
             <div class="form-group-4rge" style="margin-bottom: 0;">
               <label class="form-label-4rge" for="signup-id-type">
-                <i data-lucide="shield" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+                <i data-lucide="shield"></i>
                 <span>Govt ID Type *</span>
               </label>
               <select class="select-4rge" id="signup-id-type">
@@ -913,7 +940,7 @@
 
             <div class="form-group-4rge" style="margin-bottom: 0;">
               <label class="form-label-4rge" for="signup-id-number">
-                <i data-lucide="hash" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
+                <i data-lucide="hash"></i>
                 <span>ID Number / Last 4 *</span>
               </label>
               <input type="text" class="input-4rge" id="signup-id-number" placeholder="e.g. 8821" maxlength="16" required />
@@ -926,7 +953,7 @@
             <span>I solemnly declare under the Tamil Nadu Prohibition Act that I am 21 years of age or older, and agree to present my original Govt Photo ID at the pickup counter.</span>
           </label>
 
-          <button type="submit" class="btn-4rge btn-4rge-default" id="btn-signup-submit" style="width: 100%; height: 42px; font-size: 13.5px;">
+          <button type="submit" class="btn-submit-luxury" id="btn-signup-submit">
             <span>Create Verified Patron Account</span>
             <i data-lucide="user-check" style="width: 15px; height: 15px;"></i>
           </button>
@@ -1020,15 +1047,15 @@
         if (tabSignIn) tabSignIn.classList.remove("active");
         if (formSignUp) formSignUp.style.display = "block";
         if (formSignIn) formSignIn.style.display = "none";
-        if (titleEl) titleEl.innerText = "Create Patron Account";
-        if (subtitleEl) subtitleEl.innerText = "Register your verified 21+ identity with Supabase to reserve genuine state-monopoly spirits at Govt MRP.";
+        if (titleEl) titleEl.innerText = "Create Account";
+        if (subtitleEl) subtitleEl.innerText = "Register your verified 21+ identity with Supabase for statutory Govt MRP express reservations.";
       } else {
         if (tabSignIn) tabSignIn.classList.add("active");
         if (tabSignUp) tabSignUp.classList.remove("active");
         if (formSignIn) formSignIn.style.display = "block";
         if (formSignUp) formSignUp.style.display = "none";
-        if (titleEl) titleEl.innerText = "Patron Portal";
-        if (subtitleEl) subtitleEl.innerText = "Sign in with your registered email and password to access your cart and express tokens.";
+        if (titleEl) titleEl.innerText = "TASMAC Reserve";
+        if (subtitleEl) subtitleEl.innerText = "Verified 21+ Patron Access • Express Digital Token Counter Pickup";
       }
       if (window.lucide) lucide.createIcons();
     }
