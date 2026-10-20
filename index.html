@@ -3865,11 +3865,63 @@
                     <i data-lucide="shield" style="width: 13px; height: 13px; color: var(--muted-foreground);"></i>
                     <span>Govt ID Type *</span>
                   </label>
-                  <select class="select-4rge" id="cust-id-select">
-                    <option value="Aadhaar Card">Aadhaar Card</option>
+                  <!-- Hidden native select for form data & validation compatibility -->
+                  <select class="select-4rge" id="cust-id-select" style="display: none;" tabindex="-1" aria-hidden="true">
+                    <option value="Aadhaar Card" selected>Aadhaar Card</option>
                     <option value="Voter ID">Voter ID</option>
                     <option value="Driving License">Driving License</option>
+                    <option value="Passport">Passport</option>
                   </select>
+
+                  <!-- Luxury Custom Dropdown Component -->
+                  <div class="luxury-select-wrapper" id="cust-id-custom-select">
+                    <button 
+                      type="button" 
+                      class="luxury-select-trigger" 
+                      id="cust-id-trigger" 
+                      aria-haspopup="listbox" 
+                      aria-expanded="false" 
+                      onclick="toggleLuxurySelect(event, 'cust-id-custom-select')"
+                      onkeydown="handleLuxuryKeydown(event, 'cust-id-custom-select', 'cust-id-select')"
+                    >
+                      <div class="luxury-select-trigger-content">
+                        <i data-lucide="credit-card" id="cust-id-current-icon"></i>
+                        <span class="luxury-select-trigger-text" id="cust-id-current-text">Aadhaar Card</span>
+                      </div>
+                      <i data-lucide="chevron-down" class="luxury-select-chevron"></i>
+                    </button>
+
+                    <div class="luxury-select-menu" id="cust-id-menu" role="listbox">
+                      <div class="luxury-select-item active" data-value="Aadhaar Card" data-icon="credit-card" onclick="selectLuxuryOption('cust-id-custom-select', 'cust-id-select', 'Aadhaar Card', 'credit-card')">
+                        <div class="luxury-select-item-left">
+                          <i data-lucide="credit-card"></i>
+                          <span>Aadhaar Card</span>
+                        </div>
+                        <i data-lucide="check" class="luxury-select-check"></i>
+                      </div>
+                      <div class="luxury-select-item" data-value="Voter ID" data-icon="file-check" onclick="selectLuxuryOption('cust-id-custom-select', 'cust-id-select', 'Voter ID', 'file-check')">
+                        <div class="luxury-select-item-left">
+                          <i data-lucide="file-check"></i>
+                          <span>Voter ID</span>
+                        </div>
+                        <i data-lucide="check" class="luxury-select-check"></i>
+                      </div>
+                      <div class="luxury-select-item" data-value="Driving License" data-icon="car" onclick="selectLuxuryOption('cust-id-custom-select', 'cust-id-select', 'Driving License', 'car')">
+                        <div class="luxury-select-item-left">
+                          <i data-lucide="car"></i>
+                          <span>Driving License</span>
+                        </div>
+                        <i data-lucide="check" class="luxury-select-check"></i>
+                      </div>
+                      <div class="luxury-select-item" data-value="Passport" data-icon="globe" onclick="selectLuxuryOption('cust-id-custom-select', 'cust-id-select', 'Passport', 'globe')">
+                        <div class="luxury-select-item-left">
+                          <i data-lucide="globe"></i>
+                          <span>Passport</span>
+                        </div>
+                        <i data-lucide="check" class="luxury-select-check"></i>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
