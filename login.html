@@ -219,11 +219,14 @@
       font-family: inherit;
     }
 
-    /* Clean Luxury Viewport — 100% Reliable Native & Touch Scroll */
+    /* Clean Luxury Viewport — 100% Touch & Desktop Scroll Compatibility */
     html {
       width: 100%;
-      overflow-x: clip;
+      height: 100%;
+      overflow-x: hidden;
       overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
       scrollbar-width: thin;
       scrollbar-color: rgba(245, 158, 11, 0.35) transparent;
     }
@@ -247,15 +250,17 @@
 
     body {
       width: 100%;
-      overflow-x: clip;
+      min-height: 100%;
+      overflow-x: hidden;
       overflow-y: visible !important;
+      touch-action: pan-y;
+      -webkit-overflow-scrolling: touch;
       font-family: var(--fp-font-mono) !important;
       background-color: var(--background);
       background-image: radial-gradient(circle 750px at 50% 36%, rgba(245, 158, 11, 0.04), transparent 70%);
       background-repeat: no-repeat;
       background-attachment: fixed;
       color: var(--foreground);
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       font-size: 13px;
@@ -263,6 +268,13 @@
       letter-spacing: -0.012em;
       position: relative;
       padding-top: var(--top-shell-height, 90px);
+    }
+
+    .auth-main-area,
+    .auth-card-wrapper,
+    .auth-card-body,
+    form {
+      touch-action: pan-y;
     }
 .dark body {
       background-image: radial-gradient(circle 750px at 50% 36%, rgba(245, 158, 11, 0.065), transparent 70%);
@@ -937,13 +949,15 @@
       z-index: 10;
     }
 
-    .statutory-text-mobile {
+    .statutory-text-mobile,
+    .btn-return-mobile {
       display: none;
     }
 
     @media (max-width: 600px) {
       .auth-main-area {
-        padding: 14px 12px 28px 12px;
+        padding: 12px 14px 64px 14px;
+        min-height: calc(100vh - 80px);
       }
       .auth-card-wrapper {
         border-radius: var(--radius-xl);
@@ -1043,8 +1057,11 @@
         font-size: 11px;
         gap: 5px;
       }
-      .btn-return-store span {
-        display: inline;
+      .btn-return-desktop {
+        display: none !important;
+      }
+      .btn-return-mobile {
+        display: inline !important;
       }
       .icon-button-quiet {
         width: 32px;
