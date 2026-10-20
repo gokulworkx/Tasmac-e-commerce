@@ -2110,15 +2110,27 @@
       outline: none !important;
     }
 
+    .map-zone-pills-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      width: 100%;
+      overflow: hidden;
+    }
+
     .map-zone-pills-bar {
       display: flex;
       align-items: center;
       gap: 8px;
-      padding: 10px 20px;
+      padding: 10px 44px;
       background: var(--card);
-      border-bottom: 1px solid var(--border);
       overflow-x: auto;
       scrollbar-width: none;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
     }
 
     .map-zone-pills-bar::-webkit-scrollbar {
@@ -2143,6 +2155,7 @@
       user-select: none;
       outline: none;
       font-family: inherit;
+      flex-shrink: 0;
     }
 
     .zone-pill:hover {
@@ -2161,6 +2174,40 @@
 
     .zone-pill.elite-pill {
       border-color: color-mix(in srgb, var(--fp-state-warning) 30%, transparent);
+    }
+
+    .zone-scroll-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--foreground);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+      transition: all 0.2s ease;
+      opacity: 0.95;
+    }
+
+    .zone-scroll-btn:hover {
+      background: var(--accent);
+      color: var(--primary);
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .zone-scroll-btn.left {
+      left: 6px;
+    }
+
+    .zone-scroll-btn.right {
+      right: 6px;
     }
 
     .zone-pill.elite-pill.active {
@@ -3567,18 +3614,26 @@
       </div>
 
       <!-- Zone Filter Pills -->
-      <div class="map-zone-pills-bar">
-        <button class="zone-pill active" onclick="filterMapZone('All', this)">All Chennai (35)</button>
-        <button class="zone-pill elite-pill" onclick="filterMapZone('Elite', this)">
-          <i data-lucide="crown" style="width: 12px; height: 12px; color: var(--fp-state-warning);"></i>
-          <span>Elite Only (9)</span>
+      <div class="map-zone-pills-wrapper">
+        <button class="zone-scroll-btn left" onclick="scrollZonePills(-180)" title="Scroll left" aria-label="Scroll left">
+          <i data-lucide="chevron-left" style="width: 15px; height: 15px;"></i>
         </button>
-        <button class="zone-pill" onclick="filterMapZone('Central', this)">Central & T. Nagar</button>
-        <button class="zone-pill" onclick="filterMapZone('South & Adyar', this)">South & Adyar</button>
-        <button class="zone-pill" onclick="filterMapZone('Anna Nagar & West', this)">Anna Nagar & West</button>
-        <button class="zone-pill" onclick="filterMapZone('OMR IT Corridor', this)">OMR IT Corridor</button>
-        <button class="zone-pill" onclick="filterMapZone('Tambaram & Guindy', this)">Tambaram & Guindy</button>
-        <button class="zone-pill" onclick="filterMapZone('North Chennai', this)">North Chennai</button>
+        <div class="map-zone-pills-bar" id="map-zone-pills-bar">
+          <button class="zone-pill active" onclick="filterMapZone('All', this)">All Chennai (37)</button>
+          <button class="zone-pill elite-pill" onclick="filterMapZone('Elite', this)">
+            <i data-lucide="crown" style="width: 12px; height: 12px; color: var(--fp-state-warning);"></i>
+            <span>Elite Only (9)</span>
+          </button>
+          <button class="zone-pill" onclick="filterMapZone('Central', this)">Central & T. Nagar</button>
+          <button class="zone-pill" onclick="filterMapZone('South & Adyar', this)">South & Adyar</button>
+          <button class="zone-pill" onclick="filterMapZone('Anna Nagar & West', this)">Anna Nagar & West</button>
+          <button class="zone-pill" onclick="filterMapZone('OMR IT Corridor', this)">OMR IT Corridor</button>
+          <button class="zone-pill" onclick="filterMapZone('Tambaram & Guindy', this)">Tambaram & Guindy</button>
+          <button class="zone-pill" onclick="filterMapZone('North Chennai', this)">North Chennai</button>
+        </div>
+        <button class="zone-scroll-btn right" onclick="scrollZonePills(180)" title="Scroll right" aria-label="Scroll right">
+          <i data-lucide="chevron-right" style="width: 15px; height: 15px;"></i>
+        </button>
       </div>
 
       <!-- Split Map & Outlets List Workspace -->
@@ -5828,10 +5883,12 @@
         bounds.push([o.lat, o.lng]);
       });
 
-      // Adjust map view to bounds if not user-located
-      if (bounds.length > 0 && !userCoords) {
+      // Adjust map view to bounds so filtered zones (e.g. North Chennai) display properly
+      if (bounds.length > 0) {
         try {
-          leafletMapInstance.fitBounds(bounds, { padding: [35, 35], maxZoom: 13 });
+          if (activeMapZone !== "All" || !userCoords) {
+            leafletMapInstance.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
+          }
         } catch(e) {}
       }
     }
@@ -5847,10 +5904,20 @@
     function filterMapZone(zone, btn) {
       activeMapZone = zone;
       document.querySelectorAll(".zone-pill").forEach(p => p.classList.remove("active"));
-      if (btn) btn.classList.add("active");
+      if (btn) {
+        btn.classList.add("active");
+        btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      }
 
       renderMapOutletsList();
       renderMapMarkers();
+    }
+
+    function scrollZonePills(offset) {
+      const bar = document.getElementById("map-zone-pills-bar");
+      if (bar) {
+        bar.scrollBy({ left: offset, behavior: "smooth" });
+      }
     }
 
     function handleMapSearch(term) {
@@ -5942,6 +6009,17 @@
     }
 
     function openMapModal() {
+      // Ensure horizontal scroll with mouse wheel
+      const pillBar = document.getElementById("map-zone-pills-bar");
+      if (pillBar && !pillBar.dataset.wheelReady) {
+        pillBar.dataset.wheelReady = "true";
+        pillBar.addEventListener("wheel", (e) => {
+          if (e.deltaY !== 0) {
+            e.preventDefault();
+            pillBar.scrollLeft += e.deltaY;
+          }
+        }, { passive: false });
+      }
       document.getElementById("map-modal").classList.add("open");
       lockBackground();
       setTimeout(() => {
