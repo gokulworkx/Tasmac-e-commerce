@@ -937,7 +937,11 @@
       z-index: 10;
     }
 
-    @media (max-width: 520px) {
+    .statutory-text-mobile {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
       .auth-main-area {
         padding: 14px 12px 28px 12px;
       }
@@ -960,12 +964,108 @@
       .auth-card-body {
         padding: 14px 14px 20px 14px;
       }
-      .header-container {
-        padding: 0 14px;
-      }
+
+      /* Mobile Header & Brand Layout Fix */
       .statutory-top-strip {
         font-size: 9px;
-        padding: 5px 10px;
+        padding: 5px 12px;
+        gap: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .statutory-text-desktop {
+        display: none;
+      }
+      .statutory-text-mobile {
+        display: inline;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .statutory-badge-pill {
+        font-size: 8px;
+        padding: 1.5px 5px;
+        flex-shrink: 0;
+      }
+
+      .human-header {
+        height: 54px;
+        padding: 0 12px;
+      }
+      .header-container {
+        padding: 0;
+        gap: 8px;
+      }
+
+      .brand-group {
+        gap: 8px;
+        min-width: 0;
+        flex-shrink: 1;
+      }
+      .brand-logo-gem {
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+      }
+      .brand-text-col {
+        min-width: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .brand-title {
+        font-size: 13.5px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        line-height: 1.2;
+        letter-spacing: 0.04em;
+      }
+      .brand-sub {
+        font-size: 8.5px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        margin-top: 1px;
+        letter-spacing: 0.08em;
+      }
+
+      .header-right {
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .btn-return-store {
+        height: 32px;
+        padding: 0 10px;
+        font-size: 11px;
+        gap: 5px;
+      }
+      .btn-return-store span {
+        display: inline;
+      }
+      .icon-button-quiet {
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .btn-return-store span {
+        display: none;
+      }
+      .btn-return-store {
+        width: 32px;
+        padding: 0;
+        justify-content: center;
+      }
+      .brand-title {
+        font-size: 12.5px !important;
+      }
+      .brand-sub {
+        font-size: 8px !important;
       }
     }
   </style>
@@ -977,7 +1077,8 @@
     <!-- Statutory Legal Banner -->
     <div class="statutory-top-strip">
       <span class="statutory-badge-pill">TAMIL NADU EXCISE</span>
-      <span>Official Government Reserve Concierge &bull; Guaranteed Statutory MRP &bull; Strictly 21+ Only</span>
+      <span class="statutory-text-desktop">Official Government Reserve Concierge &bull; Guaranteed Statutory MRP &bull; Strictly 21+ Only</span>
+      <span class="statutory-text-mobile">Guaranteed Govt MRP &bull; Strictly 21+ Only</span>
     </div>
 
     <!-- Header -->
