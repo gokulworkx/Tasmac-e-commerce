@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,24 +18,18 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
 
-  <!-- Instant Theme Init (Prevents FOUC & Synchronizes with Storefront) -->
+  <!-- Permanent Luxury Dark Theme -->
   <script>
-    (function() {
-      const saved = localStorage.getItem('tasmac-theme');
-      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    })();
+    try { localStorage.removeItem('tasmac-theme'); } catch(e) {}
+    document.documentElement.classList.add('dark');
   </script>
 
   <style>
     /* =========================================================================
        TASMAC RESERVE — ULTRA-LUXURY EXECUTIVE DESIGN TOKENS
        ========================================================================= */
-    :root {
-      color-scheme: light;
+    :root, .dark {
+      color-scheme: dark;
       --fp-font-mono: "JetBrains Mono", Consolas, "Liberation Mono", Menlo, monospace;
       --font-display: "Cinzel", Georgia, serif;
       
@@ -47,90 +41,6 @@
       --radius-2xl: 1.25rem;
       --radius-full: 9999px;
 
-      /* Light Theme Surface & Typography Tokens */
-      --background: #f4f6fa;
-      --foreground: #0f172a;
-      --card: #ffffff;
-      --card-foreground: #0f172a;
-      
-      --primary: #f59e0b;
-      --primary-hover: #ea580c;
-      --primary-foreground: #0b0c10;
-      
-      --secondary: #f1f5f9;
-      --secondary-foreground: #0f172a;
-      --muted: #f1f5f9;
-      --muted-foreground: #64748b;
-      
-      --border: rgba(0, 0, 0, 0.08);
-      --card-border: rgba(212, 165, 78, 0.42);
-
-      --fp-state-success: #059669;
-      --fp-state-success-subtle: #ecfdf5;
-      --fp-state-warning: #d97706;
-      --fp-state-warning-subtle: #fffbeb;
-      --fp-state-danger: #dc2626;
-
-      /* Structural & Component Theme Variables */
-      --header-bg: rgba(255, 255, 255, 0.88);
-      --header-border: rgba(0, 0, 0, 0.07);
-      --top-strip-bg: #0f172a;
-      --top-strip-text: rgba(255, 255, 255, 0.72);
-      --top-strip-border: rgba(0, 0, 0, 0.12);
-
-      --brand-title-gradient: linear-gradient(135deg, #0f172a 35%, #b45309 100%);
-      --auth-title-gradient: linear-gradient(135deg, #0f172a 35%, #b45309 100%);
-      --subtitle-color: #64748b;
-
-      --btn-return-bg: rgba(0, 0, 0, 0.04);
-      --btn-return-border: rgba(0, 0, 0, 0.12);
-      --btn-return-text: #334155;
-      --btn-return-hover-bg: rgba(0, 0, 0, 0.08);
-      --btn-return-hover-text: #0f172a;
-
-      --card-top-border: rgba(0, 0, 0, 0.06);
-      --govt-badge-bg: rgba(245, 158, 11, 0.12);
-      --govt-badge-border: rgba(245, 158, 11, 0.38);
-      --govt-badge-text: #b45309;
-
-      --alert-box-bg: rgba(245, 158, 11, 0.07);
-      --alert-box-border: rgba(245, 158, 11, 0.28);
-      --alert-box-text: #475569;
-
-      --tabs-bar-bg: #edf2f7;
-      --tabs-bar-border: rgba(0, 0, 0, 0.08);
-      --tab-btn-text: #64748b;
-      --tab-btn-hover-bg: rgba(0, 0, 0, 0.04);
-      --tab-btn-hover-text: #0f172a;
-      --tab-btn-active-bg: #ffffff;
-      --tab-btn-active-text: #0f172a;
-      --tab-btn-active-border: rgba(212, 165, 78, 0.45);
-      --tab-btn-active-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-
-      --form-label-color: #1e293b;
-      --input-bg: #ffffff;
-      --input-border: rgba(0, 0, 0, 0.14);
-      --input-text: #0f172a;
-      --input-placeholder: #94a3b8;
-      --input-hover-border: rgba(0, 0, 0, 0.28);
-      --input-focus-bg: #ffffff;
-      --input-focus-border: #d97706;
-      --input-focus-ring: rgba(217, 119, 6, 0.18);
-      --input-focus-glow: rgba(217, 119, 6, 0.1);
-      --input-divider: rgba(0, 0, 0, 0.12);
-
-      --checkbox-text: #475569;
-      --auth-toggle-border: rgba(0, 0, 0, 0.07);
-      --auth-toggle-text: #64748b;
-
-      --footer-border: rgba(0, 0, 0, 0.07);
-      --footer-text: #64748b;
-
-      --fp-shadow-luxury: 0 25px 60px -15px rgba(0, 0, 0, 0.09), 0 0 35px -10px rgba(217, 119, 6, 0.12);
-    }
-
-    .dark {
-      color-scheme: dark;
       --background: #07080a; /* Plain Solid Obsidian Black */
       --foreground: #f8fafc;
       --card: #0d0f15;
@@ -286,42 +196,6 @@
     }
 .dark body {
       background-image: radial-gradient(circle 750px at 50% 36%, rgba(245, 158, 11, 0.065), transparent 70%);
-    }
-
-    /* Executive Smooth Theme Transitions & View Transitions API */
-    ::view-transition-old(root),
-    ::view-transition-new(root) {
-      animation: none;
-      mix-blend-mode: normal;
-    }
-    ::view-transition-old(root) {
-      z-index: 1;
-    }
-    ::view-transition-new(root) {
-      z-index: 9999;
-    }
-
-    /* Fallback universal smooth transition */
-    html.theme-transitioning,
-    html.theme-transitioning *,
-    html.theme-transitioning *::before,
-    html.theme-transitioning *::after {
-      transition: background-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-                  border-color 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-                  color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-                  fill 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-                  box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
-      transition-delay: 0s !important;
-    }
-
-    #theme-toggle-btn {
-      position: relative;
-    }
-    #theme-icon {
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
-    }
-    #theme-toggle-btn:active #theme-icon {
-      transform: scale(0.85);
     }
 
     /* Fixed Top Navigation Shell */
@@ -1294,9 +1168,7 @@
             <i data-lucide="arrow-left" style="width: 14px; height: 14px; color: #f59e0b;"></i>
             <span>Return to Store</span>
           </a>
-          <button class="icon-button-quiet" onclick="toggleTheme(event)" id="theme-toggle-btn" title="Toggle Light/Dark Theme">
-            <i data-lucide="moon" id="theme-icon" style="width: 15px; height: 15px;"></i>
-          </button>
+          
         </div>
       </div>
     </header>
@@ -1576,94 +1448,6 @@
 
   <!-- Client Auth Logic -->
   <script>
-    // 1. Executive Smooth Theme Switcher Action (View Transitions API Circular Ripple)
-    let isThemeTransitioning = false;
-
-    function applyThemeState(isDark) {
-      if (isDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-      localStorage.setItem('tasmac-theme', isDark ? 'dark' : 'light');
-
-      const icon = document.getElementById('theme-icon');
-      if (icon) {
-        icon.style.transform = 'rotate(180deg) scale(0.6)';
-        icon.style.opacity = '0';
-        setTimeout(() => {
-          icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
-          if (window.lucide) lucide.createIcons();
-          const newIcon = document.getElementById('theme-icon');
-          if (newIcon) {
-            newIcon.style.transform = 'rotate(0deg) scale(1)';
-            newIcon.style.opacity = '1';
-          }
-        }, 140);
-      }
-    }
-
-    function toggleTheme(event) {
-      if (isThemeTransitioning) return;
-      isThemeTransitioning = true;
-
-      const willBeDark = !document.documentElement.classList.contains('dark');
-
-      // Fallback if browser doesn't support View Transitions API or user prefers reduced motion
-      if (!document.startViewTransition || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        document.documentElement.classList.add('theme-transitioning');
-        applyThemeState(willBeDark);
-        setTimeout(() => {
-          document.documentElement.classList.remove('theme-transitioning');
-          isThemeTransitioning = false;
-        }, 450);
-        return;
-      }
-
-      const btn = document.getElementById('theme-toggle-btn');
-      const rect = btn ? btn.getBoundingClientRect() : null;
-      const x = event && event.clientX ? event.clientX : (rect ? rect.left + rect.width / 2 : window.innerWidth - 60);
-      const y = event && event.clientY ? event.clientY : (rect ? rect.top + rect.height / 2 : 40);
-
-      const endRadius = Math.hypot(
-        Math.max(x, window.innerWidth - x),
-        Math.max(y, window.innerHeight - y)
-      );
-
-      const transition = document.startViewTransition(() => {
-        applyThemeState(willBeDark);
-      });
-
-      transition.ready.then(() => {
-        document.documentElement.animate(
-          {
-            clipPath: [
-              `circle(0px at ${x}px ${y}px)`,
-              `circle(${endRadius}px at ${x}px ${y}px)`
-            ]
-          },
-          {
-            duration: 480,
-            easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
-            pseudoElement: '::view-transition-new(root)'
-          }
-        );
-      }).catch(() => {}).finally(() => {
-        setTimeout(() => {
-          isThemeTransitioning = false;
-        }, 480);
-      });
-    }
-
-    function updateThemeIcon() {
-      const isDark = document.documentElement.classList.contains("dark");
-      const icon = document.getElementById("theme-icon");
-      if (icon) {
-        icon.setAttribute("data-lucide", isDark ? "sun" : "moon");
-        if (window.lucide) lucide.createIcons();
-      }
-    }
-
     // 2. Tab Switcher
     
     
@@ -2207,7 +1991,6 @@
     window.addEventListener('orientationchange', () => setTimeout(syncTopShellHeight, 100));
 
     document.addEventListener("DOMContentLoaded", function() {
-      updateThemeIcon();
       if (window.lucide) lucide.createIcons();
       syncTopShellHeight();
       handleTopShellScroll();
