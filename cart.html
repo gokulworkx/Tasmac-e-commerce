@@ -1728,7 +1728,7 @@
             <!-- Corresponding Bottle Cutout Stage -->
             <div class="cart-bottle-stage">
               <img 
-                src="${bottleImg}" 
+                src="${bottleImg}${bottleImg.includes('?') ? '&' : '?'}v=12" 
                 alt="${item.name}" 
                 class="cart-bottle-img" 
                 onerror="this.src='img/tasmac-icon-128.png'" 
