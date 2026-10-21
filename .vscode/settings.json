@@ -1,5 +1,7 @@
 {
     "liveServer.settings.port": 5500,
-    "liveServer.settings.root": "/"
+    "liveServer.settings.root": "/",
+    "code-runner.executorMap": {
+        "html": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" $fullFileName"
+    }
 }
-
