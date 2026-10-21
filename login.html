@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,18 +18,18 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
 
-  <!-- Permanent Luxury Dark Theme -->
+  <!-- Permanent Clean Light Theme -->
   <script>
-    try { localStorage.removeItem('tasmac-theme'); } catch(e) {}
-    document.documentElement.classList.add('dark');
+    try { localStorage.setItem('tasmac-theme', 'light'); } catch(e) {}
+    document.documentElement.classList.remove('dark');
   </script>
 
   <style>
     /* =========================================================================
        TASMAC RESERVE — ULTRA-LUXURY EXECUTIVE DESIGN TOKENS
        ========================================================================= */
-    :root, .dark {
-      color-scheme: dark;
+    :root {
+      color-scheme: light;
       --fp-font-mono: "JetBrains Mono", Consolas, "Liberation Mono", Menlo, monospace;
       --font-display: "Cinzel", Georgia, serif;
       
@@ -41,85 +41,86 @@
       --radius-2xl: 1.25rem;
       --radius-full: 9999px;
 
-      --background: #07080a; /* Plain Solid Obsidian Black */
-      --foreground: #f8fafc;
-      --card: #0d0f15;
-      --card-foreground: #f8fafc;
+      /* Light Theme Surface & Typography Tokens */
+      --background: #f4f6fa;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --card-foreground: #0f172a;
       
       --primary: #f59e0b;
-      --primary-hover: #fbbf24;
+      --primary-hover: #ea580c;
       --primary-foreground: #0b0c10;
       
-      --secondary: #12141a;
-      --secondary-foreground: #f8fafc;
-      --muted: #141720;
-      --muted-foreground: #94a3b8;
+      --secondary: #f1f5f9;
+      --secondary-foreground: #0f172a;
+      --muted: #f1f5f9;
+      --muted-foreground: #64748b;
       
-      --border: rgba(255, 255, 255, 0.08);
-      --card-border: rgba(212, 165, 78, 0.24);
+      --border: rgba(0, 0, 0, 0.08);
+      --card-border: rgba(212, 165, 78, 0.42);
 
-      --fp-state-success: #34d399;
-      --fp-state-success-subtle: rgba(52, 211, 153, 0.1);
-      --fp-state-warning: #f59e0b;
-      --fp-state-warning-subtle: rgba(245, 158, 11, 0.1);
-      --fp-state-danger: #f87171;
+      --fp-state-success: #059669;
+      --fp-state-success-subtle: #ecfdf5;
+      --fp-state-warning: #d97706;
+      --fp-state-warning-subtle: #fffbeb;
+      --fp-state-danger: #dc2626;
 
       /* Structural & Component Theme Variables */
-      --header-bg: rgba(7, 8, 10, 0.85);
-      --header-border: rgba(255, 255, 255, 0.06);
-      --top-strip-bg: #0a0b0e;
-      --top-strip-text: rgba(255, 255, 255, 0.55);
-      --top-strip-border: rgba(255, 255, 255, 0.05);
+      --header-bg: rgba(255, 255, 255, 0.88);
+      --header-border: rgba(0, 0, 0, 0.07);
+      --top-strip-bg: #0f172a;
+      --top-strip-text: rgba(255, 255, 255, 0.72);
+      --top-strip-border: rgba(0, 0, 0, 0.12);
 
-      --brand-title-gradient: linear-gradient(135deg, #ffffff 45%, #e2b774 100%);
-      --auth-title-gradient: linear-gradient(135deg, #ffffff 45%, #e2b774 100%);
-      --subtitle-color: rgba(255, 255, 255, 0.6);
+      --brand-title-gradient: linear-gradient(135deg, #0f172a 35%, #b45309 100%);
+      --auth-title-gradient: linear-gradient(135deg, #0f172a 35%, #b45309 100%);
+      --subtitle-color: #64748b;
 
-      --btn-return-bg: rgba(255, 255, 255, 0.03);
-      --btn-return-border: rgba(255, 255, 255, 0.12);
-      --btn-return-text: rgba(255, 255, 255, 0.85);
-      --btn-return-hover-bg: rgba(255, 255, 255, 0.08);
-      --btn-return-hover-text: #ffffff;
+      --btn-return-bg: rgba(0, 0, 0, 0.04);
+      --btn-return-border: rgba(0, 0, 0, 0.12);
+      --btn-return-text: #334155;
+      --btn-return-hover-bg: rgba(0, 0, 0, 0.08);
+      --btn-return-hover-text: #0f172a;
 
-      --card-top-border: rgba(255, 255, 255, 0.06);
-      --govt-badge-bg: rgba(245, 158, 11, 0.08);
-      --govt-badge-border: rgba(245, 158, 11, 0.28);
-      --govt-badge-text: #f59e0b;
+      --card-top-border: rgba(0, 0, 0, 0.06);
+      --govt-badge-bg: rgba(245, 158, 11, 0.12);
+      --govt-badge-border: rgba(245, 158, 11, 0.38);
+      --govt-badge-text: #b45309;
 
-      --alert-box-bg: rgba(255, 255, 255, 0.02);
-      --alert-box-border: rgba(255, 255, 255, 0.07);
-      --alert-box-text: rgba(255, 255, 255, 0.72);
+      --alert-box-bg: rgba(245, 158, 11, 0.07);
+      --alert-box-border: rgba(245, 158, 11, 0.28);
+      --alert-box-text: #475569;
 
-      --tabs-bar-bg: #08090d;
-      --tabs-bar-border: rgba(255, 255, 255, 0.08);
-      --tab-btn-text: rgba(255, 255, 255, 0.55);
-      --tab-btn-hover-bg: rgba(255, 255, 255, 0.03);
-      --tab-btn-hover-text: rgba(255, 255, 255, 0.85);
-      --tab-btn-active-bg: rgba(255, 255, 255, 0.07);
-      --tab-btn-active-text: #ffffff;
-      --tab-btn-active-border: rgba(245, 158, 11, 0.35);
-      --tab-btn-active-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+      --tabs-bar-bg: #edf2f7;
+      --tabs-bar-border: rgba(0, 0, 0, 0.08);
+      --tab-btn-text: #64748b;
+      --tab-btn-hover-bg: rgba(0, 0, 0, 0.04);
+      --tab-btn-hover-text: #0f172a;
+      --tab-btn-active-bg: #ffffff;
+      --tab-btn-active-text: #0f172a;
+      --tab-btn-active-border: rgba(212, 165, 78, 0.45);
+      --tab-btn-active-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
-      --form-label-color: rgba(255, 255, 255, 0.88);
-      --input-bg: rgba(0, 0, 0, 0.45);
-      --input-border: rgba(255, 255, 255, 0.12);
-      --input-text: #ffffff;
-      --input-placeholder: rgba(255, 255, 255, 0.32);
-      --input-hover-border: rgba(255, 255, 255, 0.22);
-      --input-focus-bg: rgba(0, 0, 0, 0.65);
-      --input-focus-border: #f59e0b;
-      --input-focus-ring: rgba(245, 158, 11, 0.18);
-      --input-focus-glow: rgba(245, 158, 11, 0.15);
-      --input-divider: rgba(255, 255, 255, 0.12);
+      --form-label-color: #1e293b;
+      --input-bg: #ffffff;
+      --input-border: rgba(0, 0, 0, 0.14);
+      --input-text: #0f172a;
+      --input-placeholder: #94a3b8;
+      --input-hover-border: rgba(0, 0, 0, 0.28);
+      --input-focus-bg: #ffffff;
+      --input-focus-border: #d97706;
+      --input-focus-ring: rgba(217, 119, 6, 0.18);
+      --input-focus-glow: rgba(217, 119, 6, 0.1);
+      --input-divider: rgba(0, 0, 0, 0.12);
 
-      --checkbox-text: rgba(255, 255, 255, 0.72);
-      --auth-toggle-border: rgba(255, 255, 255, 0.07);
-      --auth-toggle-text: rgba(255, 255, 255, 0.55);
+      --checkbox-text: #475569;
+      --auth-toggle-border: rgba(0, 0, 0, 0.07);
+      --auth-toggle-text: #64748b;
 
-      --footer-border: rgba(255, 255, 255, 0.05);
-      --footer-text: rgba(255, 255, 255, 0.45);
+      --footer-border: rgba(0, 0, 0, 0.07);
+      --footer-text: #64748b;
 
-      --fp-shadow-luxury: 0 30px 80px -15px rgba(0, 0, 0, 0.95), 0 0 50px -10px rgba(245, 158, 11, 0.12);
+      --fp-shadow-luxury: 0 25px 60px -15px rgba(0, 0, 0, 0.09), 0 0 35px -10px rgba(217, 119, 6, 0.12);
     }
 
     *, *::before, *::after {
@@ -194,9 +195,7 @@
     form {
       touch-action: pan-y;
     }
-.dark body {
-      background-image: radial-gradient(circle 750px at 50% 36%, rgba(245, 158, 11, 0.065), transparent 70%);
-    }
+
 
     /* Fixed Top Navigation Shell */
     .fixed-top-shell {
@@ -215,9 +214,7 @@
       box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.15) !important;
     }
 
-    .dark .fixed-top-shell.scrolled {
-      box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.75) !important;
-    }
+    
 
     /* Top Statutory Strip - Discreet Luxury */
     .statutory-top-strip {

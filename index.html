@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,10 +22,10 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
 
-  <!-- Permanent Luxury Dark Theme -->
+  <!-- Permanent Clean Light Theme -->
   <script>
-    try { localStorage.removeItem('tasmac-theme'); } catch(e) {}
-    document.documentElement.classList.add('dark');
+    try { localStorage.setItem('tasmac-theme', 'light'); } catch(e) {}
+    document.documentElement.classList.remove('dark');
   </script>
 
   <style>
@@ -33,8 +33,8 @@
        4RGE PLATFORM DESIGN SYSTEM — OFFICIAL DESIGN TOKENS & UI SPECIFICATION
        App shell, UI primitives, typography, glassmorphism, and semantic contracts
        ========================================================================= */
-    :root, .dark {
-      color-scheme: dark;
+    :root {
+      color-scheme: light;
 
       --fp-font-sans: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
       --fp-font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
@@ -55,65 +55,65 @@
       --radius-2xl: 1rem;
       --radius-full: 9999px;
 
-      /* 4RGE Premium Luxury Dark Mode (Obsidian Onyx & Pure Electric Orange) */
-      --background: hsl(0, 0%, 0%); /* Deepest Obsidian Slate */
-      --foreground: hsl(210 25% 96%);
-      --card: hsl(0, 0%, 0%);       /* Refined Charcoal Card Surface */
-      --card-foreground: hsl(210 25% 96%);
-      --popover: hsl(0, 0%, 0%);
-      --popover-foreground: hsl(210 25% 96%);
+      /* 4RGE Premium Palette (Pure Vibrant Orange & Crisp Modern Surfaces) */
+      --background: hsl(210 20% 98%);
+      --foreground: hsl(220 28% 10%);
+      --card: hsl(0 0% 100%);
+      --card-foreground: hsl(220 28% 10%);
+      --popover: hsl(0 0% 100%);
+      --popover-foreground: hsl(220 28% 10%);
       
-      --primary: hsl(24 100% 50%);      /* Pure Electric Orange */
-      --primary-foreground: #ffffff;    /* Crisp White for Clear Contrast */
+      --primary: hsl(24 100% 50%); /* Pure Radiant Orange */
+      --primary-foreground: #ffffff;
       
-      --secondary: hsl(0, 0%, 0%);
-      --secondary-foreground: hsl(210 25% 96%);
-      --muted: hsl(0, 0%, 0%);
-      --muted-foreground: hsl(215 14% 62%);
-      --accent: hsl(0, 0%, 0%);
-      --accent-foreground: hsl(210 25% 96%);
-      --destructive: hsl(0 80% 64%);
+      --secondary: hsl(210 20% 96%);
+      --secondary-foreground: hsl(220 28% 10%);
+      --muted: hsl(210 20% 96%);
+      --muted-foreground: hsl(218 12% 44%);
+      --accent: hsl(210 20% 94%);
+      --accent-foreground: hsl(220 28% 10%);
+      --destructive: hsl(0 72% 51%);
       
-      --border: hsl(0 0% 18%);
-      --input: hsl(0 0% 18%);
+      --border: hsl(214 20% 88%);
+      --input: hsl(214 20% 88%);
       --ring: hsl(24 100% 50%);
 
       /* 4RGE Semantic Surfaces & Borders */
-      --fp-surface-canvas: hsl(0 0% 0%);
+      --fp-surface-canvas: hsl(210 20% 98%);
       --fp-surface-default: var(--card);
       --fp-surface-subtle: var(--muted);
-      --fp-surface-raised: hsl(0 0% 12%);
-      --fp-surface-overlay: color-mix(in srgb, var(--card) 92%, transparent);
+      --fp-surface-raised: var(--card);
+      --fp-surface-overlay: color-mix(in srgb, var(--card) 94%, transparent);
       
       --fp-text-primary: var(--foreground);
       --fp-text-secondary: var(--muted-foreground);
-      --fp-text-tertiary: hsl(215 10% 50%);
+      --fp-text-tertiary: hsl(215 10% 60%);
       
-      --fp-border-subtle: color-mix(in srgb, white 7%, transparent);
+      --fp-border-subtle: color-mix(in srgb, var(--foreground) 7%, transparent);
       --fp-border-default: var(--border);
-      --fp-border-strong: color-mix(in srgb, white 18%, transparent);
+      --fp-border-strong: color-mix(in srgb, var(--foreground) 20%, transparent);
       --border-subtle: var(--fp-border-subtle);
       --border-default: var(--fp-border-default);
       --border-strong: var(--fp-border-strong);
       
       --fp-state-hover: color-mix(in srgb, var(--primary) 8%, transparent);
-      --fp-state-pressed: color-mix(in srgb, var(--primary) 15%, transparent);
-      --fp-state-selected: color-mix(in srgb, var(--primary) 13%, transparent);
+      --fp-state-pressed: color-mix(in srgb, var(--primary) 14%, transparent);
+      --fp-state-selected: color-mix(in srgb, var(--primary) 12%, transparent);
       --fp-state-focus: var(--ring);
       
       --fp-accent-hover: hsl(24 100% 44%);
-      --fp-accent-soft: hsl(24 40% 15%);
+      --fp-accent-soft: hsl(24 100% 96%);
       
-      --fp-state-success: hsl(151 56% 54%);
-      --fp-state-success-subtle: hsl(151 25% 14%);
+      --fp-state-success: hsl(151 61% 32%);
+      --fp-state-success-subtle: hsl(148 52% 95%);
       --fp-state-warning: hsl(24 100% 50%);
-      --fp-state-warning-subtle: hsl(24 35% 15%);
+      --fp-state-warning-subtle: hsl(24 100% 94%);
       --fp-state-danger: var(--destructive);
-      --fp-state-danger-subtle: hsl(0 28% 16%);
+      --fp-state-danger-subtle: hsl(0 82% 97%);
 
-      --fp-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-      --fp-shadow-2: 0 4px 16px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--fp-border-subtle);
-      --fp-shadow-3: 0 20px 50px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
+      --fp-shadow-1: 0 1px 3px rgba(15, 23, 42, 0.05);
+      --fp-shadow-2: 0 8px 24px rgba(15, 23, 42, 0.07), 0 0 0 1px var(--fp-border-subtle);
+      --fp-shadow-3: 0 24px 60px rgba(15, 23, 42, 0.12), 0 2px 8px rgba(15, 23, 42, 0.05);
 
       --max-width: 100%;
       --transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
@@ -618,10 +618,7 @@
                   0 2px 6px -1px rgba(0, 0, 0, 0.05) !important;
     }
 
-    .dark .fixed-top-shell.scrolled {
-      box-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.55),
-                  0 2px 8px -1px rgba(0, 0, 0, 0.35) !important;
-    }
+    
 
     .statutory-top-strip {
       background: var(--secondary);
@@ -2346,9 +2343,7 @@
       filter: none;
       transition: filter 0.35s ease;
     }
-    .dark #interactive-leaflet-map .leaflet-tile-pane {
-      filter: brightness(0.65) invert(1) contrast(3.2) hue-rotate(200deg) saturate(0.28) brightness(0.72) !important;
-    }
+    
     .leaflet-popup-content-wrapper {
       background: var(--card) !important;
       color: var(--foreground) !important;
@@ -2802,16 +2797,6 @@
       color: var(--muted-foreground);
     }
 
-    .dark footer.human-footer,
-    .dark .footer-content,
-    .dark .footer-content span {
-      color: #e2e8f0;
-    }
-
-    .dark footer.human-footer strong {
-      color: #ffffff;
-    }
-
     .footer-content {
       max-width: var(--max-width);
       margin: 0 auto;
@@ -2827,10 +2812,11 @@
       transition: var(--transition);
     }
 
-    .footer-content span:hover,
-    .dark .footer-content span:hover {
+    .footer-content span:hover {
       color: var(--primary);
     }
+
+    
 
     /* =========================================================================
        INTERMEDIATE VIEWPORT OPTIMIZATION (Prevent header crowding)
