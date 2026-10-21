@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Cart & Direct Reservation — TASMAC Reserve</title>
+  <link rel="icon" type="image/png" href="img/tasmac-icon-128.png" />
+
+  <!-- Typography Stack: JetBrains Mono & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Supabase Client SDK & Configuration -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+
+  <!-- Permanent Clean Light Theme -->
+  <script>
+    try { localStorage.setItem('tasmac-theme', 'light'); } catch(e) {}
+    document.documentElement.classList.remove('dark');
+  </script>
+
+  <style>
+    /* =========================================================================
+       TASMAC RESERVE — DEDICATED CART & RESERVATION DESIGN SYSTEM (LIGHT THEME)
+       ========================================================================= */
+    :root {
+      color-scheme: light;
+      --fp-font-mono: "JetBrains Mono", Consolas, "Liberation Mono", Menlo, monospace;
+      --font-display: "Cinzel", Georgia, serif;
+      --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      
+      --radius: 0.625rem;
+      --radius-sm: calc(var(--radius) - 4px);
+      --radius-md: calc(var(--radius) - 2px);
+      --radius-lg: var(--radius);
+      --radius-xl: 1rem;
+      --radius-2xl: 1.25rem;
+      --radius-full: 9999px;
+
+      /* Light Theme Surface & Typography Tokens */
+      --background: #f4f6fa;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --card-foreground: #0f172a;
+      
+      --primary: #f59e0b;
+      --primary-hover: #ea580c;
+      --primary-foreground: #ffffff;
+      
+      --secondary: #f8fafc;
+      --secondary-foreground: #0f172a;
+      --muted: #f1f5f9;
+      --muted-foreground: #64748b;
+      
+      --border: rgba(0, 0, 0, 0.08);
+      --border-strong: rgba(0, 0, 0, 0.16);
+      --card-border: rgba(212, 165, 78, 0.35);
+
+      --fp-state-success: #059669;
+      --fp-state-success-subtle: #ecfdf5;
+      --fp-state-warning: #d97706;
+      --fp-state-warning-subtle: #fffbeb;
+      --fp-state-danger: #dc2626;
+
+      --header-bg: rgba(255, 255, 255, 0.94);
+      --header-border: rgba(0, 0, 0, 0.07);
+      --top-strip-bg: #0f172a;
+      --top-strip-text: rgba(255, 255, 255, 0.75);
+
+      --btn-return-bg: rgba(0, 0, 0, 0.04);
+      --btn-return-border: rgba(0, 0, 0, 0.12);
+      --btn-return-text: #334155;
+      --btn-return-hover-bg: rgba(0, 0, 0, 0.08);
+      --btn-return-hover-text: #0f172a;
+
+      --fp-shadow-luxury: 0 20px 45px -10px rgba(0, 0, 0, 0.08), 0 0 25px -5px rgba(217, 119, 6, 0.08);
+      --fp-shadow-card: 0 4px 16px -2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: inherit;
+    }
+
+    html {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+
+    body {
+      width: 100%;
+      min-height: 100%;
+      font-family: var(--font-sans);
+      background-color: var(--background);
+      background-image: radial-gradient(circle 800px at 50% 25%, rgba(245, 158, 11, 0.045), transparent 70%);
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: var(--foreground);
+      display: flex;
+      flex-direction: column;
+      font-size: 13.5px;
+      line-height: 1.5;
+      letter-spacing: -0.012em;
+      position: relative;
+      padding-top: 86px;
+    }
+
+    /* Fixed Top Navigation Shell */
+    .fixed-top-shell {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      z-index: 600 !important;
+      background: var(--header-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--header-border);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Statutory Top Banner */
+    .statutory-top-strip {
+      background-color: var(--top-strip-bg);
+      color: var(--top-strip-text);
+      font-size: 11px;
+      font-weight: 550;
+      letter-spacing: 0.025em;
+      text-transform: uppercase;
+      padding: 5px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--fp-font-mono);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .statutory-badge-pill {
+      background: #f59e0b;
+      color: #0b0c10;
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.04em;
+    }
+
+    /* Human Header Container */
+    .human-header {
+      width: 100%;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+    }
+    .header-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+    .brand-logo-gem {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      background: #ffffff;
+      border: 1px solid rgba(212, 165, 78, 0.35);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+    .brand-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .brand-text-col {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      color: #0f172a;
+      line-height: 1.1;
+    }
+    .brand-sub {
+      font-size: 10.5px;
+      color: #64748b;
+      font-family: var(--fp-font-mono);
+      letter-spacing: 0.02em;
+    }
+
+    /* Return to Store Button */
+    .btn-return-store {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--btn-return-text);
+      background: var(--btn-return-bg);
+      border: 1px solid var(--btn-return-border);
+      border-radius: var(--radius-full);
+      text-decoration: none;
+      transition: all 0.18s ease;
+      cursor: pointer;
+    }
+    .btn-return-store:hover {
+      background: var(--btn-return-hover-bg);
+      color: var(--btn-return-hover-text);
+      border-color: rgba(0, 0, 0, 0.22);
+      transform: translateX(-2px);
+    }
+
+    /* Main Cart Workspace */
+    .cart-main-area {
+      flex: 1;
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+
+    /* Card Wrapper */
+    .cart-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--fp-shadow-luxury);
+      padding: 28px 28px 32px;
+      position: relative;
+    }
+    @media (max-width: 640px) {
+      .cart-card {
+        padding: 20px 16px 24px;
+      }
+    }
+
+    /* Card Header Area */
+    .cart-header-badge {
+      font-size: 11px;
+      font-weight: 750;
+      color: #d97706;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-family: var(--fp-font-mono);
+      margin-bottom: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .cart-header-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--foreground);
+      font-family: var(--font-display);
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+
+    /* Store Fulfillment Banner */
+    .store-summary-pill {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 10px 14px;
+      font-size: 12.5px;
+      color: var(--muted-foreground);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+    .store-summary-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .store-summary-name {
+      color: var(--foreground);
+      font-weight: 700;
+    }
+    .store-summary-dist {
+      color: #ea580c;
+      font-weight: 600;
+      font-size: 11.5px;
+      font-family: var(--fp-font-mono);
+    }
+    .store-change-btn {
+      background: none;
+      border: none;
+      color: #d97706;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    /* Outlet Selector Dropdown (Collapsible) */
+    .outlet-picker-drawer {
+      display: none;
+      background: #ffffff;
+      border: 1px solid rgba(212, 165, 78, 0.4);
+      border-radius: var(--radius-lg);
+      padding: 12px;
+      margin-top: -12px;
+      margin-bottom: 22px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      max-height: 250px;
+      overflow-y: auto;
+    }
+    .outlet-picker-drawer.open {
+      display: block;
+    }
+    .outlet-opt-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: background 0.15s ease;
+      font-size: 12.5px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    }
+    .outlet-opt-row:hover {
+      background: #f1f5f9;
+    }
+    .outlet-opt-row.active {
+      background: #fffbeb;
+      font-weight: 700;
+      color: #b45309;
+    }
+
+    /* Cart Items Section */
+    .cart-items-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    /* Individual Cart Item Row with Bottle Cutout */
+    .cart-item-card {
+      display: flex;
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 12px 16px;
+      gap: 16px;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+    .cart-item-card:hover {
+      border-color: rgba(212, 165, 78, 0.45);
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Dedicated Bottle Thumbnail Stage */
+    .cart-bottle-stage {
+      width: 58px;
+      height: 74px;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: var(--radius-md);
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+    .cart-bottle-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.15));
+      transition: transform 0.25s ease;
+    }
+    .cart-item-card:hover .cart-bottle-img {
+      transform: scale(1.08) translateY(-2px);
+    }
+
+    /* Item Details */
+    .cart-item-details {
+      flex: 1;
+      min-width: 0;
+    }
+    .cart-item-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--foreground);
+      line-height: 1.25;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cart-item-meta {
+      font-size: 12px;
+      color: var(--muted-foreground);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cart-item-unit-price {
+      font-family: var(--fp-font-mono);
+      font-weight: 600;
+      color: #ea580c;
+    }
+
+    /* Stepper Controls */
+    .cart-stepper-box {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      padding: 3px 6px;
+      flex-shrink: 0;
+    }
+    .btn-stepper {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: none;
+      background: #f1f5f9;
+      color: var(--foreground);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-stepper:hover {
+      background: #e2e8f0;
+      color: #000;
+    }
+    .cart-qty-value {
+      font-family: var(--fp-font-mono);
+      font-size: 13px;
+      font-weight: 750;
+      min-width: 22px;
+      text-align: center;
+      color: var(--foreground);
+    }
+
+    /* Item Total & Remove */
+    .cart-item-actions {
+      text-align: right;
+      min-width: 80px;
+      flex-shrink: 0;
+    }
+    .cart-item-total {
+      font-family: var(--fp-font-mono);
+      font-size: 15px;
+      font-weight: 800;
+      color: #ea580c;
+      letter-spacing: -0.01em;
+    }
+    .cart-item-remove {
+      background: none;
+      border: none;
+      color: var(--muted-foreground);
+      font-size: 11.5px;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 2px 0;
+      margin-top: 3px;
+      transition: color 0.15s ease;
+    }
+    .cart-item-remove:hover {
+      color: #dc2626;
+    }
+
+    /* Empty Cart State */
+    .cart-empty-box {
+      text-align: center;
+      padding: 48px 20px;
+      background: #f8fafc;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-xl);
+      margin-bottom: 24px;
+    }
+    .cart-empty-icon-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(245, 158, 11, 0.12);
+      color: #d97706;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px auto;
+    }
+    .cart-empty-title {
+      font-size: 17px;
+      font-weight: 750;
+      color: var(--foreground);
+      margin-bottom: 6px;
+    }
+    .cart-empty-desc {
+      font-size: 13px;
+      color: var(--muted-foreground);
+      max-width: 360px;
+      margin: 0 auto 20px auto;
+      line-height: 1.5;
+    }
+    .btn-explore-catalog {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      font-size: 13px;
+      font-weight: 700;
+      background: #f59e0b;
+      color: #ffffff;
+      border-radius: var(--radius-full);
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.28);
+      transition: all 0.18s ease;
+    }
+    .btn-explore-catalog:hover {
+      background: #ea580c;
+      transform: translateY(-1px);
+    }
+
+    /* Auth & Guest Status Banners */
+    .auth-status-banner {
+      background: var(--fp-state-success-subtle);
+      border: 1px solid rgba(5, 150, 105, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--fp-state-success);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .guest-status-banner {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--muted-foreground);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .status-link {
+      color: #d97706;
+      font-weight: 750;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .status-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Form Fields */
+    .form-group-4rge {
+      margin-bottom: 16px;
+    }
+    .form-label-4rge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 650;
+      color: #1e293b;
+      margin-bottom: 6px;
+    }
+    .input-4rge {
+      width: 100%;
+      height: 42px;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      border-radius: var(--radius-md);
+      padding: 0 14px;
+      font-size: 13.5px;
+      color: var(--foreground);
+      outline: none;
+      transition: all 0.18s ease;
+      font-family: inherit;
+    }
+    .input-4rge:focus {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+    }
+    .input-wrapper-prefix {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-prefix-tag {
+      position: absolute;
+      left: 10px;
+      background: #f1f5f9;
+      color: #475569;
+      font-family: var(--fp-font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 6px;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+    .input-with-prefix {
+      padding-left: 54px;
+    }
+
+    /* Custom Luxury Dropdown for Govt ID */
+    .luxury-select-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    .luxury-select-trigger {
+      width: 100%;
+      height: 42px;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      border-radius: var(--radius-md);
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      color: var(--foreground);
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.18s ease;
+    }
+    .luxury-select-trigger:focus,
+    .luxury-select-wrapper.open .luxury-select-trigger {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+    }
+    .luxury-select-content-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .luxury-select-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+      z-index: 100;
+      padding: 6px;
+    }
+    .luxury-select-wrapper.open .luxury-select-menu {
+      display: block;
+    }
+    .luxury-select-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      color: #334155;
+      transition: background 0.15s ease;
+    }
+    .luxury-select-item:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .luxury-select-item.active {
+      background: #fffbeb;
+      color: #b45309;
+      font-weight: 700;
+    }
+
+    /* Statutory Warning Notice */
+    .statutory-notice-box {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.28);
+      border-radius: var(--radius-lg);
+      padding: 12px 14px;
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.45;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .statutory-notice-box i {
+      color: #d97706;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Total Price Card */
+    .cart-total-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      margin-bottom: 22px;
+      box-shadow: var(--fp-shadow-card);
+    }
+    .cart-total-label {
+      font-size: 13.5px;
+      font-weight: 650;
+      color: #475569;
+    }
+    .cart-total-num {
+      font-family: var(--fp-font-mono);
+      font-size: 24px;
+      font-weight: 800;
+      color: #ea580c;
+      letter-spacing: -0.02em;
+    }
+
+    /* Submit Button */
+    .btn-submit-token {
+      width: 100%;
+      height: 46px;
+      background: #f59e0b;
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 750;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.32);
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .btn-submit-token:hover {
+      background: #ea580c;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(234, 88, 12, 0.4);
+    }
+    .btn-submit-token:active {
+      transform: translateY(1px);
+    }
+
+    /* Step 2: Digital Token Receipt Stage */
+    .token-success-stage {
+      display: none;
+      text-align: center;
+      padding: 10px 0;
+    }
+    .token-success-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--fp-state-success-subtle);
+      color: var(--fp-state-success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px auto;
+      border: 2px solid rgba(5, 150, 105, 0.3);
+    }
+    .token-card-primitive {
+      background: #f8fafc;
+      border: 2px dashed rgba(212, 165, 78, 0.45);
+      border-radius: var(--radius-xl);
+      padding: 24px 20px;
+      text-align: left;
+      margin: 20px 0 24px;
+      position: relative;
+    }
+    .token-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .token-card-code {
+      font-family: var(--fp-font-mono);
+      font-size: 24px;
+      font-weight: 800;
+      color: #ea580c;
+      letter-spacing: 0.04em;
+    }
+    .token-status-pill {
+      background: #dcfce7;
+      color: #166534;
+      font-family: var(--fp-font-mono);
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.04em;
+    }
+    .token-info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .token-info-label {
+      color: var(--muted-foreground);
+    }
+    .token-info-val {
+      color: var(--foreground);
+      font-weight: 700;
+      text-align: right;
+    }
+    .token-total-row {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .token-total-amount {
+      font-family: var(--fp-font-mono);
+      font-size: 20px;
+      font-weight: 850;
+      color: #ea580c;
+    }
+
+    /* Toast Notifications Tray */
+    #toast-tray {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast-msg {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: var(--radius-full);
+      font-size: 12.5px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: toastIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes toastIn {
+      from { transform: translateY(12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fixed Top Header -->
+  <div class="fixed-top-shell">
+    <div class="statutory-top-strip">
+      <span class="statutory-badge-pill">TAMIL NADU EXCISE</span>
+      <span>Official Government Reserve Concierge &bull; Guaranteed Statutory MRP &bull; Strictly 21+ Only</span>
+    </div>
+
+    <header class="human-header">
+      <div class="header-container">
+        <a href="index.html" class="brand-group" title="Back to TASMAC Store">
+          <div class="brand-logo-gem">
+            <img src="img/tasmac-luxury-clean-cutout.png" alt="TASMAC Emblem" class="brand-logo-img" />
+          </div>
+          <div class="brand-text-col">
+            <span class="brand-title">TASMAC RESERVE</span>
+            <span class="brand-sub">Express Retail &bull; Chennai</span>
+          </div>
+        </a>
+
+        <div>
+          <a href="index.html" class="btn-return-store" title="Continue Shopping">
+            <i data-lucide="arrow-left" style="width: 14px; height: 14px; color: #ea580c;"></i>
+            <span>Return to Store</span>
+          </a>
+        </div>
+      </div>
+    </header>
+  </div>
+
+  <!-- Main Cart Workspace -->
+  <main class="cart-main-area">
+    <div class="cart-card">
+      
+      <!-- Step 1: Cart Items & Reservation Form -->
+      <div id="cart-step-details">
+        
+        <div style="margin-bottom: 20px;">
+          <div class="cart-header-badge">
+            <i data-lucide="shield-check" style="width: 13px; height: 13px;"></i>
+            <span>Direct Counter Reservation</span>
+          </div>
+          <h1 class="cart-header-title">Your Cart & Express Token</h1>
+          
+          <!-- Store Fulfillment Bar -->
+          <div class="store-summary-pill" id="cart-store-summary-pill">
+            <div class="store-summary-left">
+              <i data-lucide="map-pin" style="width: 15px; height: 15px; color: #ea580c; flex-shrink: 0;"></i>
+              <div>
+                <span>Pickup at: </span>
+                <span class="store-summary-name" id="cart-outlet-name">Shop #1085 (Elite), Usman Road</span>
+                <span class="store-summary-dist" id="cart-outlet-dist">(6.4 km away)</span>
+              </div>
+            </div>
+            <button type="button" class="store-change-btn" onclick="toggleOutletDrawer()">
+              <span>Change Outlet ▾</span>
+            </button>
+          </div>
+
+          <!-- Collapsible Outlet Picker Drawer -->
+          <div class="outlet-picker-drawer" id="outlet-picker-drawer">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Cart Items List (Rendered dynamically with bottle cutouts) -->
+        <div class="cart-items-wrapper" id="cart-items-list">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Checkout Form Section (visible when cart has items) -->
+        <div id="cart-form-section">
+          
+          <!-- Patron Account Status Banner -->
+          <div id="cart-auth-banner" class="auth-status-banner" style="display: none;">
+            <div style="display: flex; align-items: center; gap: 7px;">
+              <i data-lucide="check-circle-2" style="width: 15px; height: 15px;"></i>
+              <span>Signed in as <strong id="cart-logged-user-name">Patron</strong> (21+ Verified Patron)</span>
+            </div>
+            <a href="login.html" class="status-link" style="font-size: 11px;">Switch</a>
+          </div>
+
+          <div id="cart-guest-banner" class="guest-status-banner">
+            <span>Have a TASMAC account?</span>
+            <a href="login.html" class="status-link">Sign in for 1-click token &rarr;</a>
+          </div>
+
+          <!-- Reservation Form -->
+          <form onsubmit="handleReservationSubmit(event)">
+            <div class="form-group-4rge">
+              <label class="form-label-4rge" for="cust-name">
+                <i data-lucide="user" style="width: 13px; height: 13px; color: #64748b;"></i>
+                <span>Your Full Name (As per Govt Photo ID) *</span>
+              </label>
+              <input type="text" class="input-4rge" id="cust-name" placeholder="e.g. Enter your full name" required />
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+              <div class="form-group-4rge" style="margin-bottom: 0;">
+                <label class="form-label-4rge" for="cust-phone">
+                  <i data-lucide="phone" style="width: 13px; height: 13px; color: #64748b;"></i>
+                  <span>Mobile Number *</span>
+                </label>
+                <div class="input-wrapper-prefix">
+                  <span class="input-prefix-tag">+91</span>
+                  <input type="tel" class="input-4rge input-with-prefix" id="cust-phone" placeholder="98765 43210" maxlength="10" required />
+                </div>
+              </div>
+
+              <div class="form-group-4rge" style="margin-bottom: 0;">
+                <label class="form-label-4rge">
+                  <i data-lucide="shield" style="width: 13px; height: 13px; color: #64748b;"></i>
+                  <span>Govt ID Type *</span>
+                </label>
+                <select id="cust-id-type" style="display: none;" tabindex="-1">
+                  <option value="Aadhaar Card" selected>Aadhaar Card</option>
+                  <option value="Voter ID">Voter ID</option>
+                  <option value="Driving License">Driving License</option>
+                  <option value="Passport">Passport</option>
+                </select>
+
+                <!-- Custom Luxury Dropdown -->
+                <div class="luxury-select-wrapper" id="id-custom-select">
+                  <button type="button" class="luxury-select-trigger" onclick="toggleIdDropdown(event)">
+                    <div class="luxury-select-content-left">
+                      <span id="current-id-icon"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg></span>
+                      <span id="current-id-label">Aadhaar Card</span>
+                    </div>
+                    <i data-lucide="chevron-down" style="width: 14px; height: 14px; color: #64748b;"></i>
+                  </button>
+
+                  <div class="luxury-select-menu" id="id-select-menu">
+                    <div class="luxury-select-item active" onclick="selectIdOption('Aadhaar Card', 'credit-card')">
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="credit-card" style="width: 14px; height: 14px;"></i>
+                        <span>Aadhaar Card</span>
+                      </div>
+                      <i data-lucide="check" style="width: 13px; height: 13px;"></i>
+                    </div>
+                    <div class="luxury-select-item" onclick="selectIdOption('Voter ID', 'file-check')">
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="file-check" style="width: 14px; height: 14px;"></i>
+                        <span>Voter ID</span>
+                      </div>
+                      <i data-lucide="check" style="width: 13px; height: 13px;"></i>
+                    </div>
+                    <div class="luxury-select-item" onclick="selectIdOption('Driving License', 'car')">
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="car" style="width: 14px; height: 14px;"></i>
+                        <span>Driving License</span>
+                      </div>
+                      <i data-lucide="check" style="width: 13px; height: 13px;"></i>
+                    </div>
+                    <div class="luxury-select-item" onclick="selectIdOption('Passport', 'globe')">
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="globe" style="width: 14px; height: 14px;"></i>
+                        <span>Passport</span>
+                      </div>
+                      <i data-lucide="check" style="width: 13px; height: 13px;"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Statutory Alert -->
+            <div class="statutory-notice-box">
+              <i data-lucide="alert-circle" style="width: 16px; height: 16px;"></i>
+              <div>
+                <strong style="color: #0f172a;">Statutory Notice:</strong> Show original Govt ID at the dedicated VIP counter to claim your bottles. Maximum purchase limits per patron apply under state law.
+              </div>
+            </div>
+
+            <!-- Total Price Row -->
+            <div class="cart-total-banner">
+              <span class="cart-total-label">Total Payable at Counter:</span>
+              <span class="cart-total-num" id="cart-total-display">₹0</span>
+            </div>
+
+            <!-- Confirm Reservation Button -->
+            <button type="submit" class="btn-submit-token" id="btn-submit-reservation">
+              <span>Confirm & Generate Digital Token</span>
+              <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Step 2: Digital Token Success Receipt -->
+      <div id="cart-step-success" class="token-success-stage">
+        <div class="token-success-icon">
+          <i data-lucide="check" style="width: 30px; height: 30px;"></i>
+        </div>
+        <h2 style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 4px; font-family: var(--font-display);">Reservation Ready!</h2>
+        <p style="font-size: 13px; color: var(--muted-foreground); margin-bottom: 20px;">Present this digital token to the express counter cashier for 2-minute pickup.</p>
+
+        <!-- Digital Token Primitive Card -->
+        <div class="token-card-primitive">
+          <div class="token-card-header">
+            <div>
+              <span style="font-size: 10px; font-weight: 750; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--fp-font-mono);">DIGITAL TOKEN</span>
+              <div class="token-card-code" id="receipt-token-code">TSM-1085-8821</div>
+            </div>
+            <span class="token-status-pill">EXPRESS QUEUE</span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="token-info-row">
+              <span class="token-info-label">Customer Name:</span>
+              <span class="token-info-val" id="receipt-cust-name">Customer</span>
+            </div>
+            <div class="token-info-row">
+              <span class="token-info-label">Pickup Outlet:</span>
+              <span class="token-info-val" id="receipt-store-name">Shop #1085 (Elite), Usman Road</span>
+            </div>
+            <div class="token-info-row">
+              <span class="token-info-label">Operating Hours:</span>
+              <span class="token-info-val">12:00 PM – 10:00 PM (Daily)</span>
+            </div>
+            <div class="token-total-row">
+              <span style="font-weight: 700; color: #0f172a;">Statutory Total (MRP):</span>
+              <span class="token-total-amount" id="receipt-total-amount">₹0</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+          <a href="index.html" class="btn-explore-catalog" style="height: 42px; padding: 0 24px; font-size: 13.5px;">
+            <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+            <span>Done & Return to Store</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="toast-tray"></div>
+
+  <!-- Cart Client Logic -->
+  <script>
+    // Master Outlets Reference
+    const OUTLETS = [
+      { id: "1085", name: "Shop #1085 (Elite)", area: "Usman Road, T. Nagar", distance: "6.4 km away" },
+      { id: "1098", name: "Shop #1098", area: "Pondy Bazaar, T. Nagar", distance: "6.8 km away" },
+      { id: "1114", name: "Shop #1114", area: "Eldams Road, Teynampet", distance: "7.1 km away" },
+      { id: "1120", name: "Shop #1120 (Elite)", area: "Express Avenue Mall, Royapettah", distance: "4.5 km away" },
+      { id: "1135", name: "Shop #1135", area: "Cathedral Road, Gopalapuram", distance: "5.2 km away" },
+      { id: "1142", name: "Shop #1142", area: "TTK Road, Alwarpet", distance: "7.8 km away" },
+      { id: "1158", name: "Shop #1158", area: "Kodambakkam High Road, Nungambakkam", distance: "5.9 km away" },
+      { id: "1165", name: "Shop #1165 (Elite)", area: "Phoenix Marketcity, Velachery", distance: "13.2 km away" },
+      { id: "1012", name: "Shop #1012", area: "Parrys Corner, George Town", distance: "2.1 km away" },
+      { id: "1205", name: "Shop #1205 (Elite)", area: "VR Chennai Mall, Anna Nagar", distance: "8.6 km away" }
+    ];
+
+    let cart = [];
+    let selectedOutlet = OUTLETS[0];
+
+    // Load Cart from localStorage
+    function loadCartData() {
+      try {
+        const saved = localStorage.getItem("tasmac-cart");
+        cart = saved ? JSON.parse(saved) : [];
+      } catch (e) {
+        cart = [];
+      }
+
+      // Load selected outlet from localStorage
+      try {
+        const savedOutletId = localStorage.getItem("tasmac-selected-outlet-id");
+        if (savedOutletId) {
+          const match = OUTLETS.find(o => o.id === savedOutletId);
+          if (match) selectedOutlet = match;
+        }
+      } catch (e) {}
+
+      updateStorePill();
+      renderCartUI();
+      prefillUserData();
+    }
+
+    // Save Cart to localStorage
+    function saveCartData() {
+      try {
+        localStorage.setItem("tasmac-cart", JSON.stringify(cart));
+      } catch (e) {}
+    }
+
+    // Update Store Fulfillment Header
+    function updateStorePill() {
+      const nameEl = document.getElementById("cart-outlet-name");
+      const distEl = document.getElementById("cart-outlet-dist");
+      if (nameEl) nameEl.innerText = `${selectedOutlet.name}, ${selectedOutlet.area}`;
+      if (distEl) distEl.innerText = `(${selectedOutlet.distance})`;
+    }
+
+    // Toggle Outlet Picker Drawer
+    function toggleOutletDrawer() {
+      const drawer = document.getElementById("outlet-picker-drawer");
+      if (!drawer) return;
+      drawer.classList.toggle("open");
+      if (drawer.classList.contains("open")) {
+        drawer.innerHTML = OUTLETS.map(o => `
+          <div class="outlet-opt-row ${o.id === selectedOutlet.id ? 'active' : ''}" onclick="pickOutlet('${o.id}')">
+            <div>
+              <strong>${o.name}</strong> &bull; <span style="color:#64748b;">${o.area}</span>
+            </div>
+            <span style="font-family:var(--fp-font-mono); color:#ea580c; font-size:11.5px;">${o.distance}</span>
+          </div>
+        `).join("");
+      }
+    }
+
+    function pickOutlet(id) {
+      const found = OUTLETS.find(o => o.id === id);
+      if (found) {
+        selectedOutlet = found;
+        try { localStorage.setItem("tasmac-selected-outlet-id", id); } catch(e) {}
+        updateStorePill();
+        toggleOutletDrawer();
+        showToast(`Pickup outlet switched to ${found.name}`);
+      }
+    }
+
+    // Render Cart Items with Standalone Bottle Cutouts
+    function renderCartUI() {
+      const container = document.getElementById("cart-items-list");
+      const formSection = document.getElementById("cart-form-section");
+      const totalDisplay = document.getElementById("cart-total-display");
+      if (!container) return;
+
+      if (!cart || cart.length === 0) {
+        container.innerHTML = `
+          <div class="cart-empty-box">
+            <div class="cart-empty-icon-wrap">
+              <i data-lucide="shopping-bag" style="width: 28px; height: 28px;"></i>
+            </div>
+            <div class="cart-empty-title">Your Cart is Empty</div>
+            <p class="cart-empty-desc">
+              You haven't reserved any bottles yet. Browse our verified stock of single malts, fine whiskeys, beers and rums.
+            </p>
+            <a href="index.html" class="btn-explore-catalog">
+              <i data-lucide="compass" style="width: 15px; height: 15px;"></i>
+              <span>Explore Bottle Catalog</span>
+            </a>
+          </div>
+        `;
+        if (formSection) formSection.style.display = "none";
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      if (formSection) formSection.style.display = "block";
+
+      let total = 0;
+      container.innerHTML = cart.map(item => {
+        const lineTotal = item.price * item.qty;
+        total += lineTotal;
+
+        // Image fallback hierarchy
+        const bottleImg = item.img || item.image || `images/${item.id}.png`;
+
+        return `
+          <div class="cart-item-card">
+            <!-- Corresponding Bottle Cutout Stage -->
+            <div class="cart-bottle-stage">
+              <img 
+                src="${bottleImg}" 
+                alt="${item.name}" 
+                class="cart-bottle-img" 
+                onerror="this.src='img/tasmac-icon-128.png'" 
+              />
+            </div>
+
+            <!-- Bottle Information -->
+            <div class="cart-item-details">
+              <div class="cart-item-name" title="${item.name}">${item.name}</div>
+              <div class="cart-item-meta">
+                <span>${item.size || '750 ml'}</span>
+                <span>&bull;</span>
+                <span class="cart-item-unit-price">₹${item.price.toLocaleString()}</span>
+              </div>
+            </div>
+
+            <!-- Stepper Controls -->
+            <div class="cart-stepper-box">
+              <button type="button" class="btn-stepper" onclick="updateQty('${item.id}', -1)" title="Decrease">
+                <i data-lucide="minus" style="width: 12px; height: 12px;"></i>
+              </button>
+              <span class="cart-qty-value">${item.qty}</span>
+              <button type="button" class="btn-stepper" onclick="updateQty('${item.id}', 1)" title="Increase">
+                <i data-lucide="plus" style="width: 12px; height: 12px;"></i>
+              </button>
+            </div>
+
+            <!-- Item Price & Remove -->
+            <div class="cart-item-actions">
+              <div class="cart-item-total">₹${lineTotal.toLocaleString()}</div>
+              <button type="button" class="cart-item-remove" onclick="removeItem('${item.id}')" title="Remove bottle">
+                Remove
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      if (totalDisplay) {
+        totalDisplay.innerText = `₹${total.toLocaleString()}`;
+      }
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // Stepper Handlers
+    function updateQty(id, delta) {
+      const item = cart.find(ci => ci.id === id);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cart = cart.filter(ci => ci.id !== id);
+        showToast("Bottle removed from cart");
+      }
+      saveCartData();
+      renderCartUI();
+    }
+
+    function removeItem(id) {
+      cart = cart.filter(ci => ci.id !== id);
+      saveCartData();
+      renderCartUI();
+      showToast("Bottle removed from cart");
+    }
+
+    // Pre-populate Logged In Patron Data
+    function prefillUserData() {
+      const userJson = localStorage.getItem("tasmac-user");
+      const authBanner = document.getElementById("cart-auth-banner");
+      const guestBanner = document.getElementById("cart-guest-banner");
+      const nameInput = document.getElementById("cust-name");
+      const phoneInput = document.getElementById("cust-phone");
+
+      if (userJson) {
+        try {
+          const user = JSON.parse(userJson);
+          if (user && user.name) {
+            if (nameInput) nameInput.value = user.name;
+            if (phoneInput && user.phone) {
+              const cleanPhone = user.phone.replace('+91', '').trim();
+              phoneInput.value = cleanPhone;
+            }
+            if (authBanner) {
+              authBanner.style.display = "flex";
+              const userNameEl = document.getElementById("cart-logged-user-name");
+              if (userNameEl) userNameEl.innerText = user.name;
+            }
+            if (guestBanner) guestBanner.style.display = "none";
+          }
+        } catch(e) {}
+      } else {
+        if (authBanner) authBanner.style.display = "none";
+        if (guestBanner) guestBanner.style.display = "flex";
+      }
+    }
+
+    // Luxury Select for Govt ID
+    function toggleIdDropdown(e) {
+      e.stopPropagation();
+      const wrap = document.getElementById("id-custom-select");
+      if (wrap) wrap.classList.toggle("open");
+    }
+
+    const ID_ICONS = {
+      "credit-card": '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>',
+      "file-check": '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></svg>',
+      "car": '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>',
+      "globe": '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>'
+    };
+
+    function selectIdOption(value, iconName) {
+      const select = document.getElementById("cust-id-type");
+      const label = document.getElementById("current-id-label");
+      const iconBox = document.getElementById("current-id-icon");
+      if (select) select.value = value;
+      if (label) label.innerText = value;
+      if (iconBox && ID_ICONS[iconName]) iconBox.innerHTML = ID_ICONS[iconName];
+
+      document.querySelectorAll(".luxury-select-item").forEach(el => {
+        el.classList.toggle("active", el.innerText.includes(value));
+      });
+
+      const wrap = document.getElementById("id-custom-select");
+      if (wrap) wrap.classList.remove("open");
+    }
+
+    document.addEventListener("click", () => {
+      const wrap = document.getElementById("id-custom-select");
+      if (wrap) wrap.classList.remove("open");
+    });
+
+    // Handle Reservation Form Submission
+    function handleReservationSubmit(e) {
+      e.preventDefault();
+      if (!cart || cart.length === 0) {
+        showToast("Your cart is empty. Please add bottles first.");
+        return;
+      }
+
+      const nameInput = document.getElementById("cust-name");
+      const phoneInput = document.getElementById("cust-phone");
+      const idSelect = document.getElementById("cust-id-type");
+
+      const name = nameInput ? nameInput.value.trim() : "Patron";
+      const phone = phoneInput ? phoneInput.value.trim() : "";
+      const idType = idSelect ? idSelect.value : "Aadhaar Card";
+
+      const total = cart.reduce((acc, ci) => acc + (ci.price * ci.qty), 0);
+      const token = `TSM-${selectedOutlet.id}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      // Sync reservation to Supabase Database if configured
+      if (window.TASMAC_SUPABASE && window.TASMAC_SUPABASE.isConfigured()) {
+        window.TASMAC_SUPABASE.createReservation({
+          token: token,
+          name: name,
+          phone: phone ? `+91 ${phone}` : "",
+          idType: idType,
+          outletId: selectedOutlet.id,
+          outletName: selectedOutlet.name,
+          amount: total,
+          items: cart.map(ci => ({ id: ci.id, name: ci.name, size: ci.size, price: ci.price, qty: ci.qty }))
+        }).then(res => {
+          if (res.success && !res.localOnly) {
+            console.log("✅ Reservation stored in Supabase database:", token);
+          }
+        });
+      }
+
+      // Populate Digital Receipt Card
+      const codeEl = document.getElementById("receipt-token-code");
+      const custEl = document.getElementById("receipt-cust-name");
+      const storeEl = document.getElementById("receipt-store-name");
+      const amtEl = document.getElementById("receipt-total-amount");
+
+      if (codeEl) codeEl.innerText = token;
+      if (custEl) custEl.innerText = name;
+      if (storeEl) storeEl.innerText = `${selectedOutlet.name}, ${selectedOutlet.area}`;
+      if (amtEl) amtEl.innerText = `₹${total.toLocaleString()}`;
+
+      // Switch views
+      document.getElementById("cart-step-details").style.display = "none";
+      document.getElementById("cart-step-success").style.display = "block";
+
+      // Clear cart
+      cart = [];
+      saveCartData();
+      showToast("Token generated successfully!");
+      if (window.lucide) lucide.createIcons();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Toast Messenger
+    function showToast(msg) {
+      const tray = document.getElementById("toast-tray");
+      if (!tray) return;
+      const t = document.createElement("div");
+      t.className = "toast-msg";
+      t.innerHTML = `<i data-lucide="check" style="width: 14px; height: 14px; color: #34d399;"></i><span>${msg}</span>`;
+      tray.appendChild(t);
+      if (window.lucide) lucide.createIcons();
+      setTimeout(() => {
+        t.style.opacity = "0";
+        t.style.transform = "translateY(10px)";
+        t.style.transition = "all 0.25s ease";
+        setTimeout(() => t.remove(), 250);
+      }, 3000);
+    }
+
+    // Initialize on DOM load
+    document.addEventListener("DOMContentLoaded", () => {
+      loadCartData();
+      if (window.lucide) lucide.createIcons();
+    });
+
+    // Reload cart if user returns from another tab
+    window.addEventListener("pageshow", loadCartData);
+  </script>
+</body>
+</html>

@@ -72,7 +72,8 @@ Unlike administrative back-office ERPs or warehouse inventory tables, this proje
 
 ```plaintext
 Tasmac e commerce/
-├── index.html            # Main single-page storefront (UI, Leaflet Map, Cart, Modals)
+├── index.html            # Main single-page storefront (UI, Leaflet Map, Catalog)
+├── cart.html             # Dedicated direct counter reservation & cart portal (Bottle photography preview)
 ├── login.html            # Dedicated customer authentication portal (Mobile OTP, Govt ID, 21+ Verification)
 ├── readme.md             # Project documentation & technical specifications
 ├── css/
