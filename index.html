@@ -850,6 +850,169 @@
 
 
 
+        /* Notification Bell & Dropdown */
+    .notif-bell-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+    .btn-notif-bell {
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-full);
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      color: var(--foreground);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: background-color 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+      flex-shrink: 0;
+    }
+    .btn-notif-bell:hover {
+      background: var(--muted);
+      border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+      transform: translateY(-1px);
+    }
+    .btn-notif-bell:active {
+      transform: translateY(0);
+    }
+    .btn-notif-bell svg,
+    .btn-notif-bell [data-lucide] {
+      width: 17px;
+      height: 17px;
+      color: var(--foreground);
+      stroke-width: 2;
+    }
+    .notif-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 800;
+      min-width: 17px;
+      height: 17px;
+      line-height: 17px;
+      text-align: center;
+      padding: 0 4px;
+      border-radius: 9999px;
+      font-family: var(--fp-font-mono);
+      border: 2px solid #ffffff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .notif-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 320px;
+      max-width: 90vw;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.05);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      animation: notifDropIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+    .notif-dropdown.open {
+      display: flex;
+    }
+    @keyframes notifDropIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .notif-header {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--muted);
+    }
+    .notif-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--foreground);
+      letter-spacing: -0.01em;
+    }
+    .notif-clear-btn {
+      background: none;
+      border: none;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--primary);
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: var(--radius-sm);
+      transition: opacity 0.15s ease;
+    }
+    .notif-clear-btn:hover {
+      text-decoration: underline;
+    }
+    .notif-list {
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 4px 0;
+    }
+    .notif-item {
+      padding: 10px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+      transition: background-color 0.15s ease;
+    }
+    .notif-item:last-child {
+      border-bottom: none;
+    }
+    .notif-item:hover {
+      background: var(--muted);
+    }
+    .notif-icon-box {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--primary) 12%, transparent);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .notif-text-col {
+      flex: 1;
+      min-width: 0;
+    }
+    .notif-item-msg {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--foreground);
+      line-height: 1.35;
+    }
+    .notif-item-time {
+      font-size: 10.5px;
+      color: var(--muted-foreground);
+      font-family: var(--fp-font-mono);
+      margin-top: 2px;
+    }
+    .notif-empty-state {
+      padding: 28px 16px;
+      text-align: center;
+      color: var(--muted-foreground);
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
     /* Cart Action Pill Bubble */
     .cart-pill-bubble {
       background: var(--primary);
@@ -3396,6 +3559,31 @@
             </div>
           </div>
 
+          <!-- Notification Bell Dropdown -->
+          <div class="notif-bell-wrap" id="nav-notif-wrap">
+            <button type="button" class="btn-notif-bell" id="header-notif-btn" onclick="toggleNotifDropdown(event)" title="Notifications" aria-label="Notifications">
+              <i data-lucide="bell" style="width: 17px; height: 17px;"></i>
+              <span class="notif-badge" id="notif-badge" style="display: none;">0</span>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <div class="notif-dropdown" id="notif-dropdown" onclick="event.stopPropagation()">
+              <div class="notif-header">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <i data-lucide="bell" style="width: 14px; height: 14px; color: var(--primary);"></i>
+                  <span class="notif-title">Notifications</span>
+                </div>
+                <button type="button" class="notif-clear-btn" onclick="clearNotifications()">Clear all</button>
+              </div>
+              <div class="notif-list" id="notif-list">
+                <div class="notif-empty-state">
+                  <i data-lucide="bell-off" style="width: 22px; height: 22px; color: var(--muted-foreground); margin-bottom: 6px;"></i>
+                  <span>No notifications yet</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Cart Bubble (4RGE Primary Button) -->
           <button type="button" class="cart-pill-bubble" id="header-cart-btn" onclick="openCheckoutModal()" title="Open Cart">
             <i data-lucide="shopping-bag" style="width: 15px; height: 15px;"></i>
@@ -4866,6 +5054,8 @@
 
       if (window.lucide) lucide.createIcons();
       syncCartFromStorage();
+      renderNotifications();
+      updateNotifBadge();
       updateActiveStoreUI();
       renderProductsGrid();
       initUserAuth();
@@ -4911,6 +5101,7 @@
           closeMapModal();
           closeCheckoutModal();
           closeProductModal();
+          closeNotifDropdown();
           unlockBackground();
           const sortSelect = document.getElementById("sort-custom-select");
           if (sortSelect) {
@@ -4923,6 +5114,7 @@
 
       // Dismiss custom dropdown on outside click
       document.addEventListener("click", function(e) {
+        closeNotifDropdown();
         const select = document.getElementById("sort-custom-select");
         if (select && !select.contains(e.target)) {
           select.classList.remove("open");
@@ -5060,7 +5252,7 @@
                 <span class="mrp-micro-label">Govt Printed MRP</span>
                 <span class="price-number">₹${item.price.toLocaleString()}</span>
               </div>
-              <button class="btn-reserve-action" onclick="event.stopPropagation(); addToCart('${item.id}')" title="Reserve bottle">
+              <button class="btn-reserve-action" onclick="event.stopPropagation(); addToCart('${item.id}', this)" title="Reserve bottle">
                 <i data-lucide="plus" style="width: 13px; height: 13px;"></i>
                 <span>Reserve</span>
               </button>
@@ -5541,7 +5733,7 @@
     }
 
     // 4. Cart Logic
-    function addToCart(productId) {
+    function addToCart(productId, btnEl) {
       if (!productId) return;
       const cleanId = String(productId).trim();
       const p = (Array.isArray(DRINKS) ? DRINKS.find(d => String(d.id).trim() === cleanId) : null) ||
@@ -5587,7 +5779,21 @@
       }
 
       updateCartUI();
-      showToast('Added ' + p.name + ' (₹' + Number(p.price).toLocaleString() + ')');
+
+      // Silent notification in the Notification Bell (No screen toast spam)
+      addNotification('Reserved ' + p.name + ' (₹' + Number(p.price).toLocaleString() + ')');
+
+      // Tactile button confirmation
+      if (btnEl) {
+        const origContent = btnEl.innerHTML;
+        btnEl.innerHTML = '<i data-lucide="check" style="width: 13px; height: 13px; color: var(--fp-state-success);"></i><span style="color: var(--fp-state-success);">Added</span>';
+        if (window.lucide) lucide.createIcons();
+        setTimeout(() => {
+          btnEl.innerHTML = origContent;
+          if (window.lucide) lucide.createIcons();
+        }, 900);
+      }
+
       if (document.getElementById("checkout-modal") && document.getElementById("checkout-modal").classList.contains("open")) {
         renderCheckoutModal();
       }
@@ -6247,19 +6453,136 @@
       }
     }
 
-    // 7. Toast Notification
+    // =========================================================================
+    // 7. NOTIFICATION BELL MANAGER & RESILIENT TOAST CONTROLLER
+    // =========================================================================
+    let notifications = [];
+    try {
+      const savedNotifs = localStorage.getItem('tasmac-notifs');
+      if (savedNotifs) notifications = JSON.parse(savedNotifs);
+      if (!Array.isArray(notifications)) notifications = [];
+    } catch(e) {
+      notifications = [];
+    }
+
+    function saveNotifications() {
+      try {
+        localStorage.setItem('tasmac-notifs', JSON.stringify(notifications.slice(0, 30)));
+      } catch(e) {}
+    }
+
+    function addNotification(msg) {
+      if (!msg) return;
+      if (!Array.isArray(notifications)) notifications = [];
+      const item = {
+        id: 'notif-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+        msg: msg,
+        timestamp: Date.now()
+      };
+      notifications.unshift(item);
+      if (notifications.length > 30) notifications.pop();
+      saveNotifications();
+      renderNotifications();
+      updateNotifBadge();
+    }
+
+    function clearNotifications() {
+      notifications = [];
+      saveNotifications();
+      renderNotifications();
+      updateNotifBadge();
+    }
+
+    function updateNotifBadge() {
+      const badge = document.getElementById("notif-badge");
+      if (!badge) return;
+      const count = notifications.length;
+      if (count > 0) {
+        badge.innerText = count > 9 ? '9+' : count;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function formatNotifTime(ts) {
+      if (!ts) return 'Just now';
+      const diffSec = Math.floor((Date.now() - ts) / 1000);
+      if (diffSec < 60) return 'Just now';
+      if (diffSec < 3600) return Math.floor(diffSec / 60) + 'm ago';
+      if (diffSec < 86400) return Math.floor(diffSec / 3600) + 'h ago';
+      return 'Earlier';
+    }
+
+    function renderNotifications() {
+      const list = document.getElementById("notif-list");
+      if (!list) return;
+      if (!notifications || notifications.length === 0) {
+        list.innerHTML = `
+          <div class="notif-empty-state">
+            <i data-lucide="bell-off" style="width: 22px; height: 22px; color: var(--muted-foreground); margin-bottom: 6px;"></i>
+            <span>No notifications yet</span>
+          </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      list.innerHTML = notifications.map(n => `
+        <div class="notif-item">
+          <div class="notif-icon-box">
+            <i data-lucide="check" style="width: 13px; height: 13px;"></i>
+          </div>
+          <div class="notif-text-col">
+            <div class="notif-item-msg">${n.msg}</div>
+            <div class="notif-item-time">${formatNotifTime(n.timestamp)}</div>
+          </div>
+        </div>
+      `).join('');
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function toggleNotifDropdown(e) {
+      if (e) e.stopPropagation();
+      const dropdown = document.getElementById("notif-dropdown");
+      const userDropdown = document.getElementById("nav-user-dropdown");
+      if (userDropdown) userDropdown.classList.remove("open");
+      if (dropdown) {
+        dropdown.classList.toggle("open");
+        if (dropdown.classList.contains("open")) {
+          renderNotifications();
+        }
+      }
+    }
+
+    function closeNotifDropdown() {
+      const dropdown = document.getElementById("notif-dropdown");
+      if (dropdown) dropdown.classList.remove("open");
+    }
+
+    // Single-toast guard: NEVER allows more than one toast at a time
+    let activeToastTimer = null;
     function showToast(msg) {
       const tray = document.getElementById("toast-tray");
+      if (!tray) return;
+
+      // Immediately clear all previous toasts so they NEVER stack down the screen
+      tray.innerHTML = '';
+      if (activeToastTimer) clearTimeout(activeToastTimer);
+
       const toast = document.createElement("div");
       toast.className = "toast-human";
       toast.innerHTML = `<i data-lucide="check" style="width:16px;height:16px;color:#34D399;"></i><span>${msg}</span>`;
       tray.appendChild(toast);
       if (window.lucide) lucide.createIcons();
 
-      setTimeout(() => {
+      activeToastTimer = setTimeout(() => {
         toast.style.opacity = "0";
-        setTimeout(() => toast.remove(), 200);
-      }, 3500);
+        setTimeout(() => {
+          if (toast.parentNode) toast.remove();
+        }, 200);
+      }, 1800);
     }
   </script>
 </body>

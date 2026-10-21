@@ -223,6 +223,154 @@
       letter-spacing: 0.02em;
     }
 
+        /* Notification Bell & Dropdown */
+    .notif-bell-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+    .btn-notif-bell {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      color: var(--foreground);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: background-color 0.18s ease, transform 0.18s ease;
+      flex-shrink: 0;
+    }
+    .btn-notif-bell:hover {
+      background: var(--muted);
+      border-color: rgba(0, 0, 0, 0.22);
+      transform: translateY(-1px);
+    }
+    .btn-notif-bell svg,
+    .btn-notif-bell [data-lucide] {
+      width: 15px;
+      height: 15px;
+      color: var(--foreground);
+      stroke-width: 2;
+    }
+    .notif-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 9.5px;
+      font-weight: 800;
+      min-width: 15px;
+      height: 15px;
+      line-height: 15px;
+      text-align: center;
+      padding: 0 3px;
+      border-radius: 9999px;
+      font-family: var(--fp-font-mono);
+      border: 2px solid #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .notif-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 300px;
+      max-width: 90vw;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      animation: notifDropIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+    .notif-dropdown.open {
+      display: flex;
+    }
+    .notif-header {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--muted);
+    }
+    .notif-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+    .notif-clear-btn {
+      background: none;
+      border: none;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--primary);
+      cursor: pointer;
+      padding: 2px;
+    }
+    .notif-clear-btn:hover {
+      text-decoration: underline;
+    }
+    .notif-list {
+      max-height: 260px;
+      overflow-y: auto;
+      padding: 4px 0;
+    }
+    .notif-item {
+      padding: 9px 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      border-bottom: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    }
+    .notif-item:last-child {
+      border-bottom: none;
+    }
+    .notif-item:hover {
+      background: var(--muted);
+    }
+    .notif-icon-box {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--primary) 12%, transparent);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .notif-text-col {
+      flex: 1;
+      min-width: 0;
+    }
+    .notif-item-msg {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--foreground);
+      line-height: 1.35;
+    }
+    .notif-item-time {
+      font-size: 10px;
+      color: var(--muted-foreground);
+      font-family: var(--fp-font-mono);
+      margin-top: 2px;
+    }
+    .notif-empty-state {
+      padding: 24px 14px;
+      text-align: center;
+      color: var(--muted-foreground);
+      font-size: 11.5px;
+    }
+
     /* Header Cart Badge */
     .cart-pill-bubble {
       background: var(--primary);
@@ -982,6 +1130,26 @@
         </a>
 
         <div style="display: flex; align-items: center; gap: 10px;">
+          <!-- Notification Bell -->
+          <div class="notif-bell-wrap" id="nav-notif-wrap">
+            <button type="button" class="btn-notif-bell" id="header-notif-btn" onclick="toggleNotifDropdown(event)" title="Notifications" aria-label="Notifications">
+              <i data-lucide="bell" style="width: 15px; height: 15px;"></i>
+              <span class="notif-badge" id="notif-badge" style="display: none;">0</span>
+            </button>
+            <div class="notif-dropdown" id="notif-dropdown" onclick="event.stopPropagation()">
+              <div class="notif-header">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <i data-lucide="bell" style="width: 13px; height: 13px; color: var(--primary);"></i>
+                  <span class="notif-title">Notifications</span>
+                </div>
+                <button type="button" class="notif-clear-btn" onclick="clearNotifications()">Clear all</button>
+              </div>
+              <div class="notif-list" id="notif-list">
+                <div class="notif-empty-state">No notifications yet</div>
+              </div>
+            </div>
+          </div>
+
           <div class="cart-pill-bubble" title="Items currently selected in reservation cart">
             <i data-lucide="shopping-bag" style="width: 14px; height: 14px;"></i>
             <span class="cart-label">Cart</span>
@@ -1537,26 +1705,139 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Toast Messenger
+    // =========================================================================
+    // NOTIFICATION BELL & RESILIENT TOAST CONTROLLER
+    // =========================================================================
+    let notifications = [];
+    try {
+      const savedNotifs = localStorage.getItem('tasmac-notifs');
+      if (savedNotifs) notifications = JSON.parse(savedNotifs);
+      if (!Array.isArray(notifications)) notifications = [];
+    } catch(e) {
+      notifications = [];
+    }
+
+    function saveNotifications() {
+      try {
+        localStorage.setItem('tasmac-notifs', JSON.stringify(notifications.slice(0, 30)));
+      } catch(e) {}
+    }
+
+    function addNotification(msg) {
+      if (!msg) return;
+      if (!Array.isArray(notifications)) notifications = [];
+      const item = {
+        id: 'notif-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4),
+        msg: msg,
+        timestamp: Date.now()
+      };
+      notifications.unshift(item);
+      if (notifications.length > 30) notifications.pop();
+      saveNotifications();
+      renderNotifications();
+      updateNotifBadge();
+    }
+
+    function clearNotifications() {
+      notifications = [];
+      saveNotifications();
+      renderNotifications();
+      updateNotifBadge();
+    }
+
+    function updateNotifBadge() {
+      const badge = document.getElementById("notif-badge");
+      if (!badge) return;
+      const count = notifications.length;
+      if (count > 0) {
+        badge.innerText = count > 9 ? '9+' : count;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function formatNotifTime(ts) {
+      if (!ts) return 'Just now';
+      const diffSec = Math.floor((Date.now() - ts) / 1000);
+      if (diffSec < 60) return 'Just now';
+      if (diffSec < 3600) return Math.floor(diffSec / 60) + 'm ago';
+      if (diffSec < 86400) return Math.floor(diffSec / 3600) + 'h ago';
+      return 'Earlier';
+    }
+
+    function renderNotifications() {
+      const list = document.getElementById("notif-list");
+      if (!list) return;
+      if (!notifications || notifications.length === 0) {
+        list.innerHTML = '<div class="notif-empty-state">No notifications yet</div>';
+        return;
+      }
+
+      list.innerHTML = notifications.map(n => `
+        <div class="notif-item">
+          <div class="notif-icon-box">
+            <i data-lucide="check" style="width: 12px; height: 12px;"></i>
+          </div>
+          <div class="notif-text-col">
+            <div class="notif-item-msg">${n.msg}</div>
+            <div class="notif-item-time">${formatNotifTime(n.timestamp)}</div>
+          </div>
+        </div>
+      `).join('');
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function toggleNotifDropdown(e) {
+      if (e) e.stopPropagation();
+      const dropdown = document.getElementById("notif-dropdown");
+      if (dropdown) {
+        dropdown.classList.toggle("open");
+        if (dropdown.classList.contains("open")) {
+          renderNotifications();
+        }
+      }
+    }
+
+    function closeNotifDropdown() {
+      const dropdown = document.getElementById("notif-dropdown");
+      if (dropdown) dropdown.classList.remove("open");
+    }
+
+    // Document listeners to close dropdown
+    document.addEventListener("click", closeNotifDropdown);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeNotifDropdown(); });
+
+    // Toast Messenger (Single clean toast if called, no stacking)
+    let cartToastTimer = null;
     function showToast(msg) {
       const tray = document.getElementById("toast-tray");
       if (!tray) return;
+
+      // Clear previous toasts so they NEVER stack down the screen
+      tray.innerHTML = '';
+      if (cartToastTimer) clearTimeout(cartToastTimer);
+
       const t = document.createElement("div");
       t.className = "toast-msg";
       t.innerHTML = `<i data-lucide="check" style="width: 14px; height: 14px; color: #34d399;"></i><span>${msg}</span>`;
       tray.appendChild(t);
       if (window.lucide) lucide.createIcons();
-      setTimeout(() => {
+
+      cartToastTimer = setTimeout(() => {
         t.style.opacity = "0";
         t.style.transform = "translateY(10px)";
         t.style.transition = "all 0.25s ease";
-        setTimeout(() => t.remove(), 250);
-      }, 3000);
+        setTimeout(() => { if (t.parentNode) t.remove(); }, 250);
+      }, 1800);
     }
 
     // Initialize on DOM load
     document.addEventListener("DOMContentLoaded", () => {
       loadCartData();
+      renderNotifications();
+      updateNotifBadge();
       if (window.lucide) lucide.createIcons();
     });
 
