@@ -730,27 +730,22 @@
       font-family: var(--fp-font-mono);
     }
 
-    /* Left Group: Brand Logo + Location Chip (Locked together on Left) */
-    .header-brand-picker-col {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-shrink: 0;
-    }
-
-    /* Pickup Store Location Chip */
+    /* Pickup Store Location Chip (Restored to original place with anti-overflow) */
     .header-location-picker {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      padding: 6px 12px;
+      padding: 6px 14px;
       cursor: pointer;
       transition: var(--transition);
-      max-width: 320px;
+      max-width: 380px;
+      width: auto;
       box-shadow: var(--fp-shadow-1);
+      overflow: hidden !important; /* HARD GUARANTEE: Wordings NEVER stick outside box */
+      flex-shrink: 0;
     }
 
     .header-location-picker:hover {
@@ -763,6 +758,8 @@
       display: flex;
       flex-direction: column;
       text-align: left;
+      min-width: 0; /* Enables proper flexbox text containment */
+      overflow: hidden;
     }
 
     .location-sub {
@@ -772,15 +769,21 @@
       color: var(--muted-foreground);
       letter-spacing: 0.06em;
       font-family: var(--fp-font-mono);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .location-name {
       font-size: 12px;
       font-weight: 650;
       color: var(--foreground);
+      font-family: var(--font-sans, "Plus Jakarta Sans", system-ui, sans-serif);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      max-width: 100%;
+      display: block;
     }
 
     /* Right Action Controls */
@@ -2994,19 +2997,16 @@
        ========================================================================= */
     @media (max-width: 1180px) {
       .header-location-picker {
-        max-width: 220px;
+        max-width: 320px;
       }
       .location-name {
-        max-width: 130px;
+        max-width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
       }
-      .btn-search-trigger {
-        width: 170px;
-      }
       .header-right-actions {
-        gap: 6px;
+        gap: 8px;
       }
       .user-profile-pill {
         padding: 3px 8px 3px 4px;
@@ -3086,27 +3086,22 @@
       }
 
       /* Maintain clean layout on mobile without jumping */
-      .header-brand-picker-col {
-        gap: 8px;
-        min-width: 0;
-      }
       .header-location-picker {
-        max-width: 220px;
+        max-width: 260px;
         padding: 6px 10px;
         background: var(--secondary);
+        overflow: hidden !important;
       }
-      @media (max-width: 580px) {
+      @media (max-width: 680px) {
         .header-container {
           flex-wrap: wrap;
-        }
-        .header-brand-picker-col {
-          display: contents;
         }
         .header-location-picker {
           order: 3;
           width: 100%;
           max-width: 100%;
           margin-top: 2px;
+          overflow: hidden !important;
         }
       }
       .location-sub {
@@ -3502,26 +3497,23 @@
     <header class="human-header">
       <div class="header-container">
         
-        <!-- Left Brand & Store Location Group (Locked together on Left) -->
-        <div class="header-brand-picker-col">
-          <!-- Brand Identity -->
-          <a class="brand-group" onclick="window.scrollTo({top:0, behavior:'smooth'})" title="TASMAC Reserve — Express Retail">
-            <div class="brand-logo-gem">
-              <img src="img/tasmac-luxury-clean-cutout.png" alt="TASMAC Reserve Emblem" class="brand-logo-img">
-            </div>
-            <div class="brand-text-col">
-              <span class="brand-title">TASMAC</span>
-              <span class="brand-sub">Express Retail</span>
-            </div>
-          </a>
+        <!-- Brand Identity -->
+        <a class="brand-group" onclick="window.scrollTo({top:0, behavior:'smooth'})" title="TASMAC Reserve — Express Retail">
+          <div class="brand-logo-gem">
+            <img src="img/tasmac-luxury-clean-cutout.png" alt="TASMAC Reserve Emblem" class="brand-logo-img">
+          </div>
+          <div class="brand-text-col">
+            <span class="brand-title">TASMAC</span>
+            <span class="brand-sub">Express Retail</span>
+          </div>
+        </a>
 
-          <!-- Pickup Store Selector (4RGE Outline Trigger) -->
-          <div class="header-location-picker" onclick="openShopSelectorModal()" title="Change Your Store">
-            <i data-lucide="map-pin" style="width: 15px; height: 15px; color: var(--primary);"></i>
-            <div class="location-text-wrap">
-              <span class="location-sub">Pickup Counter</span>
-              <span class="location-name" id="nav-selected-shop">Shop #1085 (Elite), Usman Road (6.4 km) ▾</span>
-            </div>
+        <!-- Pickup Store Selector (Restored to exact old place with full text containment) -->
+        <div class="header-location-picker" onclick="openShopSelectorModal()" title="Change Your Store">
+          <i data-lucide="map-pin" style="width: 15px; height: 15px; color: var(--primary); flex-shrink: 0;"></i>
+          <div class="location-text-wrap">
+            <span class="location-sub">Pickup Counter</span>
+            <span class="location-name" id="nav-selected-shop">Shop #1085 (Elite), Usman Road (6.4 km) ▾</span>
           </div>
         </div>
 
