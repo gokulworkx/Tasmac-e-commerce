@@ -4765,10 +4765,28 @@
     let mapMarkers = {}; // shopId -> Leaflet marker
     let selectedOutlet = OUTLETS[0];
     let cart = [];
-    try {
-      const savedCart = localStorage.getItem('tasmac-cart');
-      if (savedCart) cart = JSON.parse(savedCart);
-    } catch(e) {}
+    function syncCartFromStorage() {
+      try {
+        const savedCart = localStorage.getItem('tasmac-cart');
+        if (savedCart) {
+          const parsed = JSON.parse(savedCart);
+          cart = Array.isArray(parsed) ? parsed : [];
+        } else {
+          cart = [];
+        }
+      } catch(e) {
+        cart = [];
+      }
+      updateCartUI();
+    }
+    // Listen for cross-tab updates and browser navigation cache restores
+    window.addEventListener('pageshow', function () { syncCartFromStorage(); });
+    window.addEventListener('focus', function () { syncCartFromStorage(); });
+    window.addEventListener('storage', function (e) {
+      if (!e.key || e.key === 'tasmac-cart') {
+        syncCartFromStorage();
+      }
+    });
     let currentCategory = "All";
     let searchFilter = "";
     let sortMode = "popular";
@@ -4847,6 +4865,7 @@
       }
 
       if (window.lucide) lucide.createIcons();
+      syncCartFromStorage();
       updateActiveStoreUI();
       renderProductsGrid();
       initUserAuth();
@@ -5439,7 +5458,8 @@
 
     // 4. Product Quickview Modal Handlers
     function openProductQuickview(productId) {
-      const p = DRINKS.find(d => d.id === productId);
+      const cleanId = String(productId).trim();
+      const p = (Array.isArray(DRINKS) ? DRINKS.find(d => String(d.id).trim() === cleanId) : null) || MASTER_CATALOG.find(d => String(d.id).trim() === cleanId);
       if (!p) return;
 
       const modalContent = document.getElementById("quickview-modal-content");
@@ -5522,27 +5542,61 @@
 
     // 4. Cart Logic
     function addToCart(productId) {
-      const p = DRINKS.find(d => d.id === productId);
-      if (!p) return;
-
-      const existing = cart.find(ci => ci.id === productId);
-      if (existing) {
-        existing.qty += 1;
-      } else {
-        cart.push({ ...p, qty: 1 });
+      if (!productId) return;
+      const cleanId = String(productId).trim();
+      const p = (Array.isArray(DRINKS) ? DRINKS.find(d => String(d.id).trim() === cleanId) : null) ||
+                MASTER_CATALOG.find(d => String(d.id).trim() === cleanId);
+      if (!p) {
+        console.warn('Drink not found in catalog:', productId);
+        return;
       }
 
-      try { localStorage.setItem("tasmac-cart", JSON.stringify(cart)); } catch(e) {}
+      if (!Array.isArray(cart)) {
+        try {
+          const savedCart = localStorage.getItem('tasmac-cart');
+          cart = savedCart ? JSON.parse(savedCart) : [];
+        } catch(e) {
+          cart = [];
+        }
+        if (!Array.isArray(cart)) cart = [];
+      }
+
+      const existing = cart.find(ci => String(ci.id).trim() === cleanId);
+      if (existing) {
+        existing.qty = (Number(existing.qty) || 0) + 1;
+      } else {
+        cart.push({
+          id: p.id,
+          name: p.name,
+          brand: p.brand || '',
+          category: p.category || '',
+          size: p.size || '750 ml',
+          price: Number(p.price) || 0,
+          rating: p.rating || '4.5',
+          origin: p.origin || '',
+          desc: p.desc || p.description || '',
+          img: p.img || p.img_url || p.image || ('images/' + p.id + '.png'),
+          qty: 1
+        });
+      }
+
+      try {
+        localStorage.setItem("tasmac-cart", JSON.stringify(cart));
+      } catch(e) {
+        console.warn('Storage save warning:', e);
+      }
+
       updateCartUI();
-      showToast(`Added ${p.name} (₹${p.price})`);
+      showToast('Added ' + p.name + ' (₹' + Number(p.price).toLocaleString() + ')');
       if (document.getElementById("checkout-modal") && document.getElementById("checkout-modal").classList.contains("open")) {
         renderCheckoutModal();
       }
     }
 
     function updateCartUI() {
-      const totalCount = cart.reduce((acc, ci) => acc + ci.qty, 0);
-      const totalPrice = cart.reduce((acc, ci) => acc + (ci.price * ci.qty), 0);
+      if (!Array.isArray(cart)) cart = [];
+      const totalCount = cart.reduce((acc, ci) => acc + (Number(ci.qty) || 0), 0);
+      const totalPrice = cart.reduce((acc, ci) => acc + ((Number(ci.price) || 0) * (Number(ci.qty) || 0)), 0);
 
       const navBadge = document.getElementById("nav-cart-badge");
       if (navBadge) {
@@ -5558,8 +5612,8 @@
           floatBar.classList.add("visible");
           const floatQty = document.getElementById("float-qty");
           const floatTotal = document.getElementById("float-total");
-          if (floatQty) floatQty.innerText = `${totalCount} item${totalCount > 1 ? 's' : ''}`;
-          if (floatTotal) floatTotal.innerText = `₹${totalPrice.toLocaleString()}`;
+          if (floatQty) floatQty.innerText = totalCount + (totalCount > 1 ? ' items' : ' item');
+          if (floatTotal) floatTotal.innerText = '₹' + totalPrice.toLocaleString();
         } else {
           floatBar.classList.remove("visible");
         }
@@ -5695,11 +5749,13 @@
     }
 
     function updateCartItemQty(productId, delta) {
-      const item = cart.find(ci => ci.id === productId);
+      if (!Array.isArray(cart)) cart = [];
+      const cleanId = String(productId).trim();
+      const item = cart.find(ci => String(ci.id).trim() === cleanId);
       if (!item) return;
-      item.qty += delta;
+      item.qty = (Number(item.qty) || 0) + delta;
       if (item.qty <= 0) {
-        cart = cart.filter(ci => ci.id !== productId);
+        cart = cart.filter(ci => String(ci.id).trim() !== cleanId);
       }
       try { localStorage.setItem("tasmac-cart", JSON.stringify(cart)); } catch(e) {}
       updateCartUI();
@@ -5707,7 +5763,9 @@
     }
 
     function removeFromCart(productId) {
-      cart = cart.filter(ci => ci.id !== productId);
+      if (!Array.isArray(cart)) cart = [];
+      const cleanId = String(productId).trim();
+      cart = cart.filter(ci => String(ci.id).trim() !== cleanId);
       try { localStorage.setItem("tasmac-cart", JSON.stringify(cart)); } catch(e) {}
       updateCartUI();
       renderCheckoutModal();

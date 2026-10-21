@@ -223,6 +223,55 @@
       letter-spacing: 0.02em;
     }
 
+    /* Header Cart Badge */
+    .cart-pill-bubble {
+      background: var(--primary);
+      color: #ffffff !important;
+      border: 1px solid color-mix(in srgb, var(--primary) 85%, #000);
+      padding: 0 13px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      white-space: nowrap !important;
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--primary) 32%, transparent);
+      user-select: none;
+    }
+    .cart-pill-bubble svg,
+    .cart-pill-bubble [data-lucide] {
+      width: 14px !important;
+      height: 14px !important;
+      stroke-width: 2.2 !important;
+      color: #ffffff !important;
+    }
+    .cart-pill-bubble span.cart-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #ffffff !important;
+      line-height: 1;
+    }
+    .cart-num-badge {
+      background: #ffffff !important;
+      color: var(--primary) !important;
+      font-size: 10.5px !important;
+      font-weight: 850 !important;
+      min-width: 18px !important;
+      height: 18px !important;
+      padding: 0 4px !important;
+      border-radius: 9999px !important;
+      font-family: var(--fp-font-mono) !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      line-height: 1 !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    }
+
     /* Return to Store Button */
     .btn-return-store {
       display: inline-flex;
@@ -932,7 +981,12 @@
           </div>
         </a>
 
-        <div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="cart-pill-bubble" title="Items currently selected in reservation cart">
+            <i data-lucide="shopping-bag" style="width: 14px; height: 14px;"></i>
+            <span class="cart-label">Cart</span>
+            <span class="cart-num-badge" id="nav-cart-badge">0</span>
+          </div>
           <a href="index.html" class="btn-return-store" title="Continue Shopping">
             <i data-lucide="arrow-left" style="width: 14px; height: 14px; color: #ea580c;"></i>
             <span>Return to Store</span>
@@ -954,7 +1008,10 @@
             <i data-lucide="shield-check" style="width: 13px; height: 13px;"></i>
             <span>Direct Counter Reservation</span>
           </div>
-          <h1 class="cart-header-title">Your Cart & Express Token</h1>
+          <h1 class="cart-header-title">
+            <span>Your Cart & Express Token</span>
+            <span id="cart-item-count-text" style="font-size: 13px; font-weight: 600; color: #ea580c; background: #fff7ed; border: 1px solid #ffedd5; padding: 2px 10px; border-radius: 9999px; vertical-align: middle; margin-left: 8px;">(0 items)</span>
+          </h1>
           
           <!-- Store Fulfillment Bar -->
           <div class="store-summary-pill" id="cart-store-summary-pill">
@@ -1175,6 +1232,7 @@
       try {
         const saved = localStorage.getItem("tasmac-cart");
         cart = saved ? JSON.parse(saved) : [];
+        if (!Array.isArray(cart)) cart = [];
       } catch (e) {
         cart = [];
       }
@@ -1243,7 +1301,14 @@
       const totalDisplay = document.getElementById("cart-total-display");
       if (!container) return;
 
-      if (!cart || cart.length === 0) {
+      if (!Array.isArray(cart)) cart = [];
+      const totalCount = cart.reduce((acc, ci) => acc + (Number(ci.qty) || 0), 0);
+      const navBadge = document.getElementById("nav-cart-badge");
+      if (navBadge) navBadge.innerText = totalCount;
+      const countText = document.getElementById("cart-item-count-text");
+      if (countText) countText.innerText = totalCount === 1 ? '(1 item selected)' : '(' + totalCount + ' items selected)';
+
+      if (cart.length === 0) {
         container.innerHTML = `
           <div class="cart-empty-box">
             <div class="cart-empty-icon-wrap">
@@ -1260,6 +1325,7 @@
           </div>
         `;
         if (formSection) formSection.style.display = "none";
+        if (totalDisplay) totalDisplay.innerText = "₹0";
         if (window.lucide) lucide.createIcons();
         return;
       }
@@ -1494,8 +1560,13 @@
       if (window.lucide) lucide.createIcons();
     });
 
-    // Reload cart if user returns from another tab
+    // Reload cart if user returns or updates from another tab
     window.addEventListener("pageshow", loadCartData);
+    window.addEventListener("focus", loadCartData);
+    window.addEventListener("storage", (e) => {
+      if (!e.key || e.key === "tasmac-cart") loadCartData();
+    });
   </script>
 </body>
 </html>
+
