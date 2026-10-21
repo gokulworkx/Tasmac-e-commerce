@@ -425,7 +425,7 @@
     .btn-return-store {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
       padding: 7px 14px;
       font-size: 12px;
       font-weight: 600;
@@ -436,6 +436,12 @@
       text-decoration: none;
       transition: all 0.18s ease;
       cursor: pointer;
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+      line-height: 1;
+    }
+    .btn-return-text-short {
+      display: none;
     }
     .btn-return-store:hover {
       background: var(--btn-return-hover-bg);
@@ -463,8 +469,215 @@
       position: relative;
     }
     @media (max-width: 640px) {
+      body {
+        padding-top: 135px !important;
+      }
+
+      /* Fixed Shell & Statutory Bar */
+      .statutory-top-strip {
+        font-size: 9.5px !important;
+        line-height: 1.35 !important;
+        padding: 5px 10px !important;
+        gap: 5px !important;
+        text-align: center !important;
+      }
+      .statutory-badge-pill {
+        font-size: 8px !important;
+        padding: 1px 5px !important;
+      }
+
+      /* Human Header */
+      .human-header {
+        height: 52px !important;
+        padding: 0 10px !important;
+      }
+      .header-container {
+        gap: 6px !important;
+      }
+      .brand-group {
+        gap: 6px !important;
+        min-width: 0 !important;
+      }
+      .brand-logo-gem {
+        width: 30px !important;
+        height: 30px !important;
+        border-radius: var(--radius-sm) !important;
+        flex-shrink: 0 !important;
+      }
+      .brand-text-col {
+        min-width: 0 !important;
+      }
+      .brand-title {
+        font-size: 13px !important;
+        letter-spacing: -0.01em !important;
+        white-space: nowrap !important;
+      }
+      .brand-sub {
+        font-size: 8.5px !important;
+        white-space: nowrap !important;
+      }
+
+      /* Hide redundant cart pill bubble on small phone headers to make room */
+      .cart-pill-bubble {
+        display: none !important;
+      }
+
+      /* Action Buttons */
+      .btn-return-store {
+        padding: 5px 9px !important;
+        font-size: 11px !important;
+        gap: 3px !important;
+      }
+      .btn-return-text-full {
+        display: none !important;
+      }
+      .btn-return-text-short {
+        display: inline !important;
+      }
+      .btn-notif-bell {
+        width: 30px !important;
+        height: 30px !important;
+      }
+
+      /* Main Cart Workspace */
+      .cart-main-area {
+        padding: 10px 8px 48px !important;
+        max-width: 100% !important;
+      }
       .cart-card {
-        padding: 20px 16px 24px;
+        padding: 16px 12px 20px !important;
+        border-radius: var(--radius-xl) !important;
+      }
+
+      /* Cart Title & Badges */
+      .cart-header-title {
+        font-size: 19px !important;
+        line-height: 1.25 !important;
+      }
+      #cart-item-count-text {
+        font-size: 10.5px !important;
+        padding: 2px 7px !important;
+        margin-left: 4px !important;
+      }
+
+      /* Store Fulfillment Banner */
+      .store-summary-pill {
+        padding: 8px 10px !important;
+        font-size: 11.5px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 6px !important;
+        margin-bottom: 16px !important;
+      }
+      .store-summary-left {
+        width: 100% !important;
+      }
+      .store-change-btn {
+        width: 100% !important;
+        text-align: center !important;
+        justify-content: center !important;
+        padding: 5px !important;
+        background: #f1f5f9 !important;
+        border-radius: var(--radius-sm) !important;
+        font-size: 11.5px !important;
+      }
+
+      /* Individual Cart Item Cards */
+      .cart-item-card {
+        flex-wrap: wrap !important;
+        padding: 10px 10px !important;
+        gap: 8px 10px !important;
+      }
+      .cart-bottle-stage {
+        width: 44px !important;
+        height: 60px !important;
+        padding: 3px !important;
+      }
+      .cart-item-details {
+        flex: 1 1 calc(100% - 58px) !important;
+        min-width: 0 !important;
+      }
+      .cart-item-name {
+        font-size: 12.5px !important;
+        white-space: normal !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+      }
+      .cart-item-meta {
+        font-size: 11px !important;
+      }
+      .cart-stepper-box {
+        margin-left: 54px !important;
+        padding: 2px 4px !important;
+      }
+      .btn-stepper {
+        width: 22px !important;
+        height: 22px !important;
+      }
+      .cart-qty-value {
+        font-size: 12px !important;
+        min-width: 18px !important;
+      }
+      .cart-item-actions {
+        margin-left: auto !important;
+        min-width: unset !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important;
+      }
+      .cart-item-total {
+        font-size: 13.5px !important;
+      }
+      .cart-item-remove {
+        font-size: 11px !important;
+      }
+
+      /* Empty State Box */
+      .cart-empty-box {
+        padding: 32px 14px !important;
+      }
+      .cart-empty-title {
+        font-size: 15.5px !important;
+      }
+      .cart-empty-desc {
+        font-size: 12px !important;
+      }
+      .btn-explore-catalog {
+        padding: 9px 18px !important;
+        font-size: 12.5px !important;
+      }
+
+      /* Form Fields */
+      .form-group-4rge {
+        margin-bottom: 12px !important;
+      }
+      .input-4rge {
+        height: 38px !important;
+        font-size: 12.5px !important;
+      }
+      .luxury-select-trigger {
+        height: 38px !important;
+        font-size: 12px !important;
+      }
+      .cart-total-banner {
+        padding: 12px 14px !important;
+      }
+      .cart-total-num {
+        font-size: 20px !important;
+      }
+      .btn-submit-token {
+        height: 42px !important;
+        font-size: 13px !important;
+      }
+
+      /* Digital Token Success Screen */
+      .token-card-primitive {
+        padding: 16px 12px !important;
+      }
+      .token-card-code {
+        font-size: 19px !important;
       }
     }
 
@@ -1157,8 +1370,9 @@
             <span class="cart-num-badge" id="nav-cart-badge">0</span>
           </div>
           <a href="index.html" class="btn-return-store" title="Continue Shopping">
-            <i data-lucide="arrow-left" style="width: 14px; height: 14px; color: #ea580c;"></i>
-            <span>Return to Store</span>
+            <i data-lucide="arrow-left" style="width: 14px; height: 14px; color: #ea580c; flex-shrink: 0;"></i>
+            <span class="btn-return-text-full">Return to Store</span>
+            <span class="btn-return-text-short">Store</span>
           </a>
         </div>
       </div>
@@ -1834,8 +2048,24 @@
       }, 1800);
     }
 
+    // Dynamic Fixed Top Shell Height Sync (Prevents any overlap on mobile)
+    function syncTopShellHeight() {
+      const shell = document.querySelector('.fixed-top-shell');
+      if (shell) {
+        const h = shell.offsetHeight;
+        if (h > 0) {
+          document.body.style.paddingTop = (h + 14) + 'px';
+        }
+      }
+    }
+    window.addEventListener('resize', syncTopShellHeight);
+    window.addEventListener('orientationchange', () => setTimeout(syncTopShellHeight, 100));
+
     // Initialize on DOM load
     document.addEventListener("DOMContentLoaded", () => {
+      syncTopShellHeight();
+      setTimeout(syncTopShellHeight, 50);
+      setTimeout(syncTopShellHeight, 200);
       loadCartData();
       renderNotifications();
       updateNotifBadge();
