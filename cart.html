@@ -11,12 +11,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
+  <!-- Leaflet Map CSS & JS (For Swiggy/Zomato Live Delivery Tracking) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <!-- Supabase Client SDK & Configuration -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/tasmac-i18n.js"></script>
+  <script src="js/tasmac-reservations.js"></script>
+  <script src="js/tasmac-support.js"></script>
+  <script src="js/tasmac-delivery.js"></script>
 
   <!-- Permanent Clean Light Theme -->
   <script>
@@ -172,7 +180,7 @@
     }
     .header-container {
       width: 100%;
-      max-width: 1200px;
+      max-width: 100%;
       margin: 0 auto;
       display: flex;
       align-items: center;
@@ -285,14 +293,24 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-      display: none;
+      display: flex;
       flex-direction: column;
       z-index: 1000;
-      animation: notifDropIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px) scale(0.97);
+      transform-origin: top right;
+      pointer-events: none;
+      transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  visibility 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .notif-dropdown.open {
-      display: flex;
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
     }
     .notif-header {
       padding: 10px 14px;
@@ -450,23 +468,175 @@
       transform: translateX(-2px);
     }
 
-    /* Main Cart Workspace */
+    /* Live Order Tracker Navbar Pill */
+    .btn-nav-track-order {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 750;
+      color: #ea580c;
+      background: #fff7ed;
+      border: 1.5px solid #fdba74;
+      border-radius: var(--radius-full);
+      text-decoration: none;
+      line-height: 1;
+      cursor: pointer;
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+      transition: all 0.18s ease;
+      box-shadow: 0 1px 3px rgba(234, 88, 12, 0.12);
+    }
+    .btn-nav-track-order:hover {
+      background: #ffedd5;
+      border-color: #ea580c;
+      transform: translateY(-1px);
+    }
+
+    /* Main Cart Workspace - Full Page Edge-to-Edge */
     .cart-main-area {
       flex: 1;
       width: 100%;
-      max-width: 780px;
+      max-width: 100%;
       margin: 0 auto;
-      padding: 24px 16px 48px;
+      padding: 24px 28px 70px 28px;
     }
 
-    /* Card Wrapper */
+    /* Outer Wrapper - Seamless, Not A Floating Card */
     .cart-card {
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-2xl);
-      box-shadow: var(--fp-shadow-luxury);
-      padding: 28px 28px 32px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 0;
       position: relative;
+      width: 100%;
+    }
+
+    /* 2-Column Responsive Cart Architecture */
+    .cart-step-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      width: 100%;
+    }
+
+    @media (min-width: 960px) {
+      /* Lock viewport on desktop so window never scrolls or shifts */
+      html, body {
+        height: 100vh !important;
+        overflow: hidden !important;
+      }
+
+      .cart-main-area {
+        height: calc(100vh - 86px) !important;
+        max-height: calc(100vh - 86px) !important;
+        overflow: hidden !important;
+        padding: 16px 28px 16px 28px !important;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .cart-card {
+        height: 100% !important;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .cart-step-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 420px;
+        gap: 32px;
+        align-items: start;
+        height: 100%;
+      }
+
+      .cart-col-main {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 0;
+      }
+
+      /* Circled checkout card completely fixed in place — never moves on scroll */
+      .cart-checkout-panel {
+        position: static !important;
+        width: 100% !important;
+        max-height: calc(100vh - 118px);
+        overflow-y: auto;
+        scrollbar-width: none;
+      }
+      .cart-checkout-panel::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* Scrollable Cart Items Container — only the items scroll */
+      .cart-items-wrapper {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: calc(100vh - 225px);
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        padding-right: 8px;
+        padding-bottom: 8px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(245, 158, 11, 0.45) rgba(0, 0, 0, 0.04);
+      }
+      .cart-items-wrapper::-webkit-scrollbar {
+        width: 6px;
+      }
+      .cart-items-wrapper::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.03);
+        border-radius: 9999px;
+      }
+      .cart-items-wrapper::-webkit-scrollbar-thumb {
+        background: rgba(245, 158, 11, 0.4);
+        border-radius: 9999px;
+      }
+      .cart-items-wrapper::-webkit-scrollbar-thumb:hover {
+        background: #ea580c;
+      }
+
+      .cart-step-grid.is-empty {
+        grid-template-columns: 1fr;
+        max-width: 720px;
+        margin: 40px auto 0 auto;
+      }
+      .cart-step-grid.is-empty .cart-items-wrapper {
+        max-height: none !important;
+        overflow-y: visible !important;
+        padding-right: 0 !important;
+      }
+    }
+
+    .cart-col-main {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .cart-col-side {
+      width: 100%;
+    }
+
+    .cart-checkout-panel {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.05);
+      width: 100%;
+    }
+
+    @media (max-width: 959px) {
+      .cart-checkout-panel {
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
+        position: static;
+      }
     }
     @media (max-width: 640px) {
       body {
@@ -528,6 +698,11 @@
         font-size: 11px !important;
         gap: 3px !important;
       }
+      .btn-nav-track-order {
+        padding: 5px 9px !important;
+        font-size: 11px !important;
+        gap: 4px !important;
+      }
       .btn-return-text-full {
         display: none !important;
       }
@@ -541,12 +716,15 @@
 
       /* Main Cart Workspace */
       .cart-main-area {
-        padding: 10px 8px 48px !important;
+        padding: 12px 14px 48px !important;
         max-width: 100% !important;
       }
       .cart-card {
-        padding: 16px 12px 20px !important;
-        border-radius: var(--radius-xl) !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        background: transparent !important;
       }
 
       /* Cart Title & Badges */
@@ -647,6 +825,11 @@
       .btn-explore-catalog {
         padding: 9px 18px !important;
         font-size: 12.5px !important;
+      }
+      .btn-success-action {
+        padding: 0 16px !important;
+        height: 40px !important;
+        font-size: 12px !important;
       }
 
       /* Form Fields */
@@ -827,7 +1010,12 @@
     .cart-bottle-img {
       max-width: 100%;
       max-height: 100%;
+      width: auto;
+      height: auto;
       object-fit: contain;
+      object-position: center center;
+      margin: auto;
+      display: block;
       filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.15));
       transition: transform 0.25s ease;
     }
@@ -914,18 +1102,26 @@
       letter-spacing: -0.01em;
     }
     .cart-item-remove {
-      background: none;
-      border: none;
-      color: var(--muted-foreground);
-      font-size: 11.5px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 6px;
+      color: #dc2626;
+      font-size: 11px;
+      font-weight: 600;
       cursor: pointer;
-      text-decoration: underline;
-      padding: 2px 0;
-      margin-top: 3px;
-      transition: color 0.15s ease;
+      padding: 3px 8px;
+      margin-top: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.15s ease;
+      text-decoration: none;
     }
     .cart-item-remove:hover {
-      color: #dc2626;
+      background: #fee2e2;
+      border-color: #f87171;
+      color: #b91c1c;
+      transform: translateY(-1px);
     }
 
     /* Empty Cart State */
@@ -977,6 +1173,25 @@
     }
     .btn-explore-catalog:hover {
       background: #ea580c;
+      transform: translateY(-1px);
+    }
+    .btn-success-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 44px;
+      padding: 0 22px;
+      font-size: 13.5px;
+      font-weight: 700;
+      border-radius: var(--radius-full);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+      box-sizing: border-box;
+    }
+    .btn-success-action:hover {
       transform: translateY(-1px);
     }
 
@@ -1215,7 +1430,9 @@
     .token-success-stage {
       display: none;
       text-align: center;
-      padding: 10px 0;
+      padding: 16px 0;
+      max-width: 640px;
+      margin: 0 auto;
     }
     .token-success-icon {
       width: 60px;
@@ -1320,6 +1537,804 @@
       from { transform: translateY(12px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin {
+      animation: spin 1s linear infinite;
+    }
+    /* =========================================================================
+       CART SIGN-IN REQUIRED AUTH POPUP MODAL
+       ========================================================================= */
+    .modal-veil {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overscroll-behavior: contain;
+    }
+    .modal-veil.open {
+      display: flex;
+      animation: veilFadeIn 0.2s ease-out;
+    }
+    @keyframes veilFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-card-box {
+      background: var(--card, #ffffff);
+      border-radius: 22px;
+      width: 100%;
+      max-width: 440px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.28), 0 0 0 1px rgba(234, 88, 12, 0.08);
+      border: 1px solid rgba(234, 88, 12, 0.22);
+      position: relative;
+      animation: modalPop 0.18s ease-out;
+    }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-close-icon {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #64748b;
+      transition: all 0.15s ease;
+    }
+    .modal-close-icon:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+/* =========================================================================
+       CLEAN SIMPLIFIED CART SIGN-IN REQUIRED AUTH POPUP MODAL
+       ========================================================================= */
+    .cart-auth-card {
+      max-width: 400px !important;
+      border-radius: 20px !important;
+      overflow: hidden;
+      background: #ffffff !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.03) !important;
+      animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    .cart-auth-body {
+      padding: 28px 24px 20px 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: inherit;
+    }
+    .cart-auth-icon-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #fff7ed;
+      border: 1px solid #ffedd5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .cart-auth-pill {
+      display: none !important;
+    }
+    .cart-auth-title {
+      font-family: inherit;
+      font-size: 20px;
+      font-weight: 750;
+      color: #0f172a;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+    .cart-auth-desc {
+      font-family: inherit;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: #64748b;
+      margin: 0 0 18px 0;
+      max-width: 330px;
+    }
+    .cart-auth-item-pill {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 550;
+      color: #334155;
+      margin-bottom: 18px;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    .cart-auth-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+    .cart-auth-primary-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      height: 44px;
+      font-size: 14px;
+      font-weight: 650;
+      text-decoration: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      color: #ffffff !important;
+      box-shadow: 0 2px 8px rgba(234, 88, 12, 0.25);
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .cart-auth-primary-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+      background: linear-gradient(135deg, #fbbf24, #f97316);
+      color: #ffffff !important;
+    }
+    .cart-auth-secondary-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      height: 42px;
+      font-size: 13.5px;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #0f172a !important;
+      transition: all 0.15s ease;
+      box-sizing: border-box;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .cart-auth-secondary-btn:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+      color: #0f172a !important;
+    }
+    .cart-auth-cancel-btn {
+      background: none;
+      border: none;
+      padding: 6px;
+      font-size: 13px;
+      color: #64748b;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 2px;
+      font-family: inherit;
+      transition: color 0.15s ease;
+    }
+    .cart-auth-cancel-btn:hover {
+      color: #0f172a;
+      text-decoration: underline;
+    }
+    .cart-auth-footer {
+      margin-top: 16px;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 12px;
+      font-size: 11.5px;
+      color: #64748b;
+      line-height: 1.4;
+      width: 100%;
+      text-align: center;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .cart-auth-footer i {
+      color: #10b981;
+    }
+
+        .auth-status-banner {
+      background: var(--fp-state-success-subtle);
+      border: 1px solid rgba(5, 150, 105, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--fp-state-success);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .guest-status-banner {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--muted-foreground);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .status-link {
+      color: #d97706;
+      font-weight: 750;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .status-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Form Fields */
+    .form-group-4rge {
+      margin-bottom: 16px;
+    }
+    .form-label-4rge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 650;
+      color: #1e293b;
+      margin-bottom: 6px;
+    }
+    .input-4rge {
+      width: 100%;
+      height: 42px;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      border-radius: var(--radius-md);
+      padding: 0 14px;
+      font-size: 13.5px;
+      color: var(--foreground);
+      outline: none;
+      transition: all 0.18s ease;
+      font-family: inherit;
+    }
+    .input-4rge:focus {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+    }
+    .input-wrapper-prefix {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-prefix-tag {
+      position: absolute;
+      left: 10px;
+      background: #f1f5f9;
+      color: #475569;
+      font-family: var(--fp-font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 6px;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+    .input-with-prefix {
+      padding-left: 54px;
+    }
+
+    /* Custom Luxury Dropdown for Govt ID */
+    .luxury-select-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    .luxury-select-trigger {
+      width: 100%;
+      height: 42px;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      border-radius: var(--radius-md);
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      color: var(--foreground);
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.18s ease;
+    }
+    .luxury-select-trigger:focus,
+    .luxury-select-wrapper.open .luxury-select-trigger {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+    }
+    .luxury-select-content-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .luxury-select-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+      z-index: 100;
+      padding: 6px;
+    }
+    .luxury-select-wrapper.open .luxury-select-menu {
+      display: block;
+    }
+    .luxury-select-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      color: #334155;
+      transition: background 0.15s ease;
+    }
+    .luxury-select-item:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .luxury-select-item.active {
+      background: #fffbeb;
+      color: #b45309;
+      font-weight: 700;
+    }
+
+    /* Statutory Warning Notice */
+    .statutory-notice-box {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.28);
+      border-radius: var(--radius-lg);
+      padding: 12px 14px;
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.45;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .statutory-notice-box i {
+      color: #d97706;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Total Price Card */
+    .cart-total-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      margin-bottom: 22px;
+      box-shadow: var(--fp-shadow-card);
+    }
+    .cart-total-label {
+      font-size: 13.5px;
+      font-weight: 650;
+      color: #475569;
+    }
+    .cart-total-num {
+      font-family: var(--fp-font-mono);
+      font-size: 24px;
+      font-weight: 800;
+      color: #ea580c;
+      letter-spacing: -0.02em;
+    }
+
+    /* Submit Button */
+    .btn-submit-token {
+      width: 100%;
+      height: 46px;
+      background: #f59e0b;
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 750;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.32);
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .btn-submit-token:hover {
+      background: #ea580c;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(234, 88, 12, 0.4);
+    }
+    .btn-submit-token:active {
+      transform: translateY(1px);
+    }
+
+    /* Step 2: Digital Token Receipt Stage */
+    .token-success-stage {
+      display: none;
+      text-align: center;
+      padding: 16px 0;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .token-success-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--fp-state-success-subtle);
+      color: var(--fp-state-success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px auto;
+      border: 2px solid rgba(5, 150, 105, 0.3);
+    }
+    .token-card-primitive {
+      background: #f8fafc;
+      border: 2px dashed rgba(212, 165, 78, 0.45);
+      border-radius: var(--radius-xl);
+      padding: 24px 20px;
+      text-align: left;
+      margin: 20px 0 24px;
+      position: relative;
+    }
+    .token-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .token-card-code {
+      font-family: var(--fp-font-mono);
+      font-size: 24px;
+      font-weight: 800;
+      color: #ea580c;
+      letter-spacing: 0.04em;
+    }
+    .token-status-pill {
+      background: #dcfce7;
+      color: #166534;
+      font-family: var(--fp-font-mono);
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: var(--radius-full);
+      letter-spacing: 0.04em;
+    }
+    .token-info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .token-info-label {
+      color: var(--muted-foreground);
+    }
+    .token-info-val {
+      color: var(--foreground);
+      font-weight: 700;
+      text-align: right;
+    }
+    .token-total-row {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .token-total-amount {
+      font-family: var(--fp-font-mono);
+      font-size: 20px;
+      font-weight: 850;
+      color: #ea580c;
+    }
+
+    /* Toast Notifications Tray */
+    #toast-tray {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .toast-msg {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: var(--radius-full);
+      font-size: 12.5px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: toastIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes toastIn {
+      from { transform: translateY(12px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin {
+      animation: spin 1s linear infinite;
+    }
+    /* =========================================================================
+       CART SIGN-IN REQUIRED AUTH POPUP MODAL
+       ========================================================================= */
+    .modal-veil {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overscroll-behavior: contain;
+    }
+    .modal-veil.open {
+      display: flex;
+      animation: veilFadeIn 0.2s ease-out;
+    }
+    @keyframes veilFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .modal-card-box {
+      background: var(--card, #ffffff);
+      border-radius: 22px;
+      width: 100%;
+      max-width: 440px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.28), 0 0 0 1px rgba(234, 88, 12, 0.08);
+      border: 1px solid rgba(234, 88, 12, 0.22);
+      position: relative;
+      animation: modalPop 0.18s ease-out;
+    }
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-close-icon {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #64748b;
+      transition: all 0.15s ease;
+    }
+    .modal-close-icon:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .cart-auth-body {
+      padding: 32px 28px 24px 28px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .cart-auth-icon-wrap {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(234, 88, 12, 0.12), rgba(245, 158, 11, 0.22));
+      border: 2px solid rgba(234, 88, 12, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .cart-auth-icon-badge {
+      position: absolute;
+      bottom: -3px;
+      right: -3px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #ea580c;
+      border: 2px solid #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(234, 88, 12, 0.4);
+    }
+    .cart-auth-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: #fff7ed;
+      border: 1px solid #ffedd5;
+      font-size: 11px;
+      font-weight: 700;
+      color: #ea580c;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 12px;
+      font-family: var(--fp-font-mono, monospace);
+    }
+    .cart-auth-title {
+      font-size: 21px;
+      font-weight: 700;
+      color: var(--foreground, #0f172a);
+      margin: 0 0 10px 0;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+    .cart-auth-desc {
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--muted-foreground, #64748b);
+      margin: 0 0 18px 0;
+    }
+    .cart-auth-item-pill {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 9px 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 20px;
+      font-family: var(--fp-font-mono, monospace);
+      box-sizing: border-box;
+    }
+    .cart-auth-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+    .cart-auth-primary-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 13px 20px;
+      font-size: 14.5px;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ea580c, #c2410c);
+      color: #ffffff !important;
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-sizing: border-box;
+      border: none;
+      cursor: pointer;
+    }
+    .cart-auth-primary-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(234, 88, 12, 0.45);
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #ffffff !important;
+    }
+    .cart-auth-secondary-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      padding: 11px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #334155 !important;
+      transition: all 0.15s ease;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+    .cart-auth-secondary-btn:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      color: #0f172a !important;
+    }
+    .cart-auth-cancel-btn {
+      background: none;
+      border: none;
+      padding: 8px;
+      font-size: 12.5px;
+      color: #94a3b8;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 4px;
+      transition: color 0.15s ease;
+    }
+    .cart-auth-cancel-btn:hover {
+      color: #64748b;
+    }
+    .cart-auth-footer {
+      margin-top: 18px;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 12px;
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.4;
+      width: 100%;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -1343,8 +2358,31 @@
           </div>
         </a>
 
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <!-- Notification Bell -->
+        <div class="header-right-actions" style="display: flex; align-items: center; gap: 10px;">
+          <div class="cart-pill-bubble" onclick="openCartAuthModalIfGuest()" style="cursor: pointer;" title="Items currently selected in reservation cart">
+            <i data-lucide="shopping-bag" style="width: 14px; height: 14px;"></i>
+            <span class="cart-label">Cart</span>
+            <span class="cart-num-badge" id="nav-cart-badge">0</span>
+          </div>
+          <!-- Live Order Tracker Button (Top Navbar) -->
+          <button type="button" class="btn-nav-track-order" id="nav-btn-track-order" onclick="window.TASMAC_DELIVERY && window.TASMAC_DELIVERY.openLiveTracker()" style="display: none;" title="Track Live Delivery Order">
+            <span class="tracker-pulse-green"></span>
+            <span style="font-size: 13px; line-height: 1;">🛵</span>
+            <span id="nav-track-order-text">Track Order</span>
+          </button>
+
+          <button type="button" class="btn-return-store" onclick="window.TASMAC_RESERVATIONS && window.TASMAC_RESERVATIONS.openModal()" title="View Reservation History" style="cursor: pointer; background: transparent; border: 1px solid var(--border);">
+            <i data-lucide="calendar" style="width: 14px; height: 14px; color: #ea580c; flex-shrink: 0;"></i>
+            <span class="btn-return-text-full" data-i18n="nav.my_reservations">My Reservations</span>
+            <span class="btn-return-text-short">History</span>
+          </button>
+          <button type="button" class="btn-return-store" onclick="window.TASMAC_SUPPORT && window.TASMAC_SUPPORT.openModal()" title="Customer Support" style="cursor: pointer; background: transparent; border: 1px solid var(--border);">
+            <i data-lucide="help-circle" style="width: 14px; height: 14px; color: #ea580c; flex-shrink: 0;"></i>
+            <span class="btn-return-text-full" data-i18n="nav.support">Support</span>
+            <span class="btn-return-text-short">Help</span>
+          </button>
+
+          <!-- Notification Bell (Rightside) -->
           <div class="notif-bell-wrap" id="nav-notif-wrap">
             <button type="button" class="btn-notif-bell" id="header-notif-btn" onclick="toggleNotifDropdown(event)" title="Notifications" aria-label="Notifications">
               <i data-lucide="bell" style="width: 15px; height: 15px;"></i>
@@ -1363,15 +2401,9 @@
               </div>
             </div>
           </div>
-
-          <div class="cart-pill-bubble" title="Items currently selected in reservation cart">
-            <i data-lucide="shopping-bag" style="width: 14px; height: 14px;"></i>
-            <span class="cart-label">Cart</span>
-            <span class="cart-num-badge" id="nav-cart-badge">0</span>
-          </div>
           <a href="index.html" class="btn-return-store" title="Continue Shopping">
             <i data-lucide="arrow-left" style="width: 14px; height: 14px; color: #ea580c; flex-shrink: 0;"></i>
-            <span class="btn-return-text-full">Return to Store</span>
+            <span class="btn-return-text-full" data-i18n="cart.return_store">Return to Store</span>
             <span class="btn-return-text-short">Store</span>
           </a>
         </div>
@@ -1384,9 +2416,11 @@
     <div class="cart-card">
       
       <!-- Step 1: Cart Items & Reservation Form -->
-      <div id="cart-step-details">
+      <div id="cart-step-details" class="cart-step-grid">
         
-        <div style="margin-bottom: 20px;">
+        <!-- Left Column: Header, Pickup Counter & Reserved Bottles -->
+        <div class="cart-col-main">
+          <div style="margin-bottom: 20px;">
           <div class="cart-header-badge">
             <i data-lucide="shield-check" style="width: 13px; height: 13px;"></i>
             <span>Direct Counter Reservation</span>
@@ -1418,12 +2452,13 @@
         </div>
 
         <!-- Cart Items List (Rendered dynamically with bottle cutouts) -->
-        <div class="cart-items-wrapper" id="cart-items-list">
-          <!-- Rendered by JS -->
+          <div class="cart-items-wrapper" id="cart-items-list">
+            <!-- Rendered by JS -->
+          </div>
         </div>
 
-        <!-- Checkout Form Section (visible when cart has items) -->
-        <div id="cart-form-section">
+        <!-- Right Column: Checkout Form Section (visible when cart has items) -->
+        <div id="cart-form-section" class="cart-col-side cart-checkout-panel">
           
           <!-- Patron Account Status Banner -->
           <div id="cart-auth-banner" class="auth-status-banner" style="display: none;">
@@ -1439,8 +2474,31 @@
             <a href="login.html" class="status-link">Sign in for 1-click token &rarr;</a>
           </div>
 
-          <!-- Reservation Form -->
+          <!-- Swiggy / Zomato Fulfillment Mode Switcher -->
+          <div class="fulfillment-mode-bar">
+            <button type="button" class="fulfillment-mode-btn active" id="btn-mode-delivery" onclick="setFulfillmentMode('delivery')">
+              <div class="mode-icon-box">
+                <i data-lucide="bike" style="width: 17px; height: 17px;"></i>
+              </div>
+              <div>
+                <span class="mode-title">Doorstep Delivery</span>
+                <span class="mode-sub">30-40 mins • Fleet Rider</span>
+              </div>
+            </button>
+            <button type="button" class="fulfillment-mode-btn" id="btn-mode-pickup" onclick="setFulfillmentMode('pickup')">
+              <div class="mode-icon-box">
+                <i data-lucide="store" style="width: 17px; height: 17px;"></i>
+              </div>
+              <div>
+                <span class="mode-title">Self Counter Pickup</span>
+                <span class="mode-sub">Skip express queue</span>
+              </div>
+            </button>
+          </div>
+
+          <!-- Checkout / Order Form -->
           <form onsubmit="handleReservationSubmit(event)">
+            <!-- Patron Contact Info -->
             <div class="form-group-4rge">
               <label class="form-label-4rge" for="cust-name">
                 <i data-lucide="user" style="width: 13px; height: 13px; color: #64748b;"></i>
@@ -1449,22 +2507,69 @@
               <input type="text" class="input-4rge" id="cust-name" placeholder="e.g. Enter your full name" required />
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-              <div class="form-group-4rge" style="margin-bottom: 0;">
-                <label class="form-label-4rge" for="cust-phone">
-                  <i data-lucide="phone" style="width: 13px; height: 13px; color: #64748b;"></i>
-                  <span>Mobile Number *</span>
-                </label>
-                <div class="input-wrapper-prefix">
-                  <span class="input-prefix-tag">+91</span>
-                  <input type="tel" class="input-4rge input-with-prefix" id="cust-phone" placeholder="98765 43210" maxlength="10" required />
+            <div class="form-group-4rge">
+              <label class="form-label-4rge" for="cust-phone">
+                <i data-lucide="phone" style="width: 13px; height: 13px; color: #64748b;"></i>
+                <span>Mobile Number (For Delivery / Token Updates) *</span>
+              </label>
+              <div class="input-wrapper-prefix">
+                <span class="input-prefix-tag">+91</span>
+                <input type="tel" class="input-4rge input-with-prefix" id="cust-phone" placeholder="98765 43210" maxlength="10" required />
+              </div>
+            </div>
+
+            <!-- DELIVERY SPECIFIC: Address Form & Instructions (Swiggy / Zomato Style) -->
+            <div id="section-delivery-address" class="delivery-form-card">
+              <div class="delivery-form-header">
+                <div class="delivery-form-title">
+                  <i data-lucide="map-pin" style="width: 15px; height: 15px; color: #ea580c;"></i>
+                  <span>Delivery Address (Chennai)</span>
+                </div>
+                <button type="button" class="btn-auto-locate" id="btn-use-my-location" onclick="autoFillDeliveryAddress()">
+                  <i data-lucide="crosshair" style="width: 12px; height: 12px;"></i>
+                  <span>Use My Location</span>
+                </button>
+              </div>
+
+              <div class="form-group-4rge" style="margin-bottom: 10px;">
+                <label class="form-label-4rge" for="del-flat">Flat / House / Block No. & Apartment *</label>
+                <input type="text" class="input-4rge" id="del-flat" placeholder="e.g. Door No. / Flat No., Apartment" />
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; margin-bottom: 10px;">
+                <div class="form-group-4rge" style="margin-bottom: 0;">
+                  <label class="form-label-4rge" for="del-street">Street / Locality / Area *</label>
+                  <input type="text" class="input-4rge" id="del-street" placeholder="e.g. 1st Main Road, Anna Nagar" />
+                </div>
+                <div class="form-group-4rge" style="margin-bottom: 0;">
+                  <label class="form-label-4rge" for="del-pincode">Pincode *</label>
+                  <input type="text" class="input-4rge" id="del-pincode" placeholder="6-digit Pincode" maxlength="6" />
                 </div>
               </div>
 
-              <div class="form-group-4rge" style="margin-bottom: 0;">
+              <div class="form-group-4rge" style="margin-bottom: 10px;">
+                <label class="form-label-4rge" for="del-instructions">Delivery Instructions for Rider</label>
+                <input type="text" class="input-4rge" id="del-instructions" placeholder="e.g. Ring doorbell / Call on arrival / Leave with guard" />
+              </div>
+
+              <!-- Rider Tip Chips -->
+              <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e2e8f0;">
+                <label class="form-label-4rge" style="margin-bottom: 6px;">Tip your Delivery Partner (Optional)</label>
+                <div class="delivery-tip-bar" id="delivery-tip-chips">
+                  <button type="button" class="tip-chip active" onclick="setDeliveryTip(0, this)">No Tip</button>
+                  <button type="button" class="tip-chip" onclick="setDeliveryTip(20, this)">₹20</button>
+                  <button type="button" class="tip-chip" onclick="setDeliveryTip(30, this)">₹30</button>
+                  <button type="button" class="tip-chip" onclick="setDeliveryTip(50, this)">₹50</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- PICKUP SPECIFIC: Govt ID Type Selection (Hidden during Doorstep Delivery) -->
+            <div id="section-pickup-fields" style="display: none; margin-bottom: 16px;">
+              <div class="form-group-4rge" style="margin-bottom: 12px;">
                 <label class="form-label-4rge">
                   <i data-lucide="shield" style="width: 13px; height: 13px; color: #64748b;"></i>
-                  <span>Govt ID Type *</span>
+                  <span>Govt ID Type (To present at counter) *</span>
                 </label>
                 <select id="cust-id-type" style="display: none;" tabindex="-1">
                   <option value="Aadhaar Card" selected>Aadhaar Card</option>
@@ -1515,100 +2620,620 @@
                   </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Statutory Alert -->
-            <div class="statutory-notice-box">
-              <i data-lucide="alert-circle" style="width: 16px; height: 16px;"></i>
-              <div>
-                <strong style="color: #0f172a;">Statutory Notice:</strong> Show original Govt ID at the dedicated VIP counter to claim your bottles. Maximum purchase limits per patron apply under state law.
+              <!-- Counter Pickup Notice -->
+              <div class="statutory-notice-box">
+                <i data-lucide="alert-circle" style="width: 16px; height: 16px;"></i>
+                <div>
+                  <strong style="color: #0f172a;">Statutory Counter Rule:</strong> Show original Govt ID at the dedicated VIP counter to claim your bottles. Maximum purchase limits per patron apply under state law.
+                </div>
               </div>
             </div>
 
-            <!-- Total Price Row -->
-            <div class="cart-total-banner">
+            <!-- DELIVERY SPECIFIC: Transparent Bill Breakdown (Swiggy / Zomato style) -->
+            <div id="section-delivery-bill" class="delivery-bill-card">
+              <div class="bill-row">
+                <span>Bottle MRP Total</span>
+                <span id="bill-item-total" style="font-weight: 600;">₹0</span>
+              </div>
+              <div class="bill-row">
+                <span>Express Fleet Delivery</span>
+                <span id="bill-del-fee">₹49</span>
+              </div>
+              <div class="bill-row">
+                <span>Tamper-Proof Excise Packaging</span>
+                <span id="bill-pkg-fee">₹20</span>
+              </div>
+              <div class="bill-row" id="bill-row-tip" style="display: none;">
+                <span>Delivery Partner Tip</span>
+                <span id="bill-tip-fee">₹0</span>
+              </div>
+              <div class="bill-row total">
+                <span>Grand Total</span>
+                <span id="bill-grand-total" style="color: #ea580c;">₹0</span>
+              </div>
+            </div>
+
+            <!-- Statutory Notice for Delivery -->
+            <div id="section-delivery-notice" class="statutory-notice-box" style="margin-bottom: 16px;">
+              <i data-lucide="shield-check" style="width: 16px; height: 16px; color: #10b981;"></i>
+              <div>
+                <strong style="color: #0f172a;">21+ Delivery Verification:</strong> Verified rider will inspect original Govt ID & collect the 4-digit Delivery OTP upon arrival before handing over the sealed excise package.
+              </div>
+            </div>
+
+            <!-- Total Price Row (Pickup View) -->
+            <div class="cart-total-banner" id="pickup-total-banner" style="display: none;">
               <span class="cart-total-label">Total Payable at Counter:</span>
               <span class="cart-total-num" id="cart-total-display">₹0</span>
             </div>
 
-            <!-- Confirm Reservation Button -->
+            <!-- Confirm / Place Order Button -->
             <button type="submit" class="btn-submit-token" id="btn-submit-reservation">
-              <span>Confirm & Generate Digital Token</span>
+              <span>Request Delivery Partner & Place Order</span>
               <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
             </button>
           </form>
         </div>
       </div>
 
-      <!-- Step 2: Digital Token Success Receipt -->
+      <!-- Step 2: Digital Token / Delivery Success Receipt -->
       <div id="cart-step-success" class="token-success-stage">
-        <div class="token-success-icon">
-          <i data-lucide="check" style="width: 30px; height: 30px;"></i>
-        </div>
-        <h2 style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 4px; font-family: var(--font-display);">Reservation Ready!</h2>
-        <p style="font-size: 13px; color: var(--muted-foreground); margin-bottom: 20px;">Present this digital token to the express counter cashier for 2-minute pickup.</p>
 
-        <!-- Digital Token Primitive Card -->
-        <div class="token-card-primitive">
-          <div class="token-card-header">
-            <div>
-              <span style="font-size: 10px; font-weight: 750; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--fp-font-mono);">DIGITAL TOKEN</span>
-              <div class="token-card-code" id="receipt-token-code">TSM-1085-8821</div>
+        <!-- Active View: Digital Bill & Receipt -->
+        <div id="receipt-active-view">
+          <div class="token-success-icon" id="success-stage-icon">
+            <i data-lucide="check" style="width: 30px; height: 30px;"></i>
+          </div>
+          <h2 id="success-stage-title" style="font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 4px; font-family: var(--font-display);">Reservation Ready!</h2>
+          <p id="success-stage-subtitle" style="font-size: 13px; color: var(--muted-foreground); margin-bottom: 20px;">Present this digital token to the express counter cashier for 2-minute pickup.</p>
+
+          <!-- Digital Token Primitive Card -->
+          <div class="token-card-primitive">
+            <div class="token-card-header">
+              <div>
+                <span style="font-size: 10px; font-weight: 750; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--fp-font-mono);" id="receipt-tag-label">DIGITAL TOKEN</span>
+                <div class="token-card-code" id="receipt-token-code">TSM-1085-8821</div>
+              </div>
+              <span class="token-status-pill" id="receipt-status-pill">EXPRESS QUEUE</span>
             </div>
-            <span class="token-status-pill">EXPRESS QUEUE</span>
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div class="token-info-row">
+                <span class="token-info-label">Customer Name:</span>
+                <span class="token-info-val" id="receipt-cust-name">Customer</span>
+              </div>
+              <div class="token-info-row">
+                <span class="token-info-label" id="receipt-store-label">Pickup Outlet:</span>
+                <span class="token-info-val" id="receipt-store-name">Shop #1085 (Elite), Usman Road</span>
+              </div>
+              <div class="token-info-row" id="receipt-dest-row" style="display: none;">
+                <span class="token-info-label">Delivery Address:</span>
+                <span class="token-info-val" id="receipt-dest-name">-</span>
+              </div>
+              <div class="token-info-row" id="receipt-rider-row" style="display: none;">
+                <span class="token-info-label">Fleet Rider:</span>
+                <span class="token-info-val" id="receipt-rider-name" style="color: #ea580c; font-weight: 700;">Rajesh Kumar (Honda Activa)</span>
+              </div>
+              <div class="token-info-row" id="receipt-otp-row" style="display: none; background: #fff7ed; padding: 6px 10px; border-radius: 8px; border: 1px dashed #fdba74;">
+                <span class="token-info-label" style="color: #9a3412; font-weight: 700;">Delivery OTP:</span>
+                <span class="token-info-val" id="receipt-delivery-otp" style="font-family: var(--fp-font-mono); font-size: 16px; font-weight: 800; color: #ea580c; letter-spacing: 0.2em;">4 8 2 9</span>
+              </div>
+              <div class="token-total-row">
+                <span style="font-weight: 700; color: #0f172a;">Statutory Total:</span>
+                <span class="token-total-amount" id="receipt-total-amount">₹0</span>
+              </div>
+            </div>
           </div>
 
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div class="token-info-row">
-              <span class="token-info-label">Customer Name:</span>
-              <span class="token-info-val" id="receipt-cust-name">Customer</span>
-            </div>
-            <div class="token-info-row">
-              <span class="token-info-label">Pickup Outlet:</span>
-              <span class="token-info-val" id="receipt-store-name">Shop #1085 (Elite), Usman Road</span>
-            </div>
-            <div class="token-info-row">
-              <span class="token-info-label">Operating Hours:</span>
-              <span class="token-info-val">12:00 PM – 10:00 PM (Daily)</span>
-            </div>
-            <div class="token-total-row">
-              <span style="font-weight: 700; color: #0f172a;">Statutory Total (MRP):</span>
-              <span class="token-total-amount" id="receipt-total-amount">₹0</span>
-            </div>
+          <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <button type="button" id="btn-track-delivery-success" class="btn-success-action" style="background: #ea580c; color: #ffffff; border: none; display: none; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.28);" onclick="window.TASMAC_DELIVERY && window.TASMAC_DELIVERY.openLiveTracker()">
+              <span style="font-size: 16px;">🛵</span>
+              <span>Track Live on Map (Swiggy / Zomato)</span>
+              <i data-lucide="arrow-right" style="width: 15px; height: 15px;"></i>
+            </button>
+            <button type="button" id="btn-cancel-delivery-success" class="btn-success-action" style="background: #fff1f2; color: #e11d48; border: 1.5px solid #fecdd3; display: none;" onclick="window.TASMAC_DELIVERY && window.TASMAC_DELIVERY.openCancelModal()">
+              <i data-lucide="x-circle" style="width: 15px; height: 15px;"></i>
+              <span>Cancel Order</span>
+            </button>
+            <button type="button" class="btn-success-action" style="background: #ffffff; color: var(--foreground, #0f172a); border: 1px solid var(--border, #e2e8f0); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);" onclick="window.TASMAC_RESERVATIONS ? window.TASMAC_RESERVATIONS.printReceipt() : window.print()">
+              <i data-lucide="printer" style="width: 14px; height: 14px; color: var(--primary, #ea580c);"></i>
+              <span data-i18n="cart.print_receipt">Print / Save PDF Receipt</span>
+            </button>
+            <a href="index.html" class="btn-success-action" style="background: #ffffff; color: var(--foreground, #0f172a); border: 1px solid var(--border, #e2e8f0); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);">
+              <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
+              <span data-i18n="cart.return_store">Done & Return to Store</span>
+            </a>
           </div>
         </div>
 
-        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-          <a href="index.html" class="btn-explore-catalog" style="height: 42px; padding: 0 24px; font-size: 13.5px;">
-            <i data-lucide="arrow-left" style="width: 14px; height: 14px;"></i>
-            <span>Done & Return to Store</span>
-          </a>
+        <!-- Cancelled State View: Shown when order is cancelled (No bill shown!) -->
+        <div id="receipt-cancelled-view" style="display: none; padding-top: 10px;">
+          <div class="token-success-icon" style="background: #fff1f2; border: 2px solid #fecdd3; color: #e11d48; margin: 0 auto 16px; width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <i data-lucide="x-circle" style="width: 36px; height: 36px; color: #e11d48;"></i>
+          </div>
+          <h2 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 6px; font-family: var(--font-display);">Order Cancelled</h2>
+          <p id="receipt-cancelled-sub" style="font-size: 13.5px; color: #64748b; margin-bottom: 22px; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+            Your order has been cancelled successfully. No charge was incurred.
+          </p>
+
+          <!-- Cancelled Summary Notice Card (Replaces the bill) -->
+          <div class="token-card-primitive" style="border: 1.5px dashed #fecdd3; background: #fffdfd; max-width: 480px; margin: 0 auto 24px; box-shadow: 0 4px 16px rgba(225, 29, 72, 0.05); text-align: left;">
+            <div class="token-card-header" style="border-bottom: 1px solid #fee2e2; padding-bottom: 12px; margin-bottom: 12px;">
+              <div>
+                <span style="font-size: 10px; font-weight: 750; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--fp-font-mono);">CANCELLED ORDER</span>
+                <div class="token-card-code" id="cancelled-receipt-order-id" style="color: #64748b; text-decoration: line-through; font-size: 16px;">TSM-DLV-8406</div>
+              </div>
+              <span class="token-status-pill" style="background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; font-weight: 750; font-size: 11px;">CANCELLED</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;">
+                <span style="color: #64748b; flex-shrink: 0;">Reason:</span>
+                <span id="cancelled-receipt-reason" style="font-weight: 600; color: #0f172a; text-align: right;">I changed my mind / No longer need it</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="color: #64748b;">Rider Status:</span>
+                <span style="color: #0f172a; font-weight: 600;">Trip cancelled & rider recalled</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <span style="color: #64748b;">Bottle Inventory:</span>
+                <span style="color: #0f172a; font-weight: 600;">Bottles released to store stock</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid #fee2e2; padding-top: 10px; margin-top: 4px;">
+                <span style="font-weight: 700; color: #0f172a;">Total Amount Charged:</span>
+                <span style="font-weight: 850; font-family: var(--fp-font-mono); color: #16a34a; font-size: 16px;">₹0.00 (Zero Charge)</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <a href="index.html" class="btn-success-action" style="background: #ea580c; color: #ffffff; border: none; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.28);">
+              <i data-lucide="shopping-bag" style="width: 15px; height: 15px;"></i>
+              <span>Browse Catalog & Order Again</span>
+            </a>
+            <button type="button" class="btn-success-action" style="background: #ffffff; color: var(--foreground, #0f172a); border: 1px solid var(--border, #e2e8f0); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);" onclick="window.TASMAC_RESERVATIONS && window.TASMAC_RESERVATIONS.openModal()">
+              <i data-lucide="calendar" style="width: 14px; height: 14px; color: #ea580c;"></i>
+              <span>View Reservation History</span>
+            </button>
+          </div>
         </div>
+
       </div>
 
     </div>
   </main>
 
+  <!-- =========================================================================
+       MODAL: SIGN IN REQUIRED TO VIEW CART
+       ========================================================================= -->
+  <div class="modal-veil" id="cart-auth-modal" onclick="handleCartVeilClick(event, 'cart-auth-modal')">
+    <div class="modal-card-box cart-auth-card" style="position: relative;">
+      <button class="modal-close-icon" onclick="closeCartAuthModal()" style="position: absolute; top: 14px; right: 14px; z-index: 10;" title="Close dialog">
+        <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+      </button>
+
+      <div class="cart-auth-body">
+        <!-- Clean lock icon -->
+        <div class="cart-auth-icon-wrap">
+          <i data-lucide="lock" style="width: 26px; height: 26px; color: #ea580c;"></i>
+        </div>
+
+        <!-- Headline -->
+        <h3 class="cart-auth-title" data-i18n="cart.auth_modal_title">
+          Sign In to View Your Cart
+        </h3>
+
+        <!-- Description -->
+        <p class="cart-auth-desc" data-i18n="cart.auth_modal_desc">
+          Please sign in to view the items in your cart and complete your reservation.
+        </p>
+
+        <!-- Action Buttons -->
+        <div class="cart-auth-actions">
+          <!-- Primary CTA: Sign In -->
+          <a href="login.html?redirect=cart.html" id="cart-auth-signin-btn" class="cart-auth-primary-btn">
+            <span data-i18n="cart.auth_modal_signin_btn">Sign In to View Cart</span>
+            <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+          </a>
+
+          <!-- Secondary CTA: Create Account -->
+          <a href="login.html?tab=signup&redirect=cart.html" id="cart-auth-create-btn" class="cart-auth-secondary-btn">
+            <span data-i18n="cart.auth_modal_create_btn">Create New Account</span>
+          </a>
+
+          <!-- Cancel / Close -->
+          <button type="button" class="cart-auth-cancel-btn" onclick="closeCartAuthModal()" data-i18n="cart.auth_modal_cancel">
+            Continue browsing
+          </button>
+        </div>
+
+        <!-- Statutory Notice Footer -->
+        <div class="cart-auth-footer">
+          <i data-lucide="shield-check" style="width: 14px; height: 14px; color: #10b981; flex-shrink: 0;"></i>
+          <span data-i18n="cart.auth_modal_statutory">Strictly 21+ Only • Original Govt ID Required at Pickup</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="toast-tray"></div>
 
   <!-- Cart Client Logic -->
   <script>
-    // Master Outlets Reference
+    // Master Outlets Reference with GPS coordinates for live delivery dispatch
     const OUTLETS = [
-      { id: "1085", name: "Shop #1085 (Elite)", area: "Usman Road, T. Nagar", distance: "6.4 km away" },
-      { id: "1098", name: "Shop #1098", area: "Pondy Bazaar, T. Nagar", distance: "6.8 km away" },
-      { id: "1114", name: "Shop #1114", area: "Eldams Road, Teynampet", distance: "7.1 km away" },
-      { id: "1120", name: "Shop #1120 (Elite)", area: "Express Avenue Mall, Royapettah", distance: "4.5 km away" },
-      { id: "1135", name: "Shop #1135", area: "Cathedral Road, Gopalapuram", distance: "5.2 km away" },
-      { id: "1142", name: "Shop #1142", area: "TTK Road, Alwarpet", distance: "7.8 km away" },
-      { id: "1158", name: "Shop #1158", area: "Kodambakkam High Road, Nungambakkam", distance: "5.9 km away" },
-      { id: "1165", name: "Shop #1165 (Elite)", area: "Phoenix Marketcity, Velachery", distance: "13.2 km away" },
-      { id: "1012", name: "Shop #1012", area: "Parrys Corner, George Town", distance: "2.1 km away" },
-      { id: "1205", name: "Shop #1205 (Elite)", area: "VR Chennai Mall, Anna Nagar", distance: "8.6 km away" }
+      { id: "1085", name: "Shop #1085 (Elite)", area: "Usman Road, T. Nagar", lat: 13.0418, lng: 80.2341, distance: "6.4 km away", type: "elite" },
+      { id: "1098", name: "Shop #1098", area: "Pondy Bazaar, T. Nagar", lat: 13.0401, lng: 80.2372, distance: "6.8 km away", type: "retail" },
+      { id: "1114", name: "Shop #1114", area: "Eldams Road, Teynampet", lat: 13.0365, lng: 80.2482, distance: "7.1 km away", type: "retail" },
+      { id: "1120", name: "Shop #1120 (Elite)", area: "Express Avenue Mall, Royapettah", lat: 13.0588, lng: 80.2641, distance: "4.5 km away", type: "elite" },
+      { id: "1135", name: "Shop #1135", area: "Cathedral Road, Gopalapuram", lat: 13.0494, lng: 80.2529, distance: "5.2 km away", type: "retail" },
+      { id: "1142", name: "Shop #1142", area: "TTK Road, Alwarpet", lat: 13.0322, lng: 80.2541, distance: "7.8 km away", type: "retail" },
+      { id: "1158", name: "Shop #1158", area: "Kodambakkam High Road, Nungambakkam", lat: 13.0612, lng: 80.2395, distance: "5.9 km away", type: "retail" },
+      { id: "1165", name: "Shop #1165 (Elite)", area: "Phoenix Marketcity, Velachery", lat: 12.9912, lng: 80.2178, distance: "13.2 km away", type: "elite" },
+      { id: "1012", name: "Shop #1012", area: "Parrys Corner, George Town", lat: 13.0898, lng: 80.2885, distance: "2.1 km away", type: "retail" },
+      { id: "1205", name: "Shop #1205 (Elite)", area: "VR Chennai Mall, Anna Nagar", lat: 13.0855, lng: 80.2105, distance: "8.6 km away", type: "elite" }
     ];
 
     let cart = [];
     let selectedOutlet = OUTLETS[0];
+
+    // Swiggy / Zomato Fulfillment Mode State
+    let currentFulfillmentMode = "delivery";
+    let deliveryTip = 0;
+
+    function setFulfillmentMode(mode) {
+      currentFulfillmentMode = mode;
+      const btnDelivery = document.getElementById("btn-mode-delivery");
+      const btnPickup = document.getElementById("btn-mode-pickup");
+      const delSection = document.getElementById("section-delivery-address");
+      const delBill = document.getElementById("section-delivery-bill");
+      const delNotice = document.getElementById("section-delivery-notice");
+      const pickupSection = document.getElementById("section-pickup-fields");
+      const pickupBanner = document.getElementById("pickup-total-banner");
+
+      if (mode === "delivery") {
+        if (btnDelivery) btnDelivery.classList.add("active");
+        if (btnPickup) btnPickup.classList.remove("active");
+        if (delSection) delSection.style.display = "block";
+        if (delBill) delBill.style.display = "block";
+        if (delNotice) delNotice.style.display = "flex";
+        if (pickupSection) pickupSection.style.display = "none";
+        if (pickupBanner) pickupBanner.style.display = "none";
+      } else {
+        if (btnDelivery) btnDelivery.classList.remove("active");
+        if (btnPickup) btnPickup.classList.add("active");
+        if (delSection) delSection.style.display = "none";
+        if (delBill) delBill.style.display = "none";
+        if (delNotice) delNotice.style.display = "none";
+        if (pickupSection) pickupSection.style.display = "block";
+        if (pickupBanner) pickupBanner.style.display = "flex";
+      }
+
+      updateCheckoutPricing();
+    }
+
+    function setDeliveryTip(amount, btn) {
+      deliveryTip = Number(amount) || 0;
+      document.querySelectorAll("#delivery-tip-chips .tip-chip").forEach(el => el.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+
+      const tipRow = document.getElementById("bill-row-tip");
+      if (tipRow) tipRow.style.display = deliveryTip > 0 ? "flex" : "none";
+
+      updateCheckoutPricing();
+    }
+
+    function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return (R * c).toFixed(1);
+    }
+
+    async function autoFillDeliveryAddress() {
+      const btn = document.getElementById("btn-use-my-location");
+      const streetInput = document.getElementById("del-street");
+      const pincodeInput = document.getElementById("del-pincode");
+      const flatInput = document.getElementById("del-flat");
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<svg class="animate-spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="display:inline-block; vertical-align:middle; animation:spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path></svg> <span>Locating...</span>';
+      }
+
+      const restoreBtn = (success = false) => {
+        if (!btn) return;
+        btn.disabled = false;
+        if (success) {
+          btn.innerHTML = '<i data-lucide="check" style="width: 12px; height: 12px; color: #10b981;"></i> <span>Located</span>';
+          if (window.lucide) lucide.createIcons();
+          setTimeout(() => {
+            btn.innerHTML = '<i data-lucide="crosshair" style="width: 12px; height: 12px;"></i> <span>Use My Location</span>';
+            if (window.lucide) lucide.createIcons();
+          }, 3000);
+        } else {
+          btn.innerHTML = '<i data-lucide="crosshair" style="width: 12px; height: 12px;"></i> <span>Use My Location</span>';
+          if (window.lucide) lucide.createIcons();
+        }
+      };
+
+      const reverseGeocode = async (lat, lng) => {
+        let addressData = null;
+
+        // 1. Try OpenStreetMap Nominatim with street-level resolution (zoom=18)
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 4500);
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+            signal: controller.signal,
+            headers: { "Accept": "application/json" }
+          });
+          clearTimeout(timeoutId);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && (data.address || data.display_name)) {
+              addressData = Object.assign({}, data.address || {});
+              addressData.displayName = data.display_name || "";
+            }
+          }
+        } catch (e) {}
+
+        // 2. High-speed Photon Geocoder fallback
+        if (!addressData || (!addressData.road && !addressData.street)) {
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3500);
+            const res = await fetch(`https://photon.komoot.io/reverse?lat=${lat}&lon=${lng}`, {
+              signal: controller.signal,
+              headers: { "Accept": "application/json" }
+            });
+            clearTimeout(timeoutId);
+            if (res.ok) {
+              const pData = await res.json();
+              if (pData && pData.features && pData.features.length > 0) {
+                const p = pData.features[0].properties || {};
+                addressData = addressData || {};
+                addressData.road = addressData.road || p.name || p.street || "";
+                addressData.neighbourhood = addressData.neighbourhood || p.locality || "";
+                addressData.suburb = addressData.suburb || p.district || "";
+                addressData.city = addressData.city || p.city || "Chennai";
+                addressData.postcode = addressData.postcode || p.postcode || "";
+                if (p.housenumber) addressData.house_number = p.housenumber;
+              }
+            }
+          } catch (e) {}
+        }
+
+        // 3. Fallback to BigDataCloud reverse geocoder
+        if (!addressData || (!addressData.suburb && !addressData.city)) {
+          try {
+            const bdcRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`);
+            if (bdcRes.ok) {
+              const bdcData = await bdcRes.json();
+              const admin = (bdcData.localityInfo && Array.isArray(bdcData.localityInfo.administrative)) ? bdcData.localityInfo.administrative : [];
+              const locObj = admin.find(a => a.adminLevel === 9 || a.adminLevel === 10) || admin.find(a => a.adminLevel === 8);
+              addressData = addressData || {};
+              addressData.suburb = addressData.suburb || (locObj ? locObj.name : bdcData.locality) || "";
+              addressData.city = addressData.city || bdcData.city || "Chennai";
+              addressData.postcode = addressData.postcode || bdcData.postcode || "";
+            }
+          } catch (e) {}
+        }
+
+        return addressData;
+      };
+
+      const applyLocationData = (lat, lng, addressData) => {
+        window.userDeliveryCoords = { lat, lng };
+        try {
+          localStorage.setItem('tasmac-user-lat', lat);
+          localStorage.setItem('tasmac-user-lng', lng);
+        } catch(e) {}
+
+        addressData = addressData || {};
+
+        // Dynamically compute and refresh outlet distances based on real customer GPS
+        try {
+          OUTLETS.forEach(o => {
+            o.distance = `${getDistanceFromLatLonInKm(lat, lng, o.lat, o.lng)} km away`;
+          });
+          updateStorePill();
+        } catch (e) {}
+
+        let road = addressData.road || addressData.pedestrian || addressData.street || addressData.footway || addressData.path || addressData.lane || "";
+        let neighbourhood = addressData.neighbourhood || addressData.residential || addressData.subdivision || "";
+        let suburb = addressData.suburb || addressData.district || addressData.city_district || addressData.locality || "";
+        let city = addressData.city || addressData.town || addressData.village || "Chennai";
+        let postcode = addressData.postcode || addressData.postalCode || "";
+
+        // Remove administrative municipal code prefixes (e.g. "Zone 13 Adyar" -> "Adyar", "Ward 172" -> "")
+        const cleanStr = (s) => {
+          if (!s || typeof s !== 'string') return '';
+          return s.replace(/^Zone\s*\d+\s*[-:]?\s*/i, '')
+                  .replace(/^Ward\s*\d+\s*[-:]?\s*/i, '')
+                  .replace(/\bChennai\s*(District|Metropolitan Area)\b/gi, '')
+                  .trim();
+        };
+
+        road = cleanStr(road);
+        neighbourhood = cleanStr(neighbourhood);
+        suburb = cleanStr(suburb);
+        city = cleanStr(city) || 'Chennai';
+
+        // If road is still missing, extract first valid road segment from displayName
+        if (!road && addressData.displayName) {
+          const rawParts = addressData.displayName.split(',').map(p => cleanStr(p.trim())).filter(Boolean);
+          for (const p of rawParts) {
+            if (/^\d{6}$/.test(p)) continue;
+            if (/Tamil Nadu|India/i.test(p)) continue;
+            if (p.toLowerCase() === city.toLowerCase() || p.toLowerCase() === suburb.toLowerCase() || p.toLowerCase() === neighbourhood.toLowerCase()) continue;
+            road = p;
+            break;
+          }
+        }
+
+        // Assemble clean street tokens without duplicates
+        const streetTokens = [];
+        if (road) streetTokens.push(road);
+        if (neighbourhood && !streetTokens.some(t => t.toLowerCase() === neighbourhood.toLowerCase())) {
+          streetTokens.push(neighbourhood);
+        }
+        if (suburb && !streetTokens.some(t => t.toLowerCase() === suburb.toLowerCase())) {
+          streetTokens.push(suburb);
+        }
+        if (city && !streetTokens.some(t => t.toLowerCase() === city.toLowerCase())) {
+          streetTokens.push(city);
+        }
+
+        const finalStreet = streetTokens.length > 0 ? streetTokens.join(", ") : `Main Road, ${suburb || 'Adyar'}, ${city}`;
+
+        // 1. Fill Flat / House / Door box (del-flat) - Never leave empty
+        if (flatInput) {
+          let flatVal = flatInput.value.trim();
+          if (!flatVal) {
+            const houseNum = addressData.house_number || addressData.street_number || "";
+            const bldg = addressData.building || addressData.apartment || addressData.house_name || "";
+            if (houseNum && bldg) {
+              flatVal = `Door No. ${houseNum}, ${bldg}`;
+            } else if (houseNum) {
+              flatVal = `Door No. ${houseNum}`;
+            } else if (bldg) {
+              flatVal = `Flat 4B, ${bldg}`;
+            } else {
+              const savedFlat = localStorage.getItem('tasmac-user-flat');
+              flatVal = savedFlat || "Door No. 12, Ground Floor";
+            }
+          }
+          flatInput.value = flatVal;
+          try { localStorage.setItem('tasmac-user-flat', flatVal); } catch(e) {}
+          flatInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        // 2. Fill Street / Locality / Area box (del-street)
+        if (streetInput) {
+          streetInput.value = finalStreet;
+          try { localStorage.setItem('tasmac-user-street', finalStreet); } catch(e) {}
+          streetInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        // 3. Fill Pincode box (del-pincode)
+        if (!postcode || !/^\d{6}$/.test(postcode)) {
+          const combined = (finalStreet + " " + (addressData.displayName || "")).toLowerCase();
+          if (combined.includes("adyar") || combined.includes("kottur")) postcode = "600085";
+          else if (combined.includes("nungambakkam") || combined.includes("kodambakkam")) postcode = "600034";
+          else if (combined.includes("t. nagar") || combined.includes("t nagar") || combined.includes("panagal")) postcode = "600017";
+          else if (combined.includes("anna nagar")) postcode = "600040";
+          else if (combined.includes("mylapore")) postcode = "600004";
+          else if (combined.includes("velachery")) postcode = "600042";
+          else if (combined.includes("guindy")) postcode = "600032";
+          else if (combined.includes("besant")) postcode = "600090";
+          else postcode = "600085";
+        }
+
+        if (pincodeInput) {
+          pincodeInput.value = postcode;
+          try { localStorage.setItem('tasmac-user-pincode', postcode); } catch(e) {}
+          pincodeInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        restoreBtn(true);
+        showToast("Live GPS address detected successfully!");
+        if (flatInput) {
+          flatInput.focus();
+          flatInput.select();
+        }
+      };
+
+      // Real Device GPS with high accuracy and zero cached age
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const addr = await reverseGeocode(lat, lng);
+            applyLocationData(lat, lng, addr || { city: "Chennai" });
+          },
+          async (err) => {
+            console.warn("GPS error:", err);
+            // Fallback: check localStorage or IP
+            let lat = parseFloat(localStorage.getItem('tasmac-user-lat'));
+            let lng = parseFloat(localStorage.getItem('tasmac-user-lng'));
+            if (lat && lng) {
+              const addr = await reverseGeocode(lat, lng);
+              applyLocationData(lat, lng, addr || { city: "Chennai" });
+              return;
+            }
+
+            try {
+              const ipRes = await fetch("https://get.geojs.io/v1/ip/geo.json");
+              if (ipRes.ok) {
+                const ipData = await ipRes.json();
+                if (ipData.latitude && ipData.longitude) {
+                  lat = parseFloat(ipData.latitude);
+                  lng = parseFloat(ipData.longitude);
+                  const addr = await reverseGeocode(lat, lng);
+                  applyLocationData(lat, lng, addr || { city: ipData.city || "Chennai" });
+                  return;
+                }
+              }
+            } catch (e) {}
+
+            // Graceful Chennai fallback if browser GPS blocked
+            const defLat = 13.0135, defLng = 80.2445;
+            const addr = await reverseGeocode(defLat, defLng);
+            applyLocationData(defLat, defLng, addr || { city: "Chennai" });
+          },
+          { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+        );
+      } else {
+        const defLat = 13.0135, defLng = 80.2445;
+        const addr = await reverseGeocode(defLat, defLng);
+        applyLocationData(defLat, defLng, addr || { city: "Chennai" });
+      }
+    }
+
+    function updateCheckoutPricing() {
+      const itemTotal = cart.reduce((acc, ci) => acc + (ci.price * ci.qty), 0);
+      const isDelivery = currentFulfillmentMode === 'delivery';
+
+      // Swiggy/Zomato transparent fees
+      const deliveryFee = itemTotal > 1000 ? 0 : 49;
+      const packagingFee = 20;
+      const grandTotal = isDelivery ? (itemTotal + deliveryFee + packagingFee + deliveryTip) : itemTotal;
+
+      const itemTotalEl = document.getElementById("bill-item-total");
+      const delFeeEl = document.getElementById("bill-del-fee");
+      const pkgFeeEl = document.getElementById("bill-pkg-fee");
+      const tipFeeEl = document.getElementById("bill-tip-fee");
+      const grandTotalEl = document.getElementById("bill-grand-total");
+      const totalDisplay = document.getElementById("cart-total-display");
+      const submitBtn = document.getElementById("btn-submit-reservation");
+
+      if (itemTotalEl) itemTotalEl.innerText = `₹${itemTotal.toLocaleString()}`;
+      if (delFeeEl) {
+        delFeeEl.innerHTML = deliveryFee === 0 
+          ? '<span style="color:#10b981; font-weight:700;">FREE</span> <span style="text-decoration:line-through; font-size:11px; color:#94a3b8; margin-left:4px;">₹49</span>' 
+          : `₹${deliveryFee}`;
+      }
+      if (pkgFeeEl) pkgFeeEl.innerText = `₹${packagingFee}`;
+      if (tipFeeEl) tipFeeEl.innerText = `₹${deliveryTip}`;
+      if (grandTotalEl) grandTotalEl.innerText = `₹${grandTotal.toLocaleString()}`;
+      if (totalDisplay) totalDisplay.innerText = `₹${(isDelivery ? grandTotal : itemTotal).toLocaleString()}`;
+
+      if (submitBtn) {
+        if (isDelivery) {
+          submitBtn.innerHTML = `<span>Request Delivery Partner & Place Order • ₹${grandTotal.toLocaleString()}</span><i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>`;
+        } else {
+          submitBtn.innerHTML = `<span>Confirm & Generate Digital Token</span><i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>`;
+        }
+        if (window.lucide) lucide.createIcons();
+      }
+    }
 
     // Load Cart from localStorage
     function loadCartData() {
@@ -1634,11 +3259,17 @@
       prefillUserData();
     }
 
-    // Save Cart to localStorage
+    // Save Cart to localStorage and sync all navbar badges
     function saveCartData() {
+      if (!Array.isArray(cart)) cart = [];
       try {
         localStorage.setItem("tasmac-cart", JSON.stringify(cart));
       } catch (e) {}
+      const totalCount = cart.reduce((acc, ci) => acc + (Number(ci.qty) || 0), 0);
+      const navBadge = document.getElementById("nav-cart-badge");
+      if (navBadge) navBadge.innerText = totalCount;
+      const countText = document.getElementById("cart-item-count-text");
+      if (countText) countText.innerText = totalCount === 1 ? '(1 item selected)' : '(' + totalCount + ' items selected)';
     }
 
     // Update Store Fulfillment Header
@@ -1691,6 +3322,11 @@
       const countText = document.getElementById("cart-item-count-text");
       if (countText) countText.innerText = totalCount === 1 ? '(1 item selected)' : '(' + totalCount + ' items selected)';
 
+      const stepDetails = document.getElementById("cart-step-details");
+      if (stepDetails) {
+        stepDetails.classList.toggle("is-empty", cart.length === 0);
+      }
+
       if (cart.length === 0) {
         container.innerHTML = `
           <div class="cart-empty-box">
@@ -1710,11 +3346,15 @@
         if (formSection) formSection.style.display = "none";
         if (totalDisplay) totalDisplay.innerText = "₹0";
         if (window.lucide) lucide.createIcons();
+      if (window.TASMAC_I18N && typeof window.TASMAC_I18N.applyTranslations === 'function') {
+        window.TASMAC_I18N.applyTranslations();
+      }
         return;
       }
 
       if (formSection) formSection.style.display = "block";
 
+      const prevScroll = container.scrollTop;
       let total = 0;
       container.innerHTML = cart.map(item => {
         const lineTotal = item.price * item.qty;
@@ -1728,7 +3368,7 @@
             <!-- Corresponding Bottle Cutout Stage -->
             <div class="cart-bottle-stage">
               <img 
-                src="${bottleImg}${bottleImg.includes('?') ? '&' : '?'}v=13" 
+                src="${bottleImg}${bottleImg.includes('?') ? '&' : '?'}v=16" 
                 alt="${item.name}" 
                 class="cart-bottle-img" 
                 onerror="this.src='img/tasmac-icon-128.png'" 
@@ -1747,8 +3387,8 @@
 
             <!-- Stepper Controls -->
             <div class="cart-stepper-box">
-              <button type="button" class="btn-stepper" onclick="updateQty('${item.id}', -1)" title="Decrease">
-                <i data-lucide="minus" style="width: 12px; height: 12px;"></i>
+              <button type="button" class="btn-stepper" onclick="updateQty('${item.id}', -1)" title="${item.qty === 1 ? 'Remove from cart' : 'Decrease'}">
+                <i data-lucide="${item.qty === 1 ? 'trash-2' : 'minus'}" style="width: 12px; height: 12px; ${item.qty === 1 ? 'color: #dc2626;' : ''}"></i>
               </button>
               <span class="cart-qty-value">${item.qty}</span>
               <button type="button" class="btn-stepper" onclick="updateQty('${item.id}', 1)" title="Increase">
@@ -1760,7 +3400,8 @@
             <div class="cart-item-actions">
               <div class="cart-item-total">₹${lineTotal.toLocaleString()}</div>
               <button type="button" class="cart-item-remove" onclick="removeItem('${item.id}')" title="Remove bottle">
-                Remove
+                <i data-lucide="trash-2" style="width: 11px; height: 11px;"></i>
+                <span data-i18n="cart.remove_btn">Remove</span>
               </button>
             </div>
           </div>
@@ -1771,7 +3412,12 @@
         totalDisplay.innerText = `₹${total.toLocaleString()}`;
       }
 
+      updateCheckoutPricing();
+
       if (window.lucide) lucide.createIcons();
+      if (window.TASMAC_I18N && typeof window.TASMAC_I18N.applyTranslations === 'function') {
+        window.TASMAC_I18N.applyTranslations();
+      }
     }
 
     // Stepper Handlers
@@ -1794,34 +3440,125 @@
       showToast("Bottle removed from cart");
     }
 
+    // Auth Modal Controller for Cart
+    function openCartAuthModal() {
+      const modal = document.getElementById("cart-auth-modal");
+      if (!modal) return;
+
+      const pill = document.getElementById("cart-auth-item-pill");
+      const countText = document.getElementById("cart-auth-item-count-text");
+      if (pill && countText) {
+        let count = cart.reduce((acc, ci) => acc + (Number(ci.qty) || 0), 0);
+        if (count > 0) {
+          pill.style.display = "flex";
+          const isTa = window.TASMAC_I18N && window.TASMAC_I18N.getLanguage && window.TASMAC_I18N.getLanguage() === 'ta';
+          const itemWord = count === 1 ? "bottle" : "bottles";
+          countText.innerText = isTa
+            ? `உங்கள் கூடையில் ${count} பாட்டில்(கள்) தயாராக உள்ளன`
+            : `You have ${count} ${itemWord} saved in your cart`;
+        } else {
+          pill.style.display = "none";
+        }
+      }
+
+      modal.classList.add("open");
+      if (window.lucide) lucide.createIcons();
+      if (window.TASMAC_I18N && typeof window.TASMAC_I18N.applyTranslations === 'function') {
+        window.TASMAC_I18N.applyTranslations();
+      }
+    }
+
+    function closeCartAuthModal() {
+      const modal = document.getElementById("cart-auth-modal");
+      if (modal) modal.classList.remove("open");
+    }
+
+    function clearCartFromAuthModal() {
+      cart = [];
+      saveCartData();
+      renderCartUI();
+      closeCartAuthModal();
+      showToast("Selected items removed from cart");
+    }
+
+    function handleCartVeilClick(e, id) {
+      if (e.target.id === id) {
+        closeCartAuthModal();
+      }
+    }
+
+    function openCartAuthModalIfGuest() {
+      const user = getAuthenticatedUser();
+      if (!user) {
+        openCartAuthModal();
+      }
+    }
+
     // Pre-populate Logged In Patron Data
+    function getAuthenticatedUser() {
+      try {
+        const userJson = localStorage.getItem("tasmac-user");
+        if (userJson) {
+          const u = JSON.parse(userJson);
+          if (u && (u.name || u.email)) return u;
+        }
+      } catch(e) {}
+      return null;
+    }
+
     function prefillUserData() {
-      const userJson = localStorage.getItem("tasmac-user");
+      const user = getAuthenticatedUser();
       const authBanner = document.getElementById("cart-auth-banner");
       const guestBanner = document.getElementById("cart-guest-banner");
       const nameInput = document.getElementById("cust-name");
       const phoneInput = document.getElementById("cust-phone");
+      const submitBtn = document.getElementById("btn-submit-reservation");
 
-      if (userJson) {
-        try {
-          const user = JSON.parse(userJson);
-          if (user && user.name) {
-            if (nameInput) nameInput.value = user.name;
-            if (phoneInput && user.phone) {
-              const cleanPhone = user.phone.replace('+91', '').trim();
-              phoneInput.value = cleanPhone;
-            }
-            if (authBanner) {
-              authBanner.style.display = "flex";
-              const userNameEl = document.getElementById("cart-logged-user-name");
-              if (userNameEl) userNameEl.innerText = user.name;
-            }
-            if (guestBanner) guestBanner.style.display = "none";
-          }
-        } catch(e) {}
+      if (user) {
+        if (nameInput) {
+          nameInput.value = user.name || user.email.split("@")[0];
+          nameInput.readOnly = true;
+          nameInput.style.background = "#f8fafc";
+        }
+        if (phoneInput && user.phone) {
+          const cleanPhone = user.phone.replace('+91', '').trim();
+          phoneInput.value = cleanPhone;
+        }
+        if (authBanner) {
+          authBanner.style.display = "flex";
+          const userNameEl = document.getElementById("cart-logged-user-name");
+          if (userNameEl) userNameEl.innerText = user.name || "Patron";
+        }
+        if (guestBanner) guestBanner.style.display = "none";
+
+        if (submitBtn) {
+          submitBtn.classList.remove("btn-auth-required");
+          submitBtn.innerHTML = '<span>Confirm & Generate Digital Token</span><i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>';
+        }
       } else {
         if (authBanner) authBanner.style.display = "none";
-        if (guestBanner) guestBanner.style.display = "flex";
+        if (guestBanner) {
+          guestBanner.style.display = "flex";
+          guestBanner.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="lock" style="width: 15px; height: 15px; color: #ea580c; flex-shrink: 0;"></i>
+              <span data-i18n="cart.signin_required"><strong>Sign in required:</strong> You must be signed in to reserve bottles.</span>
+            </div>
+            <a href="login.html?redirect=cart.html" class="status-link" data-i18n="cart.signin_now" style="white-space: nowrap;">Sign in now &rarr;</a>
+          `;
+        }
+        if (nameInput) {
+          nameInput.readOnly = false;
+          nameInput.style.background = "";
+        }
+        if (submitBtn) {
+          submitBtn.classList.add("btn-auth-required");
+          submitBtn.innerHTML = '<i data-lucide="lock" style="width: 16px; height: 16px;"></i><span data-i18n="cart.signin_to_reserve">Sign In to Reserve Bottles</span><i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>';
+        }
+      }
+      if (window.lucide) lucide.createIcons();
+      if (window.TASMAC_I18N && typeof window.TASMAC_I18N.applyTranslations === 'function') {
+        window.TASMAC_I18N.applyTranslations();
       }
     }
 
@@ -1860,7 +3597,7 @@
       if (wrap) wrap.classList.remove("open");
     });
 
-    // Handle Reservation Form Submission
+    // Handle Reservation / Delivery Form Submission
     function handleReservationSubmit(e) {
       e.preventDefault();
       if (!cart || cart.length === 0) {
@@ -1868,33 +3605,232 @@
         return;
       }
 
+      // Strict Rule: Sign in required to reserve or order bottles
+      const user = getAuthenticatedUser();
+      if (!user) {
+        openCartAuthModal();
+        return;
+      }
+
       const nameInput = document.getElementById("cust-name");
       const phoneInput = document.getElementById("cust-phone");
-      const idSelect = document.getElementById("cust-id-type");
-
-      const name = nameInput ? nameInput.value.trim() : "Patron";
+      const name = nameInput ? nameInput.value.trim() : (user.name || "Patron");
       const phone = phoneInput ? phoneInput.value.trim() : "";
+
+      if (!name || !phone) {
+        showToast("Please provide your name and mobile number.");
+        return;
+      }
+
+      // -------------------------------------------------------------
+      // CASE 1: SWIGGY / ZOMATO DOORSTEP DELIVERY MODE
+      // -------------------------------------------------------------
+      if (currentFulfillmentMode === 'delivery') {
+        const flatInput = document.getElementById("del-flat");
+        const streetInput = document.getElementById("del-street");
+        const pincodeInput = document.getElementById("del-pincode");
+        const instructionsInput = document.getElementById("del-instructions");
+
+        const flat = flatInput ? flatInput.value.trim() : "";
+        const street = streetInput ? streetInput.value.trim() : "";
+        const pincode = pincodeInput ? pincodeInput.value.trim() : "";
+        const instructions = instructionsInput ? instructionsInput.value.trim() : "Call on arrival";
+
+        if (!flat || !street) {
+          showToast("Please enter your flat/door number and street address");
+          if (flatInput && !flat) flatInput.focus();
+          else if (streetInput) streetInput.focus();
+          return;
+        }
+
+        const itemTotal = cart.reduce((acc, ci) => acc + (ci.price * ci.qty), 0);
+        const deliveryFee = itemTotal > 1000 ? 0 : 49;
+        const pkgFee = 20;
+        const grandTotal = itemTotal + deliveryFee + pkgFee + deliveryTip;
+
+        const submitBtn = document.getElementById("btn-submit-reservation");
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<span>Assigning Verified Fleet Rider...</span>';
+        }
+
+        setTimeout(() => {
+          if (window.TASMAC_DELIVERY) {
+            const userLat = (window.userDeliveryCoords && window.userDeliveryCoords.lat)
+              || parseFloat(localStorage.getItem('tasmac-user-lat'))
+              || (selectedOutlet.lat ? selectedOutlet.lat + 0.012 : 13.0418 + 0.012);
+            const userLng = (window.userDeliveryCoords && window.userDeliveryCoords.lng)
+              || parseFloat(localStorage.getItem('tasmac-user-lng'))
+              || (selectedOutlet.lng ? selectedOutlet.lng + 0.015 : 80.2341 + 0.015);
+
+            const delOrder = window.TASMAC_DELIVERY.createDeliveryOrder({
+              store: selectedOutlet,
+              name: name,
+              phone: phone,
+              flat: flat,
+              street: street,
+              area: street.includes(",") ? street.split(",")[1].trim() : "Chennai",
+              pincode: pincode || "600017",
+              instructions: instructions,
+              lat: userLat,
+              lng: userLng,
+              items: cart.map(ci => ({ id: ci.id, name: ci.name, size: ci.size, price: ci.price, qty: ci.qty })),
+              total: grandTotal,
+              pricing: {
+                itemTotal: itemTotal,
+                deliveryFee: deliveryFee,
+                pkgFee: pkgFee,
+                tip: deliveryTip,
+                total: grandTotal
+              }
+            });
+
+            // Update success receipt view for delivery
+            const titleEl = document.getElementById("success-stage-title");
+            const subEl = document.getElementById("success-stage-subtitle");
+            const tagEl = document.getElementById("receipt-tag-label");
+            const statusPill = document.getElementById("receipt-status-pill");
+            const codeEl = document.getElementById("receipt-token-code");
+            const custEl = document.getElementById("receipt-cust-name");
+            const storeEl = document.getElementById("receipt-store-name");
+            const storeLabel = document.getElementById("receipt-store-label");
+            const destRow = document.getElementById("receipt-dest-row");
+            const destName = document.getElementById("receipt-dest-name");
+            const riderRow = document.getElementById("receipt-rider-row");
+            const riderName = document.getElementById("receipt-rider-name");
+            const otpRow = document.getElementById("receipt-otp-row");
+            const otpCode = document.getElementById("receipt-delivery-otp");
+            const amtEl = document.getElementById("receipt-total-amount");
+            const trackBtn = document.getElementById("btn-track-delivery-success");
+
+            if (titleEl) titleEl.innerText = "Order Placed & Fleet Rider Dispatched!";
+            if (subEl) subEl.innerText = `${delOrder.rider.name} is on the way to pick up your bottles. Real-time GPS tracking active.`;
+            if (tagEl) tagEl.innerText = "DELIVERY ORDER";
+            if (statusPill) {
+              statusPill.innerText = "OUT FOR PICKUP";
+              statusPill.style.background = "#fff7ed";
+              statusPill.style.color = "#ea580c";
+            }
+            if (codeEl) codeEl.innerText = delOrder.orderId;
+            if (custEl) custEl.innerText = name;
+            if (storeLabel) storeLabel.innerText = "Sourced From:";
+            if (storeEl) storeEl.innerText = `${selectedOutlet.name}, ${selectedOutlet.area}`;
+            if (destRow) destRow.style.display = "flex";
+            if (destName) destName.innerText = `${flat}, ${street}`;
+            if (riderRow) riderRow.style.display = "flex";
+            if (riderName) riderName.innerText = `${delOrder.rider.name} (${delOrder.rider.vehicle})`;
+            if (otpRow) otpRow.style.display = "flex";
+            if (otpCode) otpCode.innerText = delOrder.otp.split("").join(" ");
+            if (amtEl) amtEl.innerText = `₹${grandTotal.toLocaleString()}`;
+            if (trackBtn) trackBtn.style.display = "inline-flex";
+            const cancelBtn = document.getElementById("btn-cancel-delivery-success");
+            if (cancelBtn) cancelBtn.style.display = "inline-flex";
+
+            // Switch views
+            const actView = document.getElementById("receipt-active-view");
+            const canView = document.getElementById("receipt-cancelled-view");
+            if (actView) actView.style.display = "block";
+            if (canView) canView.style.display = "none";
+            document.getElementById("cart-step-details").style.display = "none";
+            document.getElementById("cart-step-success").style.display = "block";
+
+            // Clear cart
+            cart = [];
+            saveCartData();
+            renderCartUI();
+            showToast(`Order Placed! Assigned to ${delOrder.rider.name}`);
+            if (window.lucide) lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }, 500);
+
+        return;
+      }
+
+      // -------------------------------------------------------------
+      // CASE 2: SELF EXPRESS COUNTER PICKUP MODE
+      // -------------------------------------------------------------
+      const idSelect = document.getElementById("cust-id-type");
       const idType = idSelect ? idSelect.value : "Aadhaar Card";
-
       const total = cart.reduce((acc, ci) => acc + (ci.price * ci.qty), 0);
-      const token = `TSM-${selectedOutlet.id}-${Math.floor(1000 + Math.random() * 9000)}`;
 
-      // Sync reservation to Supabase Database if configured
+      const orderSummaryData = {
+        outletName: `${selectedOutlet.name}, ${selectedOutlet.area}`,
+        custName: name,
+        idType: idType,
+        items: cart.map(ci => ({ name: ci.name, size: ci.size, price: ci.price, qty: ci.qty })),
+        total: total
+      };
+
+      // Clear reservation summary before final confirmation
+      if (window.TASMAC_RESERVATIONS && window.TASMAC_RESERVATIONS.showSummary) {
+        window.TASMAC_RESERVATIONS.showSummary(orderSummaryData, () => {
+          proceedReservation(name, phone, idType, total);
+        });
+      } else {
+        proceedReservation(name, phone, idType, total);
+      }
+    }
+
+    function proceedReservation(name, phone, idType, total) {
+      // Secure, unique reference token compatible with existing backend
+      const token = `TSM-${selectedOutlet.id}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const submitBtn = document.getElementById("btn-submit-reservation");
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Securing Reservation Token...</span>';
+      }
+
+      const resPayload = {
+        token: token,
+        name: name,
+        phone: phone ? `+91 ${phone}` : "",
+        idType: idType,
+        outletId: selectedOutlet.id,
+        outletName: `${selectedOutlet.name}, ${selectedOutlet.area}`,
+        amount: total,
+        items: cart.map(ci => ({ id: ci.id, name: ci.name, size: ci.size, price: ci.price, qty: ci.qty }))
+      };
+
+      // Requirement B: Show success ONLY after reservation has been saved successfully;
+      // if saving fails, display understandable error and allow retry without losing cart.
       if (window.TASMAC_SUPABASE && window.TASMAC_SUPABASE.isConfigured()) {
-        window.TASMAC_SUPABASE.createReservation({
-          token: token,
-          name: name,
-          phone: phone ? `+91 ${phone}` : "",
-          idType: idType,
-          outletId: selectedOutlet.id,
-          outletName: selectedOutlet.name,
-          amount: total,
-          items: cart.map(ci => ({ id: ci.id, name: ci.name, size: ci.size, price: ci.price, qty: ci.qty }))
-        }).then(res => {
-          if (res.success && !res.localOnly) {
-            console.log("✅ Reservation stored in Supabase database:", token);
+        window.TASMAC_SUPABASE.createReservation(resPayload).then(res => {
+          if (!res.success) {
+            console.warn("Could not save reservation to Supabase:", res.error);
+            showToast("Reservation could not be saved to the database. Your cart is preserved, please retry.");
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = '<span>Confirm & Generate Digital Token</span><i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>';
+              if (window.lucide) lucide.createIcons();
+      if (window.TASMAC_I18N && typeof window.TASMAC_I18N.applyTranslations === 'function') {
+        window.TASMAC_I18N.applyTranslations();
+      }
+            }
+            return;
+          }
+          completeReservationFlow(token, name, phone, idType, total, resPayload);
+        }).catch(err => {
+          console.warn("Reservation network exception:", err);
+          showToast("Network connection issue. Your cart has been safely preserved, please retry.");
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>Confirm & Generate Digital Token</span><i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>';
+            if (window.lucide) lucide.createIcons();
+      if (window.TASMAC_I18N && typeof window.TASMAC_I18N.applyTranslations === 'function') {
+        window.TASMAC_I18N.applyTranslations();
+      }
           }
         });
+      } else {
+        completeReservationFlow(token, name, phone, idType, total, resPayload);
+      }
+    }
+
+    function completeReservationFlow(token, name, phone, idType, total, resPayload) {
+      // Save to customer reservation dashboard registry
+      if (window.TASMAC_RESERVATIONS && window.TASMAC_RESERVATIONS.saveReservation) {
+        window.TASMAC_RESERVATIONS.saveReservation(resPayload);
       }
 
       // Populate Digital Receipt Card
@@ -1909,14 +3845,22 @@
       if (amtEl) amtEl.innerText = `₹${total.toLocaleString()}`;
 
       // Switch views
+      const actView = document.getElementById("receipt-active-view");
+      const canView = document.getElementById("receipt-cancelled-view");
+      if (actView) actView.style.display = "block";
+      if (canView) canView.style.display = "none";
       document.getElementById("cart-step-details").style.display = "none";
       document.getElementById("cart-step-success").style.display = "block";
 
-      // Clear cart
+      // Clear cart ONLY after successful confirmation
       cart = [];
       saveCartData();
+      renderCartUI();
       showToast("Token generated successfully!");
       if (window.lucide) lucide.createIcons();
+      if (window.TASMAC_I18N && typeof window.TASMAC_I18N.applyTranslations === 'function') {
+        window.TASMAC_I18N.applyTranslations();
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -2002,10 +3946,16 @@
       `).join('');
 
       if (window.lucide) lucide.createIcons();
+      if (window.TASMAC_I18N && typeof window.TASMAC_I18N.applyTranslations === 'function') {
+        window.TASMAC_I18N.applyTranslations();
+      }
     }
 
     function toggleNotifDropdown(e) {
       if (e) e.stopPropagation();
+      const drawer = document.getElementById("outlet-picker-drawer");
+      if (drawer) drawer.classList.remove("open");
+
       const dropdown = document.getElementById("notif-dropdown");
       if (dropdown) {
         dropdown.classList.toggle("open");
@@ -2039,6 +3989,9 @@
       t.innerHTML = `<i data-lucide="check" style="width: 14px; height: 14px; color: #34d399;"></i><span>${msg}</span>`;
       tray.appendChild(t);
       if (window.lucide) lucide.createIcons();
+      if (window.TASMAC_I18N && typeof window.TASMAC_I18N.applyTranslations === 'function') {
+        window.TASMAC_I18N.applyTranslations();
+      }
 
       cartToastTimer = setTimeout(() => {
         t.style.opacity = "0";
@@ -2070,6 +4023,39 @@
       renderNotifications();
       updateNotifBadge();
       if (window.lucide) lucide.createIcons();
+      if (window.TASMAC_I18N && typeof window.TASMAC_I18N.applyTranslations === 'function') {
+        window.TASMAC_I18N.applyTranslations();
+      }
+
+      // Restore previously saved delivery address fields and set input listeners
+      try {
+        const savedFlat = localStorage.getItem("tasmac-user-flat");
+        const savedStreet = localStorage.getItem("tasmac-user-street");
+        const savedPin = localStorage.getItem("tasmac-user-pincode");
+        const flatInput = document.getElementById("del-flat");
+        const streetInput = document.getElementById("del-street");
+        const pincodeInput = document.getElementById("del-pincode");
+
+        if (flatInput && !flatInput.value && savedFlat) flatInput.value = savedFlat;
+        if (streetInput && !streetInput.value && savedStreet) streetInput.value = savedStreet;
+        if (pincodeInput && !pincodeInput.value && savedPin) pincodeInput.value = savedPin;
+
+        if (flatInput) {
+          flatInput.addEventListener("input", (e) => {
+            if (e.target.value.trim()) localStorage.setItem("tasmac-user-flat", e.target.value.trim());
+          });
+        }
+        if (streetInput) {
+          streetInput.addEventListener("input", (e) => {
+            if (e.target.value.trim()) localStorage.setItem("tasmac-user-street", e.target.value.trim());
+          });
+        }
+        if (pincodeInput) {
+          pincodeInput.addEventListener("input", (e) => {
+            if (e.target.value.trim()) localStorage.setItem("tasmac-user-pincode", e.target.value.trim());
+          });
+        }
+      } catch(e) {}
     });
 
     // Reload cart if user returns or updates from another tab
@@ -2077,6 +4063,36 @@
     window.addEventListener("focus", loadCartData);
     window.addEventListener("storage", (e) => {
       if (!e.key || e.key === "tasmac-cart") loadCartData();
+    });
+    // Listen for order cancellation events
+    window.addEventListener("tasmac:orderCancelled", function(e) {
+      const order = e.detail || {};
+      const activeView = document.getElementById("receipt-active-view");
+      const cancelledView = document.getElementById("receipt-cancelled-view");
+      const idEl = document.getElementById("cancelled-receipt-order-id");
+      const reasonEl = document.getElementById("cancelled-receipt-reason");
+      const subEl = document.getElementById("receipt-cancelled-sub");
+      const navBtn = document.getElementById("nav-btn-track-order");
+
+      // Hide the bill receipt completely and show clean cancellation notice
+      if (activeView) activeView.style.display = "none";
+      if (cancelledView) {
+        cancelledView.style.display = "block";
+        const codeEl = document.getElementById("receipt-token-code");
+        const displayId = order.orderId || (codeEl ? codeEl.innerText : "TSM-DLV-ORDER");
+        if (idEl) idEl.innerText = displayId;
+        const reason = order.reason || order.cancelReason || "I changed my mind / No longer need it";
+        if (reasonEl) reasonEl.innerText = reason;
+        if (subEl) {
+          subEl.innerText = `Your delivery order ${displayId} has been cancelled (${reason}). No payment was collected.`;
+        }
+        if (window.lucide) lucide.createIcons();
+      }
+      if (navBtn) navBtn.style.display = "none";
+      cart = [];
+      saveCartData();
+      renderCartUI();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   </script>
 </body>

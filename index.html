@@ -21,6 +21,11 @@
   <!-- Supabase Client SDK & Configuration -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/tasmac-i18n.js"></script>
+  <script src="js/tasmac-reservations.js"></script>
+  <script src="js/tasmac-support.js"></script>
+  <script src="js/tasmac-preferences.js"></script>
+  <script src="js/tasmac-delivery.js"></script>
 
   <!-- Permanent Clean Light Theme -->
   <script>
@@ -926,18 +931,24 @@
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.05);
-      display: none;
+      display: flex;
       flex-direction: column;
       z-index: 1000;
-      animation: notifDropIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px) scale(0.97);
+      transform-origin: top right;
+      pointer-events: none;
+      transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  visibility 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .notif-dropdown.open {
-      display: flex;
-    }
-    @keyframes notifDropIn {
-      from { opacity: 0; transform: translateY(-6px); }
-      to { opacity: 1; transform: translateY(0); }
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
     }
     .notif-header {
       padding: 11px 14px;
@@ -1230,7 +1241,7 @@
       transform: rotate(180deg);
     }
 
-    /* Dropdown Popup Card */
+    /* Dropdown Popup Card with Smooth Transition */
     .user-dropdown-menu {
       position: absolute;
       top: calc(100% + 8px);
@@ -1239,21 +1250,26 @@
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      box-shadow: var(--fp-shadow-3);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.05);
       padding: 6px;
-      display: none;
+      display: flex;
       flex-direction: column;
       z-index: 200;
-      animation: dropdownPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px) scale(0.97);
+      transform-origin: top right;
+      pointer-events: none;
+      transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+                  visibility 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .user-dropdown-menu.open {
-      display: flex;
-    }
-
-    @keyframes dropdownPop {
-      from { transform: translateY(-6px) scale(0.96); opacity: 0; }
-      to { transform: translateY(0) scale(1); opacity: 1; }
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
     }
 
     .user-dropdown-header {
@@ -1482,6 +1498,8 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
+      object-position: center center;
+      margin: auto;
       padding: 14px;
       display: block;
       filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45));
@@ -1904,6 +1922,11 @@
       border-bottom: 1px solid var(--border);
       perspective: 1000px;
       perspective-origin: center center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      text-align: center;
     }
     :root:not(.dark) .card-thumb-holder {
       background: transparent;
@@ -1921,16 +1944,19 @@
       transform-style: preserve-3d;
       transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       will-change: transform;
+      position: relative;
+      margin: 0 auto;
     }
 
     .bottle-photo {
       max-width: 82%;
-      max-height: 170px;
+      max-height: 168px;
       width: auto;
-      height: 170px;
+      height: auto;
       object-fit: contain;
+      object-position: center center;
       display: block;
-      margin: 0 auto;
+      margin: auto;
       background: transparent;
       filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12));
       transition: filter 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1989,6 +2015,9 @@
       color: var(--muted-foreground);
       font-family: var(--fp-font-mono) !important;
       display: inline-block;
+      cursor: text;
+      user-select: text;
+      -webkit-user-select: text;
     }
 
     .card-title-text {
@@ -2002,6 +2031,9 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
       letter-spacing: -0.015em;
+      cursor: text;
+      user-select: text;
+      -webkit-user-select: text;
     }
 
     .card-specs-row {
@@ -2073,6 +2105,79 @@
       background: var(--fp-accent-hover);
       box-shadow: 0 4px 14px color-mix(in srgb, var(--primary) 35%, transparent);
       transform: none !important;
+    }
+
+    /* Card Cart Stepper & Remove Button */
+    .card-action-control-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .card-cart-stepper-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      height: 32px;
+      background: #fff7ed;
+      border: 1px solid #fdba74;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(234, 88, 12, 0.12);
+    }
+    .btn-card-stepper {
+      background: none;
+      border: none;
+      width: 28px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ea580c;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+      padding: 0;
+    }
+    .btn-card-stepper:hover {
+      background: #fed7aa;
+      color: #c2410c;
+    }
+    .btn-card-stepper:active {
+      background: #fdba74;
+    }
+    .card-stepper-qty {
+      font-family: var(--fp-font-mono);
+      font-size: 13px;
+      font-weight: 750;
+      color: #9a3412;
+      min-width: 22px;
+      text-align: center;
+      padding: 0 2px;
+      user-select: none;
+    }
+    .btn-card-remove {
+      width: 32px;
+      height: 32px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #dc2626;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      padding: 0;
+      box-shadow: 0 1px 2px rgba(220, 38, 38, 0.08);
+    }
+    .btn-card-remove:hover {
+      background: #fee2e2;
+      border-color: #f87171;
+      color: #b91c1c;
+      transform: scale(1.04);
+    }
+    .btn-card-remove:active {
+      background: #fca5a5;
+      transform: scale(0.96);
     }
 
     /* =========================================================================
@@ -2216,6 +2321,166 @@
     .modal-close-icon:hover {
       background: var(--accent);
       color: var(--foreground);
+    }
+
+    /* =========================================================================
+       CLEAN SIMPLIFIED CART SIGN-IN REQUIRED AUTH POPUP MODAL
+       ========================================================================= */
+    .cart-auth-card {
+      max-width: 400px !important;
+      border-radius: 20px !important;
+      overflow: hidden;
+      background: #ffffff !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.03) !important;
+      animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    .cart-auth-body {
+      padding: 28px 24px 20px 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: inherit;
+    }
+    .cart-auth-icon-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #fff7ed;
+      border: 1px solid #ffedd5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .cart-auth-pill {
+      display: none !important;
+    }
+    .cart-auth-title {
+      font-family: inherit;
+      font-size: 20px;
+      font-weight: 750;
+      color: #0f172a;
+      margin: 0 0 8px 0;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+    .cart-auth-desc {
+      font-family: inherit;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: #64748b;
+      margin: 0 0 18px 0;
+      max-width: 330px;
+    }
+    .cart-auth-item-pill {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 550;
+      color: #334155;
+      margin-bottom: 18px;
+      font-family: inherit;
+      box-sizing: border-box;
+    }
+    .cart-auth-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+    .cart-auth-primary-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      height: 44px;
+      font-size: 14px;
+      font-weight: 650;
+      text-decoration: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      color: #ffffff !important;
+      box-shadow: 0 2px 8px rgba(234, 88, 12, 0.25);
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .cart-auth-primary-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+      background: linear-gradient(135deg, #fbbf24, #f97316);
+      color: #ffffff !important;
+    }
+    .cart-auth-secondary-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      height: 42px;
+      font-size: 13.5px;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #0f172a !important;
+      transition: all 0.15s ease;
+      box-sizing: border-box;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .cart-auth-secondary-btn:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+      color: #0f172a !important;
+    }
+    .cart-auth-cancel-btn {
+      background: none;
+      border: none;
+      padding: 6px;
+      font-size: 13px;
+      color: #64748b;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 2px;
+      font-family: inherit;
+      transition: color 0.15s ease;
+    }
+    .cart-auth-cancel-btn:hover {
+      color: #0f172a;
+      text-decoration: underline;
+    }
+    .cart-auth-footer {
+      margin-top: 16px;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 12px;
+      font-size: 11.5px;
+      color: #64748b;
+      line-height: 1.4;
+      width: 100%;
+      text-align: center;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .cart-auth-footer i {
+      color: #10b981;
     }
 
     /* 4RGE Live Chennai Map Modal */
@@ -2903,29 +3168,28 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transform: translate(-50%, -50%);
+      cursor: pointer;
     }
     .beacon-core {
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      background: var(--primary);
-      box-shadow: 0 0 8px var(--primary);
-      border: 2px solid #FFFFFF;
+      background: var(--primary, #ea580c);
+      box-shadow: 0 0 10px rgba(234, 88, 12, 0.85), 0 0 0 2.5px #ffffff;
       z-index: 2;
     }
     .beacon-ring {
       position: absolute;
-      width: 24px;
-      height: 24px;
+      inset: 0;
       border-radius: 50%;
-      background: color-mix(in srgb, var(--primary) 20%, transparent);
-      border: 1px solid color-mix(in srgb, var(--primary) 60%, transparent);
+      background: rgba(234, 88, 12, 0.22);
+      border: 1.5px solid rgba(234, 88, 12, 0.75);
       animation: beaconPulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+      z-index: 1;
     }
     @keyframes beaconPulse {
       0% { transform: scale(0.6); opacity: 1; }
-      100% { transform: scale(1.8); opacity: 0; }
+      100% { transform: scale(2.2); opacity: 0; }
     }
 
     /* 4RGE Sonner-Style Toast Notifications */
@@ -3064,46 +3328,46 @@
         padding: 1px 5px;
       }
 
-      /* Header Shell */
+      /* Header Shell (Clean 2-Row Mobile Architecture) */
       header.human-header {
         padding: 0;
       }
       .header-container {
-        padding: 8px 12px;
-        gap: 8px;
+        padding: 6px 10px;
+        gap: 4px;
+        display: flex;
         flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
         width: 100%;
         max-width: 100%;
       }
+      .brand-group {
+        gap: 6px;
+        flex-shrink: 0;
+      }
       .brand-title {
-        font-size: 14px;
+        font-size: 13.5px;
+        letter-spacing: -0.01em;
       }
       .brand-sub {
         display: none;
       }
       .brand-logo-gem {
-        width: 36px;
-        height: 36px;
+        width: 30px;
+        height: 30px;
       }
 
-      /* Maintain clean layout on mobile without jumping */
+      /* Pickup Counter full-width on Row 2 */
       .header-location-picker {
-        max-width: 260px;
+        order: 3;
+        width: 100%;
+        max-width: 100%;
+        margin-top: 4px;
         padding: 6px 10px;
         background: var(--secondary);
         overflow: hidden !important;
-      }
-      @media (max-width: 680px) {
-        .header-container {
-          flex-wrap: wrap;
-        }
-        .header-location-picker {
-          order: 3;
-          width: 100%;
-          max-width: 100%;
-          margin-top: 2px;
-          overflow: hidden !important;
-        }
+        border-radius: var(--radius-md);
       }
       .location-sub {
         font-size: 8.5px;
@@ -3116,65 +3380,124 @@
         text-overflow: ellipsis;
       }
 
-      /* Header Right Controls */
+      /* Header Right Controls - Clean single row on mobile next to brand */
       .header-search, .btn-search-trigger {
         display: none !important;
       }
       .header-right-actions {
-        gap: 6px;
+        display: flex;
+        align-items: center;
+        gap: 3.5px;
+        margin-left: auto;
+        flex-shrink: 0;
+        flex-wrap: nowrap;
       }
       .header-right-actions .btn-4rge {
-        height: 32px;
-        padding: 0 8px;
-        font-size: 11px;
+        width: 29px;
+        height: 29px;
+        padding: 0;
+        min-width: 29px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
       }
-      /* Hide "Map View" text label on mobile, show map icon */
+      /* Hide button text labels on mobile, show crisp icons */
       .header-right-actions .btn-4rge span {
-        display: none;
+        display: none !important;
+      }
+      .btn-auth-trigger {
+        width: 29px !important;
+        height: 29px !important;
+        padding: 0 !important;
+        min-width: 29px !important;
+        justify-content: center !important;
+      }
+      .btn-auth-trigger span {
+        display: none !important;
       }
       .icon-button-quiet {
-        width: 32px;
-        height: 32px;
+        width: 29px;
+        height: 29px;
       }
+      .btn-notif-bell {
+        width: 29px;
+        height: 29px;
+      }
+      .tasmac-lang-pill {
+        height: 27px !important;
+        padding: 1px 4px !important;
+        font-size: 10px !important;
+        gap: 1px !important;
+      }
+      .lang-pill-btn {
+        padding: 1px 4px !important;
+        font-size: 9.5px !important;
+      }
+
       /* Compact User Auth Pill */
       .user-profile-pill {
-        padding: 2px 6px 2px 3px;
-        gap: 4px;
+        padding: 2px 5px 2px 2px;
+        gap: 3px;
+        height: 29px;
       }
       .user-pill-tag {
         display: none;
       }
       .user-pill-name {
-        max-width: 54px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-size: 10.5px;
+        display: none;
       }
       .user-dropdown-menu {
         right: -8px;
         width: 240px;
       }
-      .btn-auth-trigger span {
-        display: inline;
-        font-size: 11px;
-      }
 
       /* Cart Bubble Compact on Mobile */
       .cart-pill-bubble {
-        height: 34px !important;
-        padding: 0 9px !important;
-        gap: 5px !important;
+        height: 29px !important;
+        padding: 0 7px !important;
+        gap: 3px !important;
         flex-shrink: 0 !important;
       }
       .cart-pill-bubble span.cart-label {
         display: none !important;
       }
       .cart-num-badge {
-        min-width: 18px !important;
-        height: 18px !important;
-        font-size: 10px !important;
-        padding: 0 4px !important;
+        min-width: 16px !important;
+        height: 16px !important;
+        font-size: 9px !important;
+        padding: 0 3px !important;
+      }
+
+      @media (max-width: 360px) {
+        .header-container {
+          padding: 5px 6px;
+          gap: 3px;
+        }
+        .header-right-actions {
+          gap: 2px;
+        }
+        .header-right-actions .btn-4rge {
+          width: 26px;
+          height: 26px;
+          min-width: 26px;
+        }
+        .btn-auth-trigger {
+          width: 26px !important;
+          height: 26px !important;
+          min-width: 26px !important;
+        }
+        .cart-pill-bubble {
+          height: 26px !important;
+          padding: 0 5px !important;
+        }
+        .tasmac-lang-pill {
+          height: 25px !important;
+          padding: 1px 3px !important;
+        }
+        .lang-pill-btn {
+          font-size: 8.5px !important;
+          padding: 1px 2px !important;
+        }
       }
 
       /* Hero Section */
@@ -3286,6 +3609,12 @@
         gap: 10px;
         margin-bottom: 16px;
       }
+      .search-filter-subbar > div:last-child {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+      }
       .search-input-box {
         max-width: 100%;
         width: 100%;
@@ -3314,10 +3643,18 @@
       }
       .card-thumb-holder {
         height: 175px;
-        padding: 10px 6px;
+        padding: 8px 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .bottle-photo {
         max-height: 135px;
+        max-width: 85%;
+        width: auto;
+        height: auto;
+        object-position: center center;
+        margin: auto;
       }
       .card-body-content {
         padding: 8px 10px 12px 10px;
@@ -3369,14 +3706,27 @@
         padding: 0;
       }
 
-      /* Floating Bottom Cart Bar */
+      /* Floating Bottom Cart Bar (Mobile Layout & Alignment Fix) */
       .floating-cart-bar {
         left: 12px !important;
         right: 12px !important;
-        width: calc(100% - 24px) !important;
+        width: auto !important;
+        max-width: calc(100vw - 24px) !important;
         bottom: 12px !important;
-        padding: 10px 14px;
-        border-radius: var(--radius-xl);
+        padding: 10px 14px !important;
+        border-radius: var(--radius-xl) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        transform: translateY(120px) !important;
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2) !important;
+      }
+      .floating-cart-bar.visible {
+        transform: translateY(0) !important;
+      }
+      .floating-cart-bar button {
+        flex-shrink: 0 !important;
       }
       .cart-float-qty {
         font-size: 11px;
@@ -3474,9 +3824,17 @@
       }
       .card-thumb-holder {
         height: 210px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .bottle-photo {
         max-height: 175px;
+        max-width: 85%;
+        width: auto;
+        height: auto;
+        object-position: center center;
+        margin: auto;
       }
       .hero-headline {
         font-size: 20px !important;
@@ -3522,13 +3880,23 @@
 
         <!-- Right Header Actions -->
         <div class="header-right-actions">
+          <!-- Live Order Tracker Button (Top Navbar) -->
+          <button class="btn-4rge btn-4rge-sm" id="nav-btn-track-order" onclick="window.TASMAC_DELIVERY && window.TASMAC_DELIVERY.openLiveTracker()" style="display: none; background: #fff7ed; color: #ea580c; border: 1.5px solid #fdba74; font-weight: 750; align-items: center; gap: 6px;" title="Track Active Delivery Order">
+            <span class="tracker-pulse-green"></span>
+            <span style="font-size: 14px;">🛵</span>
+            <span id="nav-track-order-text">Track Order</span>
+          </button>
           <!-- Interactive Map Button -->
           <button class="btn-4rge btn-4rge-outline btn-4rge-sm" onclick="openMapModal()" title="Explore Outlets on Map">
             <i data-lucide="map" style="width: 14px; height: 14px; color: var(--primary);"></i>
-            <span>Map View</span>
+            <span data-i18n="nav.map_view">Map View</span>
           </button>
 
-          
+          <!-- My Reservations Button -->
+          <button class="btn-4rge btn-4rge-outline btn-4rge-sm" onclick="window.TASMAC_RESERVATIONS && window.TASMAC_RESERVATIONS.openModal()" title="View Your Reservation History">
+            <i data-lucide="calendar" style="width: 14px; height: 14px; color: var(--primary);"></i>
+            <span data-i18n="nav.my_reservations">Reservations</span>
+          </button>
 
           <!-- User Authentication & Profile Pill -->
           <div class="user-auth-container" id="nav-user-auth-container">
@@ -3568,6 +3936,10 @@
                   <i data-lucide="map-pin" style="width: 14px; height: 14px;"></i>
                   <span>Selected Pickup Counter</span>
                 </div>
+                <div class="user-menu-item" onclick="window.TASMAC_SUPPORT && window.TASMAC_SUPPORT.openModal(); closeUserDropdown();">
+                  <i data-lucide="help-circle" style="width: 14px; height: 14px;"></i>
+                  <span data-i18n="nav.support">Customer Support</span>
+                </div>
                 <div class="user-dropdown-divider"></div>
                 <button class="user-menu-item user-logout-btn" onclick="handleUserLogout()">
                   <i data-lucide="log-out" style="width: 14px; height: 14px; color: var(--destructive);"></i>
@@ -3577,7 +3949,14 @@
             </div>
           </div>
 
-          <!-- Notification Bell Dropdown -->
+          <!-- Cart Bubble (4RGE Primary Button) -->
+          <button type="button" class="cart-pill-bubble" id="header-cart-btn" onclick="openCheckoutModal()" title="Open Cart">
+            <i data-lucide="shopping-bag" style="width: 15px; height: 15px;"></i>
+            <span class="cart-label">Cart</span>
+            <span class="cart-num-badge" id="nav-cart-badge">0</span>
+          </button>
+
+          <!-- Notification Bell Dropdown (Rightside) -->
           <div class="notif-bell-wrap" id="nav-notif-wrap">
             <button type="button" class="btn-notif-bell" id="header-notif-btn" onclick="toggleNotifDropdown(event)" title="Notifications" aria-label="Notifications">
               <i data-lucide="bell" style="width: 17px; height: 17px;"></i>
@@ -3601,13 +3980,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Cart Bubble (4RGE Primary Button) -->
-          <button type="button" class="cart-pill-bubble" id="header-cart-btn" onclick="openCheckoutModal()" title="Open Cart">
-            <i data-lucide="shopping-bag" style="width: 15px; height: 15px;"></i>
-            <span class="cart-label">Cart</span>
-            <span class="cart-num-badge" id="nav-cart-badge">0</span>
-          </button>
         </div>
 
       </div>
@@ -3686,6 +4058,10 @@
         </div>
       </div>
       <div class="store-pill-right">
+        <span class="badge-4rge" style="background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: var(--radius-sm); display: inline-flex; align-items: center; gap: 4px;">
+          <i data-lucide="bike" style="width: 12px; height: 12px;"></i>
+          <span>Doorstep Delivery (30-45m)</span>
+        </span>
         <span class="badge-4rge badge-success" id="hero-store-status">
           <i data-lucide="check-circle-2" style="width: 12px; height: 12px;"></i>
           <span>Counter Ready • 12 PM – 10 PM</span>
@@ -3810,6 +4186,10 @@
       <span class="cart-float-qty" id="float-qty">0 items</span>
       <span class="cart-float-total" id="float-total">₹0</span>
       <span style="font-size: 11px; color: var(--muted-foreground); font-family: var(--fp-font-mono);">(Govt Printed MRP)</span>
+      <button type="button" onclick="clearAllCartItems()" title="Remove all items from cart" style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 9999px; color: #dc2626; font-size: 11px; font-weight: 650; padding: 3px 9px; cursor: pointer; margin-left: 6px; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s ease;">
+        <i data-lucide="trash-2" style="width: 11px; height: 11px;"></i>
+        <span>Clear</span>
+      </button>
     </div>
     <button class="btn-4rge btn-4rge-default btn-4rge-sm" onclick="openCheckoutModal()" style="border-radius: var(--radius-full); padding: 0 16px;">
       <span>Reserve & Get Token</span>
@@ -3896,6 +4276,59 @@
 
       </div>
 
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL: SIGN IN REQUIRED TO VIEW CART
+       ========================================================================= -->
+  <div class="modal-veil" id="cart-auth-modal" onclick="handleVeilClick(event, 'cart-auth-modal')">
+    <div class="modal-card-box cart-auth-card" style="position: relative;">
+      <button class="modal-close-icon" onclick="closeCartAuthModal()" style="position: absolute; top: 14px; right: 14px; z-index: 10;" title="Close dialog">
+        <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+      </button>
+
+      <div class="cart-auth-body">
+        <!-- Clean lock icon -->
+        <div class="cart-auth-icon-wrap">
+          <i data-lucide="lock" style="width: 26px; height: 26px; color: #ea580c;"></i>
+        </div>
+
+        <!-- Headline -->
+        <h3 class="cart-auth-title" data-i18n="cart.auth_modal_title">
+          Sign In to View Your Cart
+        </h3>
+
+        <!-- Description -->
+        <p class="cart-auth-desc" data-i18n="cart.auth_modal_desc">
+          Please sign in to view the items in your cart and complete your reservation.
+        </p>
+
+        <!-- Action Buttons -->
+        <div class="cart-auth-actions">
+          <!-- Primary CTA: Sign In -->
+          <a href="login.html?redirect=cart.html" id="cart-auth-signin-btn" class="cart-auth-primary-btn">
+            <span data-i18n="cart.auth_modal_signin_btn">Sign In to View Cart</span>
+            <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
+          </a>
+
+          <!-- Secondary CTA: Create Account -->
+          <a href="login.html?tab=signup&redirect=cart.html" id="cart-auth-create-btn" class="cart-auth-secondary-btn">
+            <span data-i18n="cart.auth_modal_create_btn">Create New Account</span>
+          </a>
+
+          <!-- Cancel / Close -->
+          <button type="button" class="cart-auth-cancel-btn" onclick="closeCartAuthModal()" data-i18n="cart.auth_modal_cancel">
+            Continue browsing
+          </button>
+        </div>
+
+        <!-- Statutory Notice Footer -->
+        <div class="cart-auth-footer">
+          <i data-lucide="shield-check" style="width: 14px; height: 14px; color: #10b981; flex-shrink: 0;"></i>
+          <span data-i18n="cart.auth_modal_statutory">Strictly 21+ Only • Original Govt ID Required at Pickup</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -5045,29 +5478,61 @@
         selectedOutlet = OUTLETS.find(o => o.id === "1085") || OUTLETS[0];
       }
 
-      // Seamlessly detect user location in the background if browser permits
-      if (navigator.geolocation && !userCoords) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            userCoords = {
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude
-            };
-            try {
-              localStorage.setItem('tasmac-user-lat', userCoords.lat);
-              localStorage.setItem('tasmac-user-lng', userCoords.lng);
-            } catch(e) {}
+      // Seamlessly detect user location in the background if browser permits, with fast IP fallback
+      if (!userCoords) {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              userCoords = {
+                lat: pos.coords.latitude,
+                lng: pos.coords.longitude
+              };
+              try {
+                localStorage.setItem('tasmac-user-lat', userCoords.lat);
+                localStorage.setItem('tasmac-user-lng', userCoords.lng);
+              } catch(e) {}
 
-            initOutletsDistances(userCoords.lat, userCoords.lng);
-            updateActiveStoreUI();
-            if (leafletMapInstance) {
-              renderMapOutletsList();
-              renderMapMarkers();
-            }
-          },
-          () => {},
-          { timeout: 6000, maximumAge: 300000 }
-        );
+              initOutletsDistances(userCoords.lat, userCoords.lng);
+              updateActiveStoreUI();
+              if (leafletMapInstance) {
+                renderMapOutletsList();
+                renderMapMarkers();
+              }
+            },
+            async () => {
+              try {
+                const res = await fetch("https://get.geojs.io/v1/ip/geo.json", { cache: "no-store" });
+                if (res.ok) {
+                  const data = await res.json();
+                  if (data.latitude && data.longitude) {
+                    userCoords = { lat: parseFloat(data.latitude), lng: parseFloat(data.longitude) };
+                    try {
+                      localStorage.setItem('tasmac-user-lat', userCoords.lat);
+                      localStorage.setItem('tasmac-user-lng', userCoords.lng);
+                    } catch(e) {}
+                    initOutletsDistances(userCoords.lat, userCoords.lng);
+                    updateActiveStoreUI();
+                    if (leafletMapInstance) {
+                      renderMapOutletsList();
+                      renderMapMarkers();
+                    }
+                  }
+                }
+              } catch(e) {}
+            },
+            { timeout: 3500, enableHighAccuracy: false, maximumAge: 300000 }
+          );
+        } else {
+          fetch("https://get.geojs.io/v1/ip/geo.json", { cache: "no-store" })
+            .then(r => r.json())
+            .then(data => {
+              if (data.latitude && data.longitude) {
+                userCoords = { lat: parseFloat(data.latitude), lng: parseFloat(data.longitude) };
+                initOutletsDistances(userCoords.lat, userCoords.lng);
+                updateActiveStoreUI();
+              }
+            }).catch(() => {});
+        }
       }
 
       if (window.lucide) lucide.createIcons();
@@ -5075,6 +5540,29 @@
       renderNotifications();
       updateNotifBadge();
       updateActiveStoreUI();
+      // Restore customer preferences (Category, Search, Sort)
+      try {
+        const savedCat = localStorage.getItem('tasmac-pref-cat');
+        if (savedCat && savedCat !== 'All') {
+          const chip = Array.from(document.querySelectorAll('.filter-chip-4rge')).find(c => c.textContent.includes(savedCat));
+          if (chip) filterCategory(savedCat, chip);
+        }
+        const savedSearch = localStorage.getItem('tasmac-pref-search');
+        if (savedSearch) {
+          const searchInput = document.getElementById('product-search-input');
+          if (searchInput) {
+            searchInput.value = savedSearch;
+            handleSearch(savedSearch);
+          }
+        }
+        const savedSort = localStorage.getItem('tasmac-pref-sort');
+        if (savedSort && savedSort !== 'popular') {
+          const sortItem = document.querySelector(`#sort-select-menu .custom-select-item[data-value="${savedSort}"]`);
+          if (sortItem) {
+            selectSortOption(savedSort, sortItem.textContent.trim());
+          }
+        }
+      } catch(e) {}
       renderProductsGrid();
       initUserAuth();
       initSearchBarAnimation();
@@ -5085,6 +5573,7 @@
       if (window.TASMAC_SUPABASE && window.TASMAC_SUPABASE.isConfigured()) {
         window.TASMAC_SUPABASE.getDrinks().then(live => {
           if (live && Array.isArray(live) && live.length > 0 && live !== DRINKS && live !== MASTER_CATALOG) {
+            window.TASMAC_IS_LIVE_CATALOG = true;
             DRINKS = [...live];
             renderProductsGrid();
           }
@@ -5119,6 +5608,7 @@
           closeMapModal();
           closeCheckoutModal();
           closeProductModal();
+          closeCartAuthModal();
           closeNotifDropdown();
           unlockBackground();
           const sortSelect = document.getElementById("sort-custom-select");
@@ -5201,6 +5691,7 @@
 
     // 2. Render Products Grid (Official 4RGE Card Architecture)
     function renderProductsGrid() {
+      window.renderProductsGrid = renderProductsGrid;
       const grid = document.getElementById("products-grid");
       if (!grid) return;
       
@@ -5237,13 +5728,16 @@
         return;
       }
 
-      grid.innerHTML = filtered.map(item => `
-        <div class="product-human-card" onclick="openProductQuickview('${item.id}')">
+      grid.innerHTML = filtered.map(item => {
+        const cartItem = (Array.isArray(cart) ? cart : []).find(ci => String(ci.id).trim() === String(item.id).trim());
+        const inCartQty = cartItem ? (Number(cartItem.qty) || 0) : 0;
+        return `
+        <div class="product-human-card" data-product-id="${item.id}" onclick="handleCardClick('${item.id}', event)">
           <div class="card-thumb-holder">
             <span class="badge-4rge badge-secondary card-top-tag">${item.category}</span>
             ${item.bestseller ? '<span class="badge-4rge badge-warning card-bestseller-star">★ Top Seller</span>' : ''}
             <div class="bottle-photo-wrapper">
-              <img src="${item.img}?v=13" alt="${item.name}" class="bottle-photo" loading="lazy" onerror="this.onerror=null; this.src='images/BAC-SUP-750.png';" />
+              <img src="${item.img}?v=16" alt="${item.name}" class="bottle-photo" loading="lazy" onerror="this.onerror=null; this.src='images/BAC-SUP-750.png';" />
             </div>
           </div>
 
@@ -5260,9 +5754,9 @@
               <span style="font-size: 11px; color: var(--fp-state-warning); font-weight: 700; font-family:var(--fp-font-mono);">★ ${item.rating}</span>
             </div>
 
-            <div class="card-stock-pill">
-              <i data-lucide="check" style="width: 12px; height: 12px;"></i>
-              <span>In Stock at ${selectedOutlet.name}</span>
+            <div class="card-stock-pill" ${window.TASMAC_IS_LIVE_CATALOG ? '' : 'style="background:var(--secondary); border:1px solid var(--border); color:var(--muted-foreground);" title="Live per-outlet inventory not connected"'}>
+              <i data-lucide="${window.TASMAC_IS_LIVE_CATALOG ? 'check' : 'help-circle'}" style="width: 12px; height: 12px;"></i>
+              <span data-i18n="${window.TASMAC_IS_LIVE_CATALOG ? 'catalog.live_stock' : 'catalog.availability_unconfirmed'}">${window.TASMAC_IS_LIVE_CATALOG ? 'Verified Live Stock' : 'Availability not confirmed'}</span>
             </div>
 
             <div class="card-action-bar">
@@ -5270,17 +5764,39 @@
                 <span class="mrp-micro-label">Govt Printed MRP</span>
                 <span class="price-number">₹${item.price.toLocaleString()}</span>
               </div>
-              <button class="btn-reserve-action" onclick="event.stopPropagation(); addToCart('${item.id}', this)" title="Reserve bottle">
-                <i data-lucide="plus" style="width: 13px; height: 13px;"></i>
-                <span>Reserve</span>
-              </button>
+              <div class="card-action-control-wrap" id="card-action-wrap-${item.id}">
+                ${inCartQty > 0 ? `
+                  <div style="display: flex; align-items: center; gap: 5px;" onclick="event.stopPropagation()">
+                    <div class="card-cart-stepper-wrap">
+                      <button type="button" class="btn-card-stepper" onclick="event.stopPropagation(); updateCartItemQty('${item.id}', -1)" title="${inCartQty === 1 ? 'Remove from cart' : 'Decrease'}">
+                        <i data-lucide="${inCartQty === 1 ? 'trash-2' : 'minus'}" style="width: 12px; height: 12px; ${inCartQty === 1 ? 'color: #dc2626;' : ''}"></i>
+                      </button>
+                      <span class="card-stepper-qty">${inCartQty}</span>
+                      <button type="button" class="btn-card-stepper" onclick="event.stopPropagation(); updateCartItemQty('${item.id}', 1)" title="Increase">
+                        <i data-lucide="plus" style="width: 12px; height: 12px;"></i>
+                      </button>
+                    </div>
+                    <button type="button" class="btn-card-remove" onclick="event.stopPropagation(); removeFromCart('${item.id}')" title="Remove selected bottle">
+                      <i data-lucide="x" style="width: 13px; height: 13px;"></i>
+                    </button>
+                  </div>
+                ` : `
+                  <button class="btn-reserve-action" onclick="event.stopPropagation(); addToCart('${item.id}', this)" title="Reserve bottle">
+                    <i data-lucide="plus" style="width: 13px; height: 13px;"></i>
+                    <span data-i18n="catalog.reserve">Reserve</span>
+                  </button>
+                `}
+              </div>
             </div>
           </div>
         </div>
-      `).join("");
+      `}).join("");
 
       if (window.lucide) lucide.createIcons();
       init3DImageFloat();
+      if (window.TASMAC_I18N && typeof window.TASMAC_I18N.translateProductCards === 'function') {
+        window.TASMAC_I18N.translateProductCards();
+      }
     }
 
     // =========================================================================
@@ -5355,6 +5871,7 @@
     // 3. Category, Search & Filter Handlers (4RGE FilterChip Integration)
     function filterCategory(cat, btn) {
       currentCategory = cat;
+      try { localStorage.setItem('tasmac-pref-cat', cat); } catch(e) {}
       document.querySelectorAll(".filter-chip-4rge").forEach(p => {
         p.classList.remove("active");
         p.setAttribute("data-state", "off");
@@ -5371,6 +5888,7 @@
 
     function handleSearch(val) {
       searchFilter = val.trim();
+      try { localStorage.setItem('tasmac-pref-search', searchFilter); } catch(e) {}
       const clearBtn = document.getElementById("search-clear-btn");
       if (clearBtn) {
         clearBtn.style.display = searchFilter.length > 0 ? "flex" : "none";
@@ -5540,8 +6058,28 @@
 
     function selectSortOption(val, label) {
       sortMode = val;
+      try { localStorage.setItem('tasmac-pref-sort', val); } catch(e) {}
+
+      const SORT_LABELS = {
+        'popular': { en: 'Sort: Most Popular', ta: 'வரிசைப்படுத்து: பிரபலமானவை' },
+        'price-asc': { en: 'Price: Low to High', ta: 'விலை: குறைந்தது முதல் அதிகம்' },
+        'price-desc': { en: 'Price: High to Low', ta: 'விலை: அதிகம் முதல் குறைந்தது' },
+        'rating': { en: 'Highest Rated', ta: 'உயர்ந்த மதிப்பீடு' }
+      };
+
+      const isTamil = (window.TASMAC_I18N && window.TASMAC_I18N.getLanguage && window.TASMAC_I18N.getLanguage() === 'ta') ||
+                      localStorage.getItem('tasmac-lang') === 'ta';
+
       const labelEl = document.getElementById("sort-select-current-label");
-      if (labelEl) labelEl.innerText = label;
+      if (labelEl) {
+        labelEl.setAttribute('data-sort-val', val);
+        const entry = SORT_LABELS[val];
+        if (entry) {
+          labelEl.textContent = isTamil ? entry.ta : entry.en;
+        } else {
+          labelEl.textContent = label;
+        }
+      }
 
       document.querySelectorAll("#sort-select-menu .custom-select-item").forEach(item => {
         if (item.getAttribute("data-value") === val) {
@@ -5558,6 +6096,9 @@
         if (trigger) trigger.setAttribute("aria-expanded", "false");
       }
 
+      if (!DRINKS || DRINKS.length === 0) {
+        DRINKS = [...MASTER_CATALOG];
+      }
       renderProductsGrid();
     }
 
@@ -5665,6 +6206,70 @@
         }
       }
     }, { passive: false });
+    // =========================================================================
+    // DRAG & TEXT SELECTION SHIELD FOR PRODUCT CARDS
+    // Strictly prevents quickview popup when dragging to select/copy bottle name
+    // =========================================================================
+    let isCardDragging = false;
+    let cardDragStartX = 0;
+    let cardDragStartY = 0;
+    let clickStartedOnText = false;
+
+    document.addEventListener("mousedown", function(e) {
+      cardDragStartX = e.clientX;
+      cardDragStartY = e.clientY;
+      isCardDragging = false;
+      clickStartedOnText = !!(e.target && e.target.closest(".card-title-text, .card-brand-name"));
+    }, true);
+
+    document.addEventListener("mousemove", function(e) {
+      if (e.buttons > 0) {
+        if (Math.hypot(e.clientX - cardDragStartX, e.clientY - cardDragStartY) > 3) {
+          isCardDragging = true;
+        }
+      }
+    }, true);
+
+    document.addEventListener("mouseup", function(e) {
+      if (Math.hypot(e.clientX - cardDragStartX, e.clientY - cardDragStartY) > 3) {
+        isCardDragging = true;
+      }
+      if (isCardDragging || clickStartedOnText) {
+        setTimeout(function() {
+          isCardDragging = false;
+          clickStartedOnText = false;
+        }, 180);
+      }
+    }, true);
+
+    // Global capture-phase click interceptor: stops click BEFORE card handler can run
+    document.addEventListener("click", function(e) {
+      const card = e.target && e.target.closest(".product-human-card");
+      if (!card) return;
+
+      const hasSelection = window.getSelection && window.getSelection().toString().trim().length > 0;
+      if (isCardDragging || clickStartedOnText || hasSelection) {
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+        e.preventDefault();
+        isCardDragging = false;
+        clickStartedOnText = false;
+        return false;
+      }
+    }, true);
+
+    function handleCardClick(productId, e) {
+      // Direct clicks on title/brand text never trigger popup
+      if (e && e.target && e.target.closest(".card-title-text, .card-brand-name")) {
+        return;
+      }
+      // Interactive buttons (Reserve, etc.)
+      if (e && e.target && e.target.closest("button, .btn-reserve-action, a, input, select")) {
+        return;
+      }
+      openProductQuickview(productId);
+    }
+
 
     // 4. Product Quickview Modal Handlers
     function openProductQuickview(productId) {
@@ -5679,7 +6284,7 @@
         <div class="quickview-img-box">
           <span class="badge-4rge badge-secondary card-top-tag">${p.category}</span>
           ${p.bestseller ? '<span class="badge-4rge badge-warning card-bestseller-star">★ Top Seller</span>' : ''}
-          <img src="${p.img}?v=13" alt="${p.name}" class="quickview-img" onerror="this.onerror=null; this.src='images/BAC-SUP-750.png';" />
+          <img src="${p.img}?v=16" alt="${p.name}" class="quickview-img" onerror="this.onerror=null; this.src='images/BAC-SUP-750.png';" />
         </div>
 
         <div class="quickview-details-col">
@@ -5710,9 +6315,9 @@
               </p>
             </div>
 
-            <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--fp-state-success); font-weight:600; margin-bottom:12px;">
-              <i data-lucide="check-circle-2" style="width:14px; height:14px;"></i>
-              <span>Verified In Stock at ${selectedOutlet.name}</span>
+            <div style="display:flex; align-items:center; gap:6px; font-size:12px; color:${window.TASMAC_IS_LIVE_CATALOG ? 'var(--fp-state-success)' : 'var(--muted-foreground)'}; font-weight:600; margin-bottom:12px;">
+              <i data-lucide="${window.TASMAC_IS_LIVE_CATALOG ? 'check-circle-2' : 'help-circle'}" style="width:14px; height:14px;"></i>
+              <span>${window.TASMAC_IS_LIVE_CATALOG ? `Verified Live Stock at ${selectedOutlet.name}` : `Availability not confirmed at Counter`}</span>
             </div>
           </div>
 
@@ -5721,17 +6326,47 @@
               <span class="mrp-micro-label" style="display:block;">Govt Printed MRP</span>
               <span class="price-number" style="font-size:24px; color:var(--primary);">₹${p.price.toLocaleString()}</span>
             </div>
-            <div style="display:flex; gap:8px;">
-              <button class="btn-4rge btn-4rge-outline btn-4rge-sm" onclick="closeProductModal()">
-                <span>Back</span>
-              </button>
-              <button class="btn-4rge btn-4rge-default btn-4rge-sm" onclick="addToCart('${p.id}'); closeProductModal();">
-                <i data-lucide="plus" style="width:14px; height:14px;"></i>
-                <span>Reserve Bottle</span>
-              </button>
-            </div>
+            ${(() => {
+              const inCartItem = (Array.isArray(cart) ? cart : []).find(ci => String(ci.id).trim() === cleanId);
+              const qty = inCartItem ? (Number(inCartItem.qty) || 0) : 0;
+              if (qty > 0) {
+                return `
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <button class="btn-4rge btn-4rge-outline btn-4rge-sm" onclick="closeProductModal()">
+                      <span>Back</span>
+                    </button>
+                    <button type="button" class="btn-4rge btn-4rge-sm" onclick="removeFromCart('${p.id}'); closeProductModal();" style="background:#fef2f2; border:1px solid #fecaca; color:#dc2626; font-weight:650; display:inline-flex; align-items:center; gap:5px; cursor:pointer;" title="Remove bottle from reservation cart">
+                      <i data-lucide="trash-2" style="width:13px; height:13px;"></i>
+                      <span>Remove from Cart</span>
+                    </button>
+                    <div class="card-cart-stepper-wrap" style="height:34px;">
+                      <button type="button" class="btn-card-stepper" onclick="updateCartItemQty('${p.id}', -1); openProductQuickview('${p.id}')" title="Decrease">
+                        <i data-lucide="${qty === 1 ? 'trash-2' : 'minus'}" style="width: 12px; height: 12px; ${qty === 1 ? 'color: #dc2626;' : ''}"></i>
+                      </button>
+                      <span class="card-stepper-qty">${qty}</span>
+                      <button type="button" class="btn-card-stepper" onclick="updateCartItemQty('${p.id}', 1); openProductQuickview('${p.id}')" title="Increase">
+                        <i data-lucide="plus" style="width: 12px; height: 12px;"></i>
+                      </button>
+                    </div>
+                  </div>
+                `;
+              } else {
+                return `
+                  <div style="display:flex; gap:8px;">
+                    <button class="btn-4rge btn-4rge-outline btn-4rge-sm" onclick="closeProductModal()">
+                      <span>Back</span>
+                    </button>
+                    <button class="btn-4rge btn-4rge-default btn-4rge-sm" onclick="addToCart('${p.id}'); closeProductModal();">
+                      <i data-lucide="plus" style="width:14px; height:14px;"></i>
+                      <span>Reserve Bottle</span>
+                    </button>
+                  </div>
+                `;
+              }
+            })()}
           </div>
         </div>
+      </div>
       `;
 
       if (window.lucide) lucide.createIcons();
@@ -5842,6 +6477,62 @@
           floatBar.classList.remove("visible");
         }
       }
+
+      updateCardActionButtons();
+    }
+
+    function updateCardActionButtons() {
+      if (!Array.isArray(cart)) cart = [];
+      const isTa = window.TASMAC_I18N && window.TASMAC_I18N.getLanguage && window.TASMAC_I18N.getLanguage() === 'ta';
+      const reserveLabel = isTa ? 'முன்பதிவு' : 'Reserve';
+
+      document.querySelectorAll(".card-action-control-wrap").forEach(wrap => {
+        const id = wrap.id.replace("card-action-wrap-", "");
+        const item = cart.find(ci => String(ci.id).trim() === String(id).trim());
+        const inCartQty = item ? (Number(item.qty) || 0) : 0;
+
+        if (inCartQty > 0) {
+          wrap.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 5px;" onclick="event.stopPropagation()">
+              <div class="card-cart-stepper-wrap">
+                <button type="button" class="btn-card-stepper" onclick="event.stopPropagation(); updateCartItemQty('${id}', -1)" title="${inCartQty === 1 ? 'Remove from cart' : 'Decrease'}">
+                  <i data-lucide="${inCartQty === 1 ? 'trash-2' : 'minus'}" style="width: 12px; height: 12px; ${inCartQty === 1 ? 'color: #dc2626;' : ''}"></i>
+                </button>
+                <span class="card-stepper-qty">${inCartQty}</span>
+                <button type="button" class="btn-card-stepper" onclick="event.stopPropagation(); updateCartItemQty('${id}', 1)" title="Increase">
+                  <i data-lucide="plus" style="width: 12px; height: 12px;"></i>
+                </button>
+              </div>
+              <button type="button" class="btn-card-remove" onclick="event.stopPropagation(); removeFromCart('${id}')" title="Remove selected bottle">
+                <i data-lucide="x" style="width: 13px; height: 13px;"></i>
+              </button>
+            </div>
+          `;
+        } else {
+          wrap.innerHTML = `
+            <button class="btn-reserve-action" onclick="event.stopPropagation(); addToCart('${id}', this)" title="Reserve bottle">
+              <i data-lucide="plus" style="width: 13px; height: 13px;"></i>
+              <span data-i18n="catalog.reserve">${reserveLabel}</span>
+            </button>
+          `;
+        }
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function clearCartFromAuthModal() {
+      cart = [];
+      try { localStorage.removeItem("tasmac-cart"); } catch(e) {}
+      updateCartUI();
+      closeCartAuthModal();
+      showToast("Selected items removed from cart");
+    }
+
+    function clearAllCartItems() {
+      cart = [];
+      try { localStorage.removeItem("tasmac-cart"); } catch(e) {}
+      updateCartUI();
+      showToast("All items removed from reservation cart");
     }
 
     // 5. Cart Management & Checkout Modal Flow
@@ -5962,8 +6653,67 @@
       if (window.lucide) lucide.createIcons();
     }
 
+    function getAuthenticatedUser() {
+      try {
+        const userJson = localStorage.getItem("tasmac-user");
+        if (userJson) {
+          const u = JSON.parse(userJson);
+          if (u && (u.name || u.email || u.id)) return u;
+        }
+      } catch(e) {}
+      return null;
+    }
+
     function openCheckoutModal() {
+      const user = getAuthenticatedUser();
+      if (!user) {
+        openCartAuthModal();
+        return;
+      }
       window.location.href = "cart.html";
+    }
+
+    function openCartAuthModal() {
+      const modal = document.getElementById("cart-auth-modal");
+      if (!modal) {
+        window.location.href = "login.html?redirect=cart.html";
+        return;
+      }
+
+      // Update cart count preview pill
+      const pill = document.getElementById("cart-auth-item-pill");
+      const countText = document.getElementById("cart-auth-item-count-text");
+      if (pill && countText) {
+        let count = 0;
+        try {
+          const c = JSON.parse(localStorage.getItem("tasmac-cart") || "[]");
+          count = Array.isArray(c) ? c.reduce((acc, it) => acc + (Number(it.qty) || 0), 0) : 0;
+        } catch(e) {}
+
+        if (count > 0) {
+          pill.style.display = "flex";
+          const isTa = window.TASMAC_I18N && window.TASMAC_I18N.getLanguage && window.TASMAC_I18N.getLanguage() === 'ta';
+          const itemWord = count === 1 ? "bottle" : "bottles";
+          countText.innerText = isTa
+            ? `உங்கள் கூடையில் ${count} பாட்டில்(கள்) தயாராக உள்ளன`
+            : `You have ${count} ${itemWord} saved in your cart`;
+        } else {
+          pill.style.display = "none";
+        }
+      }
+
+      modal.classList.add("open");
+      lockBackground();
+      if (window.lucide) lucide.createIcons();
+      if (window.TASMAC_I18N && typeof window.TASMAC_I18N.applyTranslations === 'function') {
+        window.TASMAC_I18N.applyTranslations();
+      }
+    }
+
+    function closeCartAuthModal() {
+      const modal = document.getElementById("cart-auth-modal");
+      if (modal) modal.classList.remove("open");
+      unlockBackground();
     }
 
     function closeCheckoutModal() {
@@ -6076,6 +6826,9 @@
 
     function toggleUserDropdown(e) {
       if (e) e.stopPropagation();
+      // Ensure notification dropdown is closed so both never open simultaneously
+      if (typeof closeNotifDropdown === 'function') closeNotifDropdown();
+
       const wrap = document.getElementById("nav-user-profile-wrap");
       const dropdown = document.getElementById("nav-user-dropdown");
       if (dropdown) {
@@ -6102,11 +6855,22 @@
       window.location.href = "login.html?logout=true";
     }
 
-    // Dismiss user dropdown when clicking outside
+    // Dismiss user dropdown and notification dropdown when clicking outside
     document.addEventListener("click", function(e) {
       const wrap = document.getElementById("nav-user-profile-wrap");
       if (wrap && !wrap.contains(e.target)) {
         closeUserDropdown();
+      }
+      const notifWrap = document.getElementById("nav-notif-wrap");
+      if (notifWrap && !notifWrap.contains(e.target)) {
+        if (typeof closeNotifDropdown === 'function') closeNotifDropdown();
+      }
+    });
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") {
+        closeUserDropdown();
+        if (typeof closeNotifDropdown === 'function') closeNotifDropdown();
       }
     });
 
@@ -6211,6 +6975,13 @@
               ${(o.features || []).slice(0, 3).map(f => `<span style="background:var(--secondary); border:1px solid var(--border); padding:2px 6px; border-radius:4px; font-size:10px; color:var(--muted-foreground); font-family:var(--fp-font-mono);">${f}</span>`).join('')}
             </div>
 
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:3px; font-size:11px; font-family:var(--fp-font-mono);">
+              <span style="color:var(--fp-state-success); font-weight:600;">● ${o.timing || '12:00 PM – 10:00 PM'}</span>
+              <a href="https://www.google.com/maps/dir/?api=1&destination=${o.lat},${o.lng}" target="_blank" rel="noopener noreferrer" style="color:var(--primary); font-weight:600; display:inline-flex; align-items:center; gap:3px; text-decoration:none;" onclick="event.stopPropagation();" title="Get Directions on Google Maps">
+                <i data-lucide="external-link" style="width:11px; height:11px;"></i>
+                <span>Directions ↗</span>
+              </a>
+            </div>
             <div class="store-item-meta">
               <div class="store-distance-badge">
                 <i data-lucide="navigation-2" style="width: 11px; height: 11px;"></i>
@@ -6286,10 +7057,10 @@
             </div>
 
             <div style="display:flex; align-items:center; justify-content:space-between; font-size:11px; margin-bottom:10px; font-family:var(--fp-font-mono); padding-top:6px; border-top:1px dashed var(--border);">
-              <span style="color:var(--primary); font-weight:700; display:inline-flex; align-items:center; gap:4px;">
-                <i data-lucide="navigation-2" style="width:11px; height:11px;"></i>
-                <span>${o.distance}</span>
-              </span>
+              <a href="https://www.google.com/maps/dir/?api=1&destination=${o.lat},${o.lng}" target="_blank" rel="noopener noreferrer" style="color:var(--primary); font-weight:700; display:inline-flex; align-items:center; gap:4px; text-decoration:none;">
+                <i data-lucide="external-link" style="width:11px; height:11px;"></i>
+                <span>Directions</span>
+              </a>
               <span style="color:var(--fp-state-success); font-weight:600;">● ${o.timing}</span>
             </div>
 
@@ -6313,6 +7084,39 @@
           }
         } catch(e) {}
       }
+
+      updateUserMarkerOnMap();
+    }
+
+    function updateUserMarkerOnMap() {
+      if (!leafletMapInstance || !userCoords) return;
+      if (userMarker) {
+        try { leafletMapInstance.removeLayer(userMarker); } catch(e) {}
+        userMarker = null;
+      }
+      const userIcon = L.divIcon({
+        className: "custom-tasmac-pin",
+        html: `
+          <div class="user-executive-beacon" title="Your Live Location">
+            <span class="beacon-core"></span>
+            <span class="beacon-ring"></span>
+          </div>
+        `,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+        popupAnchor: [0, -14]
+      });
+      userMarker = L.marker([userCoords.lat, userCoords.lng], {
+        icon: userIcon,
+        zIndexOffset: 1500
+      }).addTo(leafletMapInstance);
+
+      userMarker.bindPopup(`
+        <div style="font-weight:700; font-size:13px; color:var(--primary); font-family:var(--fp-font-sans); display:inline-flex; align-items:center; gap:5px;">
+          <i data-lucide="navigation" style="width:13px;height:13px;"></i> Your Live Location
+        </div>
+      `);
+      if (window.lucide) lucide.createIcons();
     }
 
     function focusStoreOnMap(id) {
@@ -6341,70 +7145,113 @@
       renderMapMarkers();
     }
 
-    function triggerGeolocation() {
+    async function triggerGeolocation() {
       const btn = document.getElementById("btn-gps-locate");
-      if (!navigator.geolocation) {
-        showToast("Geolocation is not supported by your browser");
-        return;
+      if (btn) {
+        btn.classList.add("locating");
+        btn.innerHTML = `<i data-lucide="loader" style="width:14px;height:14px;animation:spin 1s linear infinite;"></i> <span>Locating...</span>`;
+        if (window.lucide) lucide.createIcons();
       }
 
-      btn.classList.add("locating");
-      btn.innerHTML = `<i data-lucide="loader" style="width:14px;height:14px;animation:spin 1s linear infinite;"></i> <span>Locating...</span>`;
-      if (window.lucide) lucide.createIcons();
+      function onSuccess(lat, lng, source) {
+        userCoords = { lat: parseFloat(lat), lng: parseFloat(lng) };
+        try {
+          localStorage.setItem('tasmac-user-lat', userCoords.lat);
+          localStorage.setItem('tasmac-user-lng', userCoords.lng);
+        } catch(e) {}
 
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          userCoords = {
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude
-          };
-          try {
-            localStorage.setItem('tasmac-user-lat', userCoords.lat);
-            localStorage.setItem('tasmac-user-lng', userCoords.lng);
-          } catch(e) {}
+        initOutletsDistances(userCoords.lat, userCoords.lng);
+        selectedOutlet = OUTLETS[0];
 
+        if (btn) {
           btn.classList.remove("locating");
           btn.innerHTML = `<i data-lucide="check-circle" style="width:15px;height:15px;color:var(--fp-state-success);"></i> <span>Located!</span>`;
           if (window.lucide) lucide.createIcons();
+        }
 
-          initOutletsDistances(userCoords.lat, userCoords.lng);
-          selectedOutlet = OUTLETS[0];
+        updateActiveStoreUI();
+        renderMapOutletsList();
+        renderMapMarkers();
+        updateUserMarkerOnMap();
 
-          if (leafletMapInstance) {
-            if (userMarker) {
-              try { leafletMapInstance.removeLayer(userMarker); } catch(e) {}
+        if (leafletMapInstance) {
+          leafletMapInstance.flyTo([userCoords.lat, userCoords.lng], 14, { duration: 0.8 });
+          setTimeout(() => {
+            if (userMarker) userMarker.openPopup();
+          }, 900);
+        }
+
+        const nearestName = OUTLETS[0] ? OUTLETS[0].name : "TASMAC Outlet";
+        const nearestDist = OUTLETS[0] ? OUTLETS[0].distance : "";
+        showToast(`Located! Nearest counter is ${nearestName} (${nearestDist})`);
+      }
+
+      async function fallbackToIp() {
+        try {
+          const res = await fetch("https://get.geojs.io/v1/ip/geo.json", { cache: "no-store" });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.latitude && data.longitude) {
+              onSuccess(data.latitude, data.longitude, data.city || "Chennai");
+              return true;
             }
-            const userIcon = L.divIcon({
-              className: "custom-tasmac-pin",
-              html: `
-                <div class="user-executive-beacon" title="Your Live Location">
-                  <span class="beacon-core"></span>
-                  <span class="beacon-ring"></span>
-                </div>
-              `,
-              iconSize: [0, 0],
-              iconAnchor: [0, 0],
-              popupAnchor: [0, -14]
-            });
-            userMarker = L.marker([userCoords.lat, userCoords.lng], { icon: userIcon }).addTo(leafletMapInstance);
-            userMarker.bindPopup(`<div style="font-weight:700; font-size:13px; color:var(--primary); font-family:var(--fp-font-sans); display:inline-flex; align-items:center; gap:5px;"><i data-lucide="navigation" style="width:13px;height:13px;"></i> Your Live Location</div>`).openPopup();
-
-            leafletMapInstance.setView([userCoords.lat, userCoords.lng], 13);
           }
+        } catch(e) {}
 
-          updateActiveStoreUI();
-          renderMapOutletsList();
-          renderMapMarkers();
-          showToast(`Located! Nearest counter is ${OUTLETS[0].name} (${OUTLETS[0].distance})`);
-        },
-        (err) => {
+        try {
+          const res = await fetch("https://ipapi.co/json/", { cache: "no-store" });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.latitude && data.longitude) {
+              onSuccess(data.latitude, data.longitude, data.city || "Chennai");
+              return true;
+            }
+          }
+        } catch(e) {}
+
+        return false;
+      }
+
+      function onFallbackDefault() {
+        if (btn) {
           btn.classList.remove("locating");
           btn.innerHTML = `<i data-lucide="crosshair" style="width:15px;height:15px;"></i> <span>Locate Near Me</span>`;
           if (window.lucide) lucide.createIcons();
-          showToast("Location access denied or unavailable. Using Chennai Central reference.");
-        },
-        { timeout: 8000, enableHighAccuracy: true }
-      );
+        }
+        onSuccess(DEFAULT_REF.lat, DEFAULT_REF.lng, "Chennai Central");
+        showToast("Using Chennai Central location reference.");
+      }
+
+      if (navigator.geolocation) {
+        let finished = false;
+        const timer = setTimeout(async () => {
+          if (!finished) {
+            finished = true;
+            const ok = await fallbackToIp();
+            if (!ok) onFallbackDefault();
+          }
+        }, 3500);
+
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            if (finished) return;
+            finished = true;
+            clearTimeout(timer);
+            onSuccess(pos.coords.latitude, pos.coords.longitude, "GPS");
+          },
+          async (err) => {
+            if (finished) return;
+            finished = true;
+            clearTimeout(timer);
+            const ok = await fallbackToIp();
+            if (!ok) onFallbackDefault();
+          },
+          { timeout: 3500, enableHighAccuracy: false, maximumAge: 60000 }
+        );
+      } else {
+        const ok = await fallbackToIp();
+        if (!ok) onFallbackDefault();
+      }
     }
 
     let currentMapTileLayer = null;
@@ -6417,7 +7264,8 @@
       if (!leafletMapInstance) return;
       if (!currentMapTileLayer) {
         currentMapTileLayer = L.tileLayer(getMapTileUrl(), {
-          maxZoom: 19,
+          maxZoom: 18,
+          maxNativeZoom: 17,
           attribution: 'Tiles &copy; Esri'
         }).addTo(leafletMapInstance);
       }
@@ -6440,7 +7288,8 @@
       setTimeout(() => {
         if (!leafletMapInstance) {
           leafletMapInstance = L.map("interactive-leaflet-map", {
-            attributionControl: false
+            attributionControl: false,
+            maxZoom: 18
           }).setView([13.0418, 80.2341], 12);
 
           leafletMapInstance.on('popupopen', () => {
@@ -6563,12 +7412,12 @@
 
     function toggleNotifDropdown(e) {
       if (e) e.stopPropagation();
+      // Ensure user profile dropdown is closed so both never open simultaneously
+      closeUserDropdown();
       const dropdown = document.getElementById("notif-dropdown");
-      const userDropdown = document.getElementById("nav-user-dropdown");
-      if (userDropdown) userDropdown.classList.remove("open");
       if (dropdown) {
-        dropdown.classList.toggle("open");
-        if (dropdown.classList.contains("open")) {
+        const isOpen = dropdown.classList.toggle("open");
+        if (isOpen) {
           renderNotifications();
         }
       }

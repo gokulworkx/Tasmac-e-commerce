@@ -13,17 +13,17 @@
 (function sanitizeSupabaseStorage() {
   if (typeof localStorage !== 'undefined') {
     let storedUrl = localStorage.getItem('tasmac-supabase-url');
-    if (storedUrl && storedUrl.includes('.supabase.com')) {
-      storedUrl = storedUrl.replace('.supabase.com', '.supabase.co');
-      localStorage.setItem('tasmac-supabase-url', storedUrl);
+    if (storedUrl && (storedUrl.includes('ilbwkldseycfqytfkiie') || storedUrl.includes('.supabase.com'))) {
+      localStorage.removeItem('tasmac-supabase-url');
+      localStorage.removeItem('tasmac-supabase-key');
     }
   }
 })();
 
 const SUPABASE_CONFIG = {
   // Live Supabase project credentials (Supabase instances strictly use .supabase.co):
-  url: ((typeof localStorage !== 'undefined' && localStorage.getItem('tasmac-supabase-url')) || "https://ilbwkldseycfqytfkiie.supabase.co").replace('.supabase.com', '.supabase.co'),
-  anonKey: (typeof localStorage !== 'undefined' && localStorage.getItem('tasmac-supabase-key')) || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsYndrbGRzZXljZnF5dGZraWllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxMzI1NzUsImV4cCI6MjEwNzcwODU3NX0.9DPW5cJGcXO5Fr2xqm1V89Lj9GBFE3aVuH-qfEEFb64"
+  url: ((typeof localStorage !== 'undefined' && localStorage.getItem('tasmac-supabase-url')) || "https://dwvfarmjwblwvacuhcrv.supabase.co").replace('.supabase.com', '.supabase.co'),
+  anonKey: (typeof localStorage !== 'undefined' && localStorage.getItem('tasmac-supabase-key')) || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR3dmZhcm1qd2Jsd3ZhY3VoY3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NDc0MDMsImV4cCI6MjEwODMyMzQwM30.je6P_LlxqX33iSEfmr-pxeJs_AvGSm6P4rcPAutyl_8"
 };
 
 // Initialize Supabase Client if library is loaded and keys are set
@@ -153,6 +153,26 @@ window.TASMAC_SUPABASE = {
       return { success: true, data };
     } catch(e) {
       return { success: false, error: e.message };
+    }
+  },
+
+  // 3b. Fetch verified customer reservations from Supabase
+  getMyReservations: async function(userPhone) {
+    if (!supabaseClient || !userPhone) return [];
+    try {
+      const cleanPhone = userPhone.replace('+91', '').trim();
+      const { data, error } = await supabaseClient
+        .from('reservations')
+        .select('*')
+        .or(`customer_phone.eq.${cleanPhone},customer_phone.eq.+91 ${cleanPhone}`)
+        .order('created_at', { ascending: false });
+
+      if (error || !data) {
+        return [];
+      }
+      return data;
+    } catch(e) {
+      return [];
     }
   },
 
